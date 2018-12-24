@@ -1,5 +1,8 @@
 import moment from 'moment';
 
+export const SNOOZE_TYPE_PERIODIC = 'periodically';
+export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
+
 export default () => {
   // constants from user settings
   const WEEK_START_DAY = 0;
@@ -103,7 +106,7 @@ export default () => {
       when: somedayTime,
     },
     {
-      id: 'periodically',
+      id: SNOOZE_TYPE_PERIODIC,
       title: 'Periodically',
       icon: require('./icons/refresh.svg'),
       activeIcon: require('./icons/refresh_white.svg'),
@@ -111,7 +114,7 @@ export default () => {
       isPro: true,
     },
     {
-      id: 'specific_date',
+      id: SNOOZE_TYPE_SPECIFIC_DATE,
       title: 'Pick a Date',
       icon: require('./icons/calendar.svg'),
       activeIcon: require('./icons/calendar_white.svg'),

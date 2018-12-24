@@ -1,9 +1,12 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import calcSnoozeOptions from './calcSnoozeOptions';
+import calcSnoozeOptions, {
+  SNOOZE_TYPE_PERIODIC,
+} from './calcSnoozeOptions';
 import SnoozeButtons from './SnoozeButtons';
 import SnoozeFooter from './SnoozeFooter';
+import PeriodicSnoozeSelector from './PeriodicSnoozeSelector';
 
 type Props = {};
 type State = {
@@ -13,7 +16,7 @@ type State = {
   selectedSnoozeOptionId: ?string,
 };
 
-const TOOLTIP_SHOW_TIMEOUT = 1000;
+const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
 export default class SnoozePanel extends Component<Props, State> {
@@ -24,7 +27,7 @@ export default class SnoozePanel extends Component<Props, State> {
   state = {
     tooltipVisible: false,
     tooltipText: null,
-    selectedSnoozeOptionId: null,
+    selectedSnoozeOptionId: SNOOZE_TYPE_PERIODIC,
   };
 
   render() {
@@ -77,9 +80,15 @@ export default class SnoozePanel extends Component<Props, State> {
           tooltip={{ visible: tooltipVisible, text: tooltipText }}
           sleepingTabsCount={2}
         />
+
+        <PeriodicSnoozeSelector
+          visible={selectedSnoozeOptionId === SNOOZE_TYPE_PERIODIC}
+        />
       </Root>
     );
   }
 }
 
-const Root = styled.div``;
+const Root = styled.div`
+  position: relative;
+`;
