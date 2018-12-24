@@ -1,15 +1,60 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
+  "manifest_version": 2,
+  "name": "Tab Snooze",
+  "short_name": "Tab Snooze",
+  "version": "2.0.0",
+
+  "description": "Save articles, videos and todos for later. They'll magically re-open when you need them.",
+  "icons": { "128": "images/extension_icon_128.png" },
+  "author": "Tab Snooze",
+  "homepage_url": "http://www.tabsnooze.com",
+  "content_security_policy": "script-src 'self' 'sha256-GgRxrVOKNdB4LrRsVPDSbzvfdV4UqglmviH9GoBJ5jk='; object-src 'self'",
+
+  "permissions": [
+    "tabs",
+    "alarms",
+    "storage",
+    "notifications",
+    "idle"
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+
+  "web_accessible_resources": ["images/*", "fonts/*"],
+
+  "browser_action": {
+    "default_title": "Snooze This Tab",
+    "default_popup": "index.html#popup",
+    "default_icon": {
+      "32": "images/browser_action_32.png"
+    }
+  },
+
+  "options_page": "index.html#options",
+
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Snooze active tab"
+    },
+    "repeat_last_snooze": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "Repeat last snooze action"
+    },
+    "open_snoozed_list": {
+      "suggested_key": {
+        "default": "Alt+Shift+L"
+      },
+      "description": "Open snoozed tabs list"
+    },
+    "new_todo_page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1"
+      },
+      "description": "New todo tab",
+      "global": true
+    }
+  }
 }
