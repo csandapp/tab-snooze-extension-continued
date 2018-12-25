@@ -3,13 +3,15 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
-import Select from './Select';
+import Collapse from '@material-ui/core/Collapse';
 import {
   WeekdayOptions,
   HourOptions,
   DayOptions,
-} from './PeriodicSnoozeOptions';
-import Button from '@material-ui/core/Button';
+  DateOptions,
+  PeriodOptions,
+} from './periodOptions';
+import Button from './Button';
 
 type Props = { visible: boolean };
 type State = {
@@ -20,17 +22,7 @@ type State = {
   selectedWeekdays: Array<boolean>,
 };
 
-const PERIOD_TYPES = [
-  { value: 'daily', label: 'Every day' },
-  { value: 'weekly', label: 'Every week' },
-  { value: 'monthly', label: 'Every month' },
-  { value: 'yearly', label: 'Every year' },
-];
-
-export default class PeriodicSnoozeSelector extends Component<
-  Props,
-  State
-> {
+export default class PeriodSelector extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -52,6 +44,9 @@ export default class PeriodicSnoozeSelector extends Component<
         false,
       ],
     };
+
+    // auto select current day in the week
+    this.state.selectedWeekdays[moment().weekday()] = true;
   }
 
   commit() {
@@ -88,7 +83,7 @@ export default class PeriodicSnoozeSelector extends Component<
 
   render() {
     const { visible } = this.props;
-    const { periodType, selectedWeekdays } = this.state;
+    const { periodType } = this.state;
 
     const bindField = stateKey => ({
       value: this.state[stateKey],
@@ -104,32 +99,45 @@ export default class PeriodicSnoozeSelector extends Component<
       <SnoozeModal visible={visible}>
         <Root>
           <Title>Wake up this tab</Title>
-          <Select
-            options={PERIOD_TYPES}
-            autoFocus
-            {...bindField('periodType')}
-          />
+          <PeriodOptions {...bindField('periodType')} />
 
-          {periodType === 'weekly' && (
+          <Collapse in={periodType === 'weekly'}>
             <Fragment>
               <Title>on these days</Title>
               <WeekdayOptions {...bindField('selectedWeekdays')} />
             </Fragment>
-          )}
+          </Collapse>
 
-          {periodType === 'monthly' && (
+          <Collapse in={periodType === 'monthly'}>
             <Fragment>
               <Title>on this day</Title>
               <DayOptions {...bindField('selectedDay')} />
             </Fragment>
-          )}
+          </Collapse>
+
+          <Collapse in={periodType === 'yearly'}>
+            <Fragment>
+              <Title>on this date</Title>
+              <DateOptions
+                value={{
+                  day: this.state.selectedDay,
+                  month: this.state.selectedMonth,
+                }}
+                onChange={({ day, month }) =>
+                  this.setState({
+                    selectedDay: day,
+                    selectedMonth: month,
+                  })
+                }
+              />
+            </Fragment>
+          </Collapse>
 
           <Title>at this hour</Title>
           <HourOptions {...bindField('selectedHour')} />
 
-          <Button variant="contained" color="primary" size="large">
-            Set Periodic Snooze
-          </Button>
+          <Spacer />
+          <SaveButton>SNOOZE</SaveButton>
         </Root>
       </SnoozeModal>
     );
@@ -145,15 +153,27 @@ function getSelectedWeekdaysIndexes(
 }
 
 const Root = styled.div`
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding-top: 10px;
+  /* justify-content: center; */
+  padding-top: 14px;
 `;
 
 const Title = styled.div`
   font-size: 20px;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 24px;
+  margin-bottom: 6px;
+  text-align: center;
+  color: #999;
+`;
+
+const Spacer = styled.div`
+  flex: 1;
+`;
+
+const SaveButton = styled(Button)`
+  width: 100%;
+  margin-top: 10px;
 `;

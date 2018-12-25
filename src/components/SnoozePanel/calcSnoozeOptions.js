@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const SNOOZE_TYPE_PERIODIC = 'periodically';
+export const SNOOZE_TYPE_REPEATED = 'periodically';
 export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
 
 export default () => {
@@ -106,8 +106,8 @@ export default () => {
       when: somedayTime,
     },
     {
-      id: SNOOZE_TYPE_PERIODIC,
-      title: 'Periodically',
+      id: SNOOZE_TYPE_REPEATED,
+      title: 'Repeatedly',
       icon: require('./icons/refresh.svg'),
       activeIcon: require('./icons/refresh_white.svg'),
       tooltip: 'Open this tab on a periodic basis',

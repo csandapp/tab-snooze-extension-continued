@@ -2,11 +2,13 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import calcSnoozeOptions, {
-  SNOOZE_TYPE_PERIODIC,
+  SNOOZE_TYPE_REPEATED,
+  SNOOZE_TYPE_SPECIFIC_DATE,
 } from './calcSnoozeOptions';
 import SnoozeButtons from './SnoozeButtons';
 import SnoozeFooter from './SnoozeFooter';
-import PeriodicSnoozeSelector from './PeriodicSnoozeSelector';
+import PeriodSelector from './PeriodSelector';
+import DateSelector from './DateSelector';
 
 type Props = {};
 type State = {
@@ -19,6 +21,14 @@ type State = {
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
+var snoozeSound = new window.Audio();
+// snoozeSound.src = window.chrome.extension.getURL(
+//   'sounds/DefaultMac-StringScale1.mp3'
+// );
+snoozeSound.src = 'sounds/DefaultMac-StringScale1.mp3';
+snoozeSound.preload = 'auto';
+snoozeSound.currentTime = 0.02;
+
 export default class SnoozePanel extends Component<Props, State> {
   // counts down until tooltip appears/hides
   tooltipShowTimeout: ?TimeoutID = null;
@@ -27,8 +37,17 @@ export default class SnoozePanel extends Component<Props, State> {
   state = {
     tooltipVisible: false,
     tooltipText: null,
-    selectedSnoozeOptionId: SNOOZE_TYPE_PERIODIC,
+    selectedSnoozeOptionId: null, //SNOOZE_TYPE_SPECIFIC_DATE,
   };
+
+  onSnoozeOptionClicked(snoozeOption) {
+    this.setState({ selectedSnoozeOptionId: snoozeOption.id });
+
+    if (snoozeOption.when) {
+      // Perform snooze
+      snoozeSound.play();
+    }
+  }
 
   render() {
     const {
@@ -41,8 +60,7 @@ export default class SnoozePanel extends Component<Props, State> {
     const snoozeButtons = snoozeOptions.map(snoozeOpt => ({
       ...snoozeOpt,
       pressed: selectedSnoozeOptionId === snoozeOpt.id,
-      onClick: () =>
-        this.setState({ selectedSnoozeOptionId: snoozeOpt.id }),
+      onClick: () => this.onSnoozeOptionClicked(snoozeOpt),
       onMouseEnter: () => {
         this.setState({
           tooltipText: snoozeOpt.tooltip,
@@ -81,8 +99,13 @@ export default class SnoozePanel extends Component<Props, State> {
           sleepingTabsCount={2}
         />
 
-        <PeriodicSnoozeSelector
-          visible={selectedSnoozeOptionId === SNOOZE_TYPE_PERIODIC}
+        <PeriodSelector
+          visible={selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED}
+        />
+        <DateSelector
+          visible={
+            selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
+          }
         />
       </Root>
     );

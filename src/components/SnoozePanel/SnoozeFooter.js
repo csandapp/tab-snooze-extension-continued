@@ -61,7 +61,7 @@ const SnoozeTooltip = styled.div`
   justify-content: center;
 
   background-color: #fff;
-  color: #929292;
+  color: #888888;
   /* font-weight: 500; */
   font-size: 17px;
 `;

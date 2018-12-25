@@ -18,7 +18,7 @@
     "idle"
   ],
 
-  "web_accessible_resources": ["images/*", "fonts/*"],
+  "web_accessible_resources": ["images/*", "fonts/*", "sounds/*"],
 
   "browser_action": {
     "default_title": "Snooze This Tab",

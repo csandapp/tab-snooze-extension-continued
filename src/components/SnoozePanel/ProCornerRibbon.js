@@ -8,6 +8,7 @@ export default (props: { white: boolean }) => (
 
 const Ribbon = styled.div`
   width: 90px;
+  transition: background-color 0.4s;
   background: ${props => (props.white ? '#fff' : '#CCD0D0')};
   position: absolute;
   text-align: center;

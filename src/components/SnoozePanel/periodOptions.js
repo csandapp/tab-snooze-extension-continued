@@ -5,6 +5,13 @@ import moment from 'moment';
 import { Checkbox } from '@material-ui/core';
 import Select from './Select';
 
+const PERIOD_TYPES = [
+  { value: 'daily', label: 'Every day' },
+  { value: 'weekly', label: 'Every week' },
+  { value: 'monthly', label: 'Every month' },
+  { value: 'yearly', label: 'Every year' },
+];
+
 // init <select> dropdown values
 const WEEKDAYS = indexLabels(moment.weekdays());
 const MONTHS = indexLabels(moment.monthsShort());
@@ -16,8 +23,12 @@ type OptionsProps = {
   onChange: any => void,
 };
 
+export const PeriodOptions = (props: OptionsProps) => (
+  <Select options={PERIOD_TYPES} autoFocus {...props} />
+);
+
 export const WeekdayOptions = ({ value, onChange }: OptionsProps) => (
-  <WeekdaysRow>
+  <Row>
     {WEEKDAYS.map((weekday, index) => (
       <WeekdayOption key={index}>
         <DayName>{weekday.label[0]}</DayName>
@@ -36,7 +47,7 @@ export const WeekdayOptions = ({ value, onChange }: OptionsProps) => (
         />
       </WeekdayOption>
     ))}
-  </WeekdaysRow>
+  </Row>
 );
 
 export const DayOptions = (props: OptionsProps) => (
@@ -47,7 +58,26 @@ export const HourOptions = (props: OptionsProps) => (
   <Select options={HOURS} {...props} />
 );
 
-const WeekdaysRow = styled.div`
+export const DateOptions = ({
+  value: { day, month },
+  onChange,
+}: OptionsProps) => (
+  <Row>
+    <Select
+      options={MONTHS}
+      value={month}
+      onChange={month => onChange({ day, month })}
+      style={{ marginRight: 16 }}
+    />
+    <Select
+      options={DAYS}
+      value={day}
+      onChange={day => onChange({ day, month })}
+    />
+  </Row>
+);
+
+const Row = styled.div`
   display: flex;
 `;
 const WeekdayOption = styled.div`
@@ -57,9 +87,7 @@ const DayName = styled.div`
   font-size: 20px;
 `;
 
-function indexLabels(array, step) {
-  if (!step) step = 1;
-
+function indexLabels(array, step = 1) {
   const items = [];
   for (let i = 0; i < array.length; i++)
     items.push({ value: i * step, label: array[i] });

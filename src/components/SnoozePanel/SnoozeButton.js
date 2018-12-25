@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
+import { Collapse } from '@material-ui/core';
 
 type Props = {
   title: string,
@@ -13,6 +14,8 @@ type Props = {
   onMouseEnter: () => void,
   onMouseLeave: () => void,
 };
+
+const SNOOZE_CLICK_EFFECT_TIME = '0.4s';
 
 export default class SnoozeButton extends Component<Props> {
   render() {
@@ -34,8 +37,13 @@ export default class SnoozeButton extends Component<Props> {
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <Icon src={pressed ? activeIcon : icon} />
-        <Title>{title}</Title>
+        <IconWrapper>
+          <Icon src={activeIcon} />
+          <OverlayIcon src={icon} hide={pressed} />
+        </IconWrapper>
+        <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
+          <Title pressed={pressed}>{title}</Title>
+        </Collapse>
         {isPro && <ProCornerRibbon white={pressed} />}
       </Button>
     );
@@ -66,21 +74,47 @@ const Button = styled.button`
     props.pressed &&
     css`
       /* To add transition, u need to transition the image too */
-      transition: background-color 0s;
+      transition: background-color ${SNOOZE_CLICK_EFFECT_TIME};
       background-color: ${props.theme.primary} !important;
-      ${Title} {
-        color: #fff;
+      ${Icon} {
+        transform: scale(1.3);
       }
     `};
 `;
 
+const IconWrapper = styled.div`
+  position: relative;
+`;
+
 const Icon = styled.img`
-  margin-bottom: 12px;
   /* width: 55px;
   height: 55px; */
+  transition: all ${SNOOZE_CLICK_EFFECT_TIME};
+  opacity: ${props => (props.hide ? 0 : 1)};
+`;
+
+const OverlayIcon = styled(Icon)`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
 `;
 
 const Title = styled.div`
+  margin-top: 12px;
   font-size: 15px;
   color: #788284;
+  font-weight: 500;
+  transition: color ${SNOOZE_CLICK_EFFECT_TIME};
+  /* height: 16px; */
+
+  ${props =>
+    props.pressed &&
+    css`
+      color: #fff;
+      /* height: 0; */
+      /* overflow: hidden; */
+      /* margin: 0; */
+    `};
 `;

@@ -11,10 +11,27 @@ const styles = theme => ({
 });
 
 export default withStyles(styles)(
-  (props: { options: Array<{ label: string, value: string }> }) => (
-    <NativeSelect {...props}>
-      {props.options.map(option => (
-        <option key={option.value} value={option.value}>
+  (props: {
+    value: any,
+    onChange: any => void,
+    options: Array<{ label: string, value: string }>,
+  }) => (
+    <NativeSelect
+      {...props}
+      value={undefined}
+      onChange={event => {
+        const selectedIndex = parseInt(event.target.value);
+        const selectedOption = props.options[selectedIndex];
+        console.log(selectedOption.value);
+        props.onChange(selectedOption.value);
+      }}
+    >
+      {props.options.map((option, index) => (
+        <option
+          key={option.value}
+          value={index}
+          selected={props.value === option.value}
+        >
           {option.label}
         </option>
       ))}
