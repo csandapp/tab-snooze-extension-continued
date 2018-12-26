@@ -10,73 +10,29 @@ export function isMacOS() {
   Close tab and popup after a short delay
   delay is for User Experience purposes (to see what they selected)
 */
-export function delayedCloseTab(tab) {
+export function delayedCloseTab(tabId: string) {
   setTimeout(function() {
-    chromep.tabs.remove(tab.id);
+    chromep.tabs.remove(tabId);
   }, 400);
-}
-
-export async function createTab(tabInfo, makeActive) {
-  const createdTab = await chromep.tabs.create({
-    url: tabInfo.url,
-    active: makeActive,
-  });
-  return [tabInfo, createdTab];
 }
 
 /*
     Create tabs and call callback() when they are all created.
 */
-export function createTabs(tabInfos, makeActive: boolean): Promise {
+export function createTabs(
+  tabInfos: Array<SnoozedTab>,
+  makeActive: boolean
+): Promise<Array<ChromeTab>> {
   const allTabsCreatedPromise = Promise.all(
-    tabInfos.map(tabInfo => createTab(tabInfo, makeActive))
+    tabInfos.map(tabInfo =>
+      chromep.tabs.create({
+        url: tabInfo.url,
+        active: makeActive,
+      })
+    )
   );
-
-  return allTabsCreatedPromise.then(results =>
-    results.map(({ tabInfo, createdTab }) => ({
-      snoozedTab: tabInfo,
-      openTab: createdTab,
-    }))
-  );
+  return allTabsCreatedPromise;
 }
-
-/*
-    Looking for open tabs that match snoozed tabs' url.
-    If found, those open tabs are returned in the callback
-    
-    callback (foundTabs, notFoundSnoozedTabs)
-*/
-// async function findExistingTabs(tabs) {
-//   var foundOpenTabs = [];
-//   var notFoundSnoozedTabs = [];
-
-//   const allOpenTabs = await chromep.tabs.query({});
-
-//   for (var k = tabs.length - 1; k >= 0; k--) {
-//     var snoozedTab = tabs[k];
-
-//     var foundOpenTab = null;
-//     for (var i = allOpenTabs.length - 1; i >= 0; i--) {
-//       var openTab = allOpenTabs[i];
-
-//       if (openTab.url === snoozedTab.url) {
-//         foundOpenTab = openTab;
-//         break;
-//       }
-//     }
-
-//     if (foundOpenTab) {
-//       foundOpenTabs.push({
-//         snoozedTab: snoozedTab,
-//         openTab: foundOpenTab,
-//       });
-//     } else {
-//       notFoundSnoozedTabs.push(snoozedTab);
-//     }
-//   }
-
-//   return [foundOpenTabs, notFoundSnoozedTabs];
-// }
 
 export async function newCenteredWindow(
   url: string,
@@ -106,21 +62,18 @@ export async function newCenteredWindow(
   Show desktop notification for the given tabs,
   and make the jumpToTab active, if notification is clicked.
 */
-async function notifyUserAboutNewTabs(
-  tabs,
-  jumpToTab,
-  shouldPlaySound
+export async function notifyUserAboutNewTabs(
+  tabs: Array<ChromeTab>,
+  jumpToTab: ChromeTab
 ) {
   var notifItems = tabs.map(tab => ({
     title: tab.title,
     message: '',
   }));
 
-  var notifTitle =
-    'Tab Snooze woke up ' +
-    tabs.length +
-    ' tab' +
-    (tabs.length > 1 ? 's' : ''); // plural handling
+  var notifTitle = `Tab Snooze woke up ${tabs.length} tab ${
+    tabs.length > 1 ? 's' : '' // plural handling
+  }`;
 
   // Console log
   console.log(notifTitle);
@@ -134,10 +87,6 @@ async function notifyUserAboutNewTabs(
     items: notifItems,
     isClickable: true,
   });
-
-  if (shouldPlaySound) {
-    playSound('notification');
-  }
 
   // chrome.windows.update(jumpToTab.windowId, {drawAttention: true});
 
@@ -155,22 +104,22 @@ async function notifyUserAboutNewTabs(
   });
 }
 
-export function addMinutes(date, minutes) {
+export function addMinutes(date: Date, minutes: number) {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-function playSound(soundName) {
-  if (!Audio) return;
+export function playSound(soundName: 'notification') {
+  if (!window.Audio) return;
 
   var soundCache = {
-    notification: new Audio('sounds/wakeup_notification.mp3'),
+    notification: new window.Audio('sounds/wakeup_notification.mp3'),
   };
 
   var audio = soundCache[soundName];
   audio.play();
 }
 
-export async function getActiveTab(callback) {
+export async function getActiveTab() {
   const tabs = await chromep.tabs.query({
     active: true,
     currentWindow: true,
@@ -186,41 +135,43 @@ export async function getActiveTab(callback) {
         time: 23 // 11pm
     }
 */
-function calcNextOccurrenceForPeriod(period) {
-  var occurrences = [];
+export function calcNextOccurrenceForPeriod(
+  period: SnoozePeriod
+): Date {
+  let occurrences = [];
 
   if (period.type === 'daily') {
-    var today = moment();
-    var tomorrow = moment().add(1, 'day');
+    const today = moment();
+    const tomorrow = moment().add(1, 'day');
 
     occurrences = [today, tomorrow];
   }
 
   if (period.type === 'weekly') {
-    occurrences = [];
-
     // occurences for this week and the next week
-    for (var k = 0; k < 2; k++)
-      for (var i = 0; i < period.days.length; i++)
+    [0, 1].forEach(weekIndex =>
+      period.days.forEach(weekdayIndex =>
         occurrences.push(
           moment()
-            .add(k, 'week')
-            .day(period.days[i])
-        );
+            .add(weekIndex, 'week')
+            .day(weekdayIndex)
+        )
+      )
+    );
   }
 
   if (period.type === 'monthly') {
-    var thisMonth = moment().date(period.day + 1); // +1, date() works not by index, by val
-    var nextMonth = moment(thisMonth).add(1, 'month');
+    const thisMonth = moment().date(period.day + 1); // +1, date() works not by index, by val
+    const nextMonth = moment(thisMonth).add(1, 'month');
 
     occurrences = [thisMonth, nextMonth];
   }
 
   if (period.type === 'yearly') {
-    var thisYear = moment()
+    const thisYear = moment()
       .month(period.date[0])
       .date(period.date[1] + 1); // +1, date() works not by index, by val
-    var nextYear = moment(thisYear).add(1, 'year');
+    const nextYear = moment(thisYear).add(1, 'year');
 
     occurrences = [thisYear, nextYear];
   }
@@ -228,87 +179,31 @@ function calcNextOccurrenceForPeriod(period) {
   // Find the first occurence that is in the future //
 
   // we add 2 mins to 'now', to avoid accidently selecting an
-  // occurence that has just passed a second ago
-  var now = moment().add(2, 'minute');
+  // occurence that has just passed a second ago.
+  const now = moment().add(2, 'minute');
 
-  for (var n = 0; n < occurrences.length; n++) {
-    var occur = momentWithHour(occurrences[n], period.time);
+  // Add specific hour to occurrences
+  occurrences = occurrences.map(occurrence =>
+    momentWithHour(occurrences, period.hour)
+  );
 
-    if (occur.isAfter(now)) return occur.toDate();
+  const nextFutureOccurrence = occurrences.find(occurrence =>
+    occurrence.isAfter(now)
+  );
+
+  if (!nextFutureOccurrence) {
+    throw new Error("Can't find next future occurrence");
   }
+
+  return nextFutureOccurrence.toDate();
 }
 
-function momentWithHour(aMoment, hour) {
-  var h = Math.floor(hour);
-  var m = Math.floor((hour - h) * 60); // 0.5h--> 30m
+function momentWithHour(aMoment: any, hour: number) {
+  const h = Math.floor(hour);
+  const m = Math.floor((hour - h) * 60); // 0.5h--> 30m
 
   return aMoment
     .hour(h)
     .minutes(m)
     .seconds(0);
 }
-
-function sendTabByEmail(tab, toAddress) {
-  var MANDRILL_API_KEY = '39ImPGRadLu7WmYL2Y7uxg';
-
-  var messageBody =
-    tab.title +
-    '<br>' +
-    '<a href="' +
-    tab.url +
-    '">' +
-    tab.url +
-    '</a>';
-
-  // Send the email using Mandrill API
-  $.ajax({
-    type: 'POST',
-    url: 'https://mandrillapp.com/api/1.0/messages/send.json',
-    data: {
-      key: MANDRILL_API_KEY,
-      message: {
-        from_email: 'tabsnoozeapp@gmail.com',
-        to: [
-          {
-            email: toAddress,
-            type: 'to',
-          },
-        ],
-        autotext: 'true',
-        subject: tab.title,
-        html: messageBody,
-      },
-    },
-  }).done(function(response) {
-    console.log('tab was sent by email'); // if you're into that sorta thing
-  });
-}
-
-/*
-    A varaible that always contains the active Tab by monitoring the
-    onActivated chrome.tabs event. This is done to remove the need 
-    to call the asynchronous API for getActiveTab each time.
-*/
-var _currActiveTab = null;
-
-function getActiveTabSync() {
-  return _currActiveTab;
-}
-
-// monitor active+focused tab
-// track time on tab.
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-  chrome.tabs.get(activeInfo.tabId, function(tab) {
-    if (chrome.runtime.lastError) _currActiveTab = null;
-    else _currActiveTab = tab;
-  });
-});
-
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  // ignore 'loading' status, only if url changes
-  if (changeInfo.url) {
-    // if the updated tab is
-    if (_currActiveTab && _currActiveTab.id === tabId)
-      _currActiveTab = tab;
-  }
-});

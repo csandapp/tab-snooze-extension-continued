@@ -4,6 +4,7 @@
 [include]
 
 [libs]
+./src/custom-flow-defenitions
 
 [lints]
 

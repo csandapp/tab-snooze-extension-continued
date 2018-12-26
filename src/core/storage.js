@@ -5,13 +5,16 @@ import clone from 'clone';
 
 // const cmdCtrl = isMacOS() ? 'super' : 'ctrl';
 
-const DEFAULT_SETTINGS = {
+export const STORAGE_KEY_SETTINGS = 'settings';
+// export const STORAGE_KEY_HISTORY = 'history';
+// export const STORAGE_KEY_SLEEPING_TABS = 'sleepingTabs';
+
+const DEFAULT_SETTINGS: Settings = {
+  // General
   closeTabAfterSnooze: true,
   showBadge: true,
   playNotificationSound: true,
   showNotifications: true,
-
-  // mailMyselfAddress: '',
 
   // Snooze times
   weekStartDay: 1, // Monday
@@ -20,27 +23,17 @@ const DEFAULT_SETTINGS = {
   workdayEnd: 19,
   laterTodayHoursDelta: 3,
   somedayMonthsDelta: 3,
-
-  // Shortucts
-  snoozeCurrentTabSC: ['alt', 's'],
-  repeatLastSnoozeSC: ['alt', 'shift', 's'],
-  showSnoozedTabsSC: ['alt', 'l'],
-  newTodoSC: ['ctrl', 'shift', '1'],
-
-  // Snooze recommendation
-  // tabIdleTimeThreshold: 1,
-  // manyTabsThreshold: 10
 };
 
 /*
     Storage sync has a QUOTA_BYTES_PER_ITEM of 4000, so we save
     each tab in a different key... instead of one big array :( it's sad
 */
-export async function getSnoozedTabs() {
+export async function getSnoozedTabs(): Promise<Array<SnoozedTab>> {
   const allStorage = await chromep.storage.local.get();
 
   const snoozedTabs = [];
-  const tabsCount = allStorage.tabsCount;
+  const tabsCount = allStorage.tabsCount || 0;
 
   if (tabsCount) {
     for (let i = 0; i < tabsCount; i++)
@@ -50,7 +43,9 @@ export async function getSnoozedTabs() {
   return snoozedTabs;
 }
 
-export function saveSnoozedTabs(snoozedTabs) {
+export function saveSnoozedTabs(
+  snoozedTabs: Array<SnoozedTab>
+): Promise<void> {
   const KV2save = {};
 
   KV2save.tsVersion = 2;
@@ -59,26 +54,28 @@ export function saveSnoozedTabs(snoozedTabs) {
   for (let i = 0; i < snoozedTabs.length; i++)
     KV2save['tab' + i] = snoozedTabs[i];
 
-  chromep.storage.local.set(KV2save);
+  return chromep.storage.local.set(KV2save);
 }
 
-export function getSnoozeHistory() {
-  return chromep.storage.local
-    .get()
-    .then(allStorage => allStorage.snoozeHistory || []);
-}
+// export function getSnoozeHistory() {
+//   return chromep.storage.local
+//     .get()
+//     .then(allStorage => allStorage.snoozeHistory || []);
+// }
 
-export async function addTabToHistory(tabInfo) {
-  const history = await getSnoozeHistory();
-  history.push(tabInfo);
+// export async function addTabToHistory(tabInfo) {
+//   const history = await getSnoozeHistory();
+//   history.push(tabInfo);
 
-  chromep.storage.local.set({ snoozeHistory: history });
+//   chromep.storage.local.set({ snoozeHistory: history });
 
-  return history;
-}
+//   return history;
+// }
 
-export async function getSettings() {
-  let { settings } = await chromep.storage.local.get('settings');
+export async function getSettings(): Promise<Settings> {
+  let { settings } = await chromep.storage.local.get(
+    STORAGE_KEY_SETTINGS
+  );
 
   // Add new settings keys, preserve user old preferences
   const defaults = clone(DEFAULT_SETTINGS);
@@ -87,12 +84,14 @@ export async function getSettings() {
   return settings;
 }
 
-export function saveSettings(settings) {
+export function saveSettings(settings: Settings): Promise<void> {
   // using local instead of sync beacuse I fear that
   // user will make many changes in the options page that
   // will trigger many 'set' api calls on storage.local which
   // will reach the api quota limit.
-  chromep.storage.local.set({ settings: settings });
+  return chromep.storage.local.set({
+    [STORAGE_KEY_SETTINGS]: settings,
+  });
 }
 
 export async function printTabs() {
