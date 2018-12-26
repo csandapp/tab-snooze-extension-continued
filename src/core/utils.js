@@ -2,6 +2,9 @@
 import chromep from 'chrome-promise';
 import moment from 'moment';
 
+// Adding chrome manually to scope, for ESLint
+const chrome = window.chrome;
+
 export function isMacOS() {
   return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 }
@@ -90,7 +93,7 @@ export async function notifyUserAboutNewTabs(
 
   // chrome.windows.update(jumpToTab.windowId, {drawAttention: true});
 
-  chromep.notifications.onClicked.addListener(function makeTabActive(
+  chrome.notifications.onClicked.addListener(function makeTabActive(
     notifId
   ) {
     if (notifId === createdNotifId) {
@@ -99,7 +102,7 @@ export async function notifyUserAboutNewTabs(
         focused: true,
       });
 
-      chromep.notifications.onClicked.removeListener(makeTabActive);
+      chrome.notifications.onClicked.removeListener(makeTabActive);
     }
   });
 }

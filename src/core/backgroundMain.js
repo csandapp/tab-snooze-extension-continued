@@ -4,22 +4,24 @@
  * Background Page - a page that opens in the background
  * without a view.
  */
-import chromep from 'chrome-promise';
 import {
   scheduleWakeupAlarm,
   wakeupReadyTabs,
   cancelWakeupAlarm,
 } from './snooze';
 
+// Adding chrome manually to scope, for ESLint
+const chrome = window.chrome;
+
 export function runBackgroundScript() {
-  chromep.runtime.onStartup.addListener(() => {
+  chrome.runtime.onStartup.addListener(() => {
     // Give 1 mintue for Chrome to load after startup before
     // waking up tabs so chrome is not stuck
     scheduleWakeupAlarm('1min');
   });
 
   // Wake up tabs on scheduled dates
-  chromep.alarms.onAlarm.addListener(async function(alarm) {
+  chrome.alarms.onAlarm.addListener(async function(alarm) {
     console.log('Alarm fired - waking up ready tabs');
 
     // wake up ready tabs, if any
@@ -34,7 +36,7 @@ export function runBackgroundScript() {
     the alarms are not called, so we use idle detection to
     get the callback when system wakes up.
   */
-  chromep.idle.onStateChanged.addListener(newState => {
+  chrome.idle.onStateChanged.addListener(newState => {
     if (newState === 'active') {
       console.log('System active after idle time');
 
@@ -51,7 +53,7 @@ export function runBackgroundScript() {
     }
   });
 
-  // chromep.commands.onCommand.addListener(function(command) {
+  // chrome.commands.onCommand.addListener(function(command) {
   //   // create a new todo window!, and focus on it
   //   if (command === 'new_todo_page') {
   //     openNewTodo();
@@ -67,7 +69,7 @@ export function runBackgroundScript() {
   // });
 
   // Show CHANGELOG doc when extension updates
-  chromep.runtime.onInstalled.addListener(function(details) {
+  chrome.runtime.onInstalled.addListener(function(details) {
     // Don't show changelog for 'install', or 'chrome_update'
     // just for extension update
     // if (details.reason === 'update')

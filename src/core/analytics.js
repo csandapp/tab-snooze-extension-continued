@@ -29,7 +29,7 @@ async function initUserTracking() {
     This function must be called after beta tester idetifies himself 
     so that upcoming future events will attach to a his/her user id.
 */
-function setupUserTracking(email: string, name: string) {
+export function setupUserTracking(email: string, name: string) {
   email = email.trim();
   name = name.trim();
 
@@ -45,7 +45,7 @@ function setupUserTracking(email: string, name: string) {
 
   mixpanel.track('Signup');
 
-  chromep.storage.sync.set({
+  chromep.storage.local.set({
     betaTester: {
       email: email,
       name: name,
@@ -54,13 +54,11 @@ function setupUserTracking(email: string, name: string) {
 }
 
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
-  const tabs = await chromep.tabs.query({} /* all */);
   const snoozedTabs = await getSnoozedTabs();
 
   mixpanel.track('Tab Snooze', {
     'Snooze Type': snoozedTab.snoozeOptionIndex,
     'Sleeping Tabs': snoozedTabs.length,
-    'Open Tabs': tabs.length,
   });
 
   mixpanel.people.increment('tabs snoozed');

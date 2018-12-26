@@ -37,21 +37,6 @@ let lastSnoozeOptions: ?SnoozeOptions = null;
 let wakeupThreshold = new Date(0);
 
 /*
-    A cache of the settings in storage.sync
-*/
-// let settings = {};
-
-/*
-    A cache of the snoozedTabs in storage.sync
-*/
-// let snoozedTabs = [];
-
-// function getSnoozedTabs() {
-//   // shallow copy - so others won't mess with our list
-//   return snoozedTabs.slice();
-// }
-
-/*
     Delete tabs from storage
 */
 async function deleteSnoozedTabs(

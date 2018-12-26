@@ -3,11 +3,14 @@ import { getSnoozedTabs, getSettings } from './storage';
 import chromep from 'chrome-promise';
 import { styledComponentsTheme } from '../theme';
 
-// init badge for the first time
-updateBadge();
+// Adding chrome manually to scope, for ESLint
+const chrome = window.chrome;
 
-// Update badge (visible/hidden + count) on any storage change
-chromep.storage.onChanged.addListener(updateBadge);
+// update badge after chrome startup
+chrome.runtime.onStartup.addListener(updateBadge);
+
+// Update badge (visible/hidden + count) on any storage change (tabs snoozed/awoken)
+chrome.storage.onChanged.addListener(updateBadge);
 
 /*
     Update the Browser Action button badge count of snoozed tabs

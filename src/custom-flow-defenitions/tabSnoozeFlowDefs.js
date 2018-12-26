@@ -52,9 +52,3 @@ declare type Settings = {
   workdayEnd: 19,
   workdayStart: 8,
 };
-
-// Chrome API
-
-// declare module 'chrome-promise' {
-//   // This is where we'll list the module's exported interface(s)
-// }
