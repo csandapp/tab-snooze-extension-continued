@@ -30,6 +30,9 @@ export const muiTheme = createMuiTheme({
   ripple: {
     color: '#fff',
   },
+  typography: {
+    useNextVariants: true,
+  },
   overrides: {
     ripple: {
       color: '#fff',

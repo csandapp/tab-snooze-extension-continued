@@ -18,20 +18,18 @@ export default withStyles(styles)(
   }) => (
     <NativeSelect
       {...props}
-      value={undefined}
+      value={props.options.findIndex(
+        opt => opt.value === props.value
+      )}
       onChange={event => {
         const selectedIndex = parseInt(event.target.value);
         const selectedOption = props.options[selectedIndex];
-        console.log(selectedOption.value);
+
         props.onChange(selectedOption.value);
       }}
     >
       {props.options.map((option, index) => (
-        <option
-          key={option.value}
-          value={index}
-          selected={props.value === option.value}
-        >
+        <option key={option.value} value={index}>
           {option.label}
         </option>
       ))}

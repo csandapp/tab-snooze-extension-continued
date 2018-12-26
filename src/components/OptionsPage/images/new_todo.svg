@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>new_todo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="new_todo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M26.6666667,0 L3.33333333,0 C1.49166667,0 0,1.49166667 0,3.33333333 L0,26.6666667 C0,28.5083333 1.49166667,30 3.33333333,30 L26.6666667,30 C28.5083333,30 30,28.5083333 30,26.6666667 L30,3.33333333 C30,1.49166667 28.5083333,0 26.6666667,0 Z M11.6666667,23.3333333 L3.33333333,15 L5.69166667,12.6416667 L11.6666667,18.6166667 L24.3083333,5.975 L26.6666667,8.33333333 L11.6666667,23.3333333 Z" id="Shape" fill="#929292" fill-rule="nonzero"></path>
+    </g>
+</svg>

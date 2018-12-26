@@ -1,4 +1,5 @@
 // @flow
+import type { SnoozeOption } from './calcSnoozeOptions';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import calcSnoozeOptions, {
@@ -22,12 +23,9 @@ const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
 var snoozeSound = new window.Audio();
-// snoozeSound.src = window.chrome.extension.getURL(
-//   'sounds/DefaultMac-StringScale1.mp3'
-// );
 snoozeSound.src = 'sounds/DefaultMac-StringScale1.mp3';
 snoozeSound.preload = 'auto';
-snoozeSound.currentTime = 0.02;
+// snoozeSound.currentTime = 0.02;
 
 export default class SnoozePanel extends Component<Props, State> {
   // counts down until tooltip appears/hides
@@ -40,8 +38,15 @@ export default class SnoozePanel extends Component<Props, State> {
     selectedSnoozeOptionId: null, //SNOOZE_TYPE_SPECIFIC_DATE,
   };
 
-  onSnoozeOptionClicked(snoozeOption) {
-    this.setState({ selectedSnoozeOptionId: snoozeOption.id });
+  onSnoozeOptionClicked(snoozeOption: SnoozeOption) {
+    this.setState({
+      selectedSnoozeOptionId: snoozeOption.id,
+    });
+
+    // Avoid showing tooltip after user already selected, its distructing
+    if (this.tooltipShowTimeout) {
+      clearTimeout(this.tooltipShowTimeout);
+    }
 
     if (snoozeOption.when) {
       // Perform snooze

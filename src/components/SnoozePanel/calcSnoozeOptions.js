@@ -1,7 +1,18 @@
+// @flow
 import moment from 'moment';
 
 export const SNOOZE_TYPE_REPEATED = 'periodically';
 export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
+
+export type SnoozeOption = {
+  id: string,
+  title: string,
+  icon: string,
+  activeIcon: string,
+  tooltip: string,
+  when?: Date,
+  isPro?: boolean,
+};
 
 export default () => {
   // constants from user settings

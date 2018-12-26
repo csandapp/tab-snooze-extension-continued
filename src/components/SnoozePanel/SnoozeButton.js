@@ -15,7 +15,7 @@ type Props = {
   onMouseLeave: () => void,
 };
 
-const SNOOZE_CLICK_EFFECT_TIME = '0.4s';
+const SNOOZE_CLICK_EFFECT_TIME = 400;
 
 export default class SnoozeButton extends Component<Props> {
   render() {
@@ -74,7 +74,7 @@ const Button = styled.button`
     props.pressed &&
     css`
       /* To add transition, u need to transition the image too */
-      transition: background-color ${SNOOZE_CLICK_EFFECT_TIME};
+      transition: background-color ${SNOOZE_CLICK_EFFECT_TIME}ms;
       background-color: ${props.theme.primary} !important;
       ${Icon} {
         transform: scale(1.3);
@@ -89,7 +89,7 @@ const IconWrapper = styled.div`
 const Icon = styled.img`
   /* width: 55px;
   height: 55px; */
-  transition: all ${SNOOZE_CLICK_EFFECT_TIME};
+  transition: all ${SNOOZE_CLICK_EFFECT_TIME}ms;
   opacity: ${props => (props.hide ? 0 : 1)};
 `;
 
@@ -106,7 +106,7 @@ const Title = styled.div`
   font-size: 15px;
   color: #788284;
   font-weight: 500;
-  transition: color ${SNOOZE_CLICK_EFFECT_TIME};
+  transition: color ${SNOOZE_CLICK_EFFECT_TIME}ms;
   /* height: 16px; */
 
   ${props =>

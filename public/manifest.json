@@ -4,7 +4,7 @@
   "short_name": "Tab Snooze",
   "version": "2.0.0",
 
-  "description": "Save articles, videos and todos for later. They'll magically re-open when you need them.",
+  "description": "Save articles, videos and todos for later. They'll magically reopen when you need them.",
   "icons": { "128": "images/extension_icon_128.png" },
   "author": "Tab Snooze",
   "homepage_url": "http://www.tabsnooze.com",
@@ -27,8 +27,11 @@
       "32": "images/browser_action_32.png"
     }
   },
-
   "options_page": "index.html#options",
+  "background": {
+    "page": "index.html#background",
+    "persistent": false
+  },
 
   "commands": {
     "_execute_browser_action": {
