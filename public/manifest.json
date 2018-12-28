@@ -8,7 +8,6 @@
   "icons": { "128": "images/extension_icon_128.png" },
   "author": "Tab Snooze",
   "homepage_url": "http://www.tabsnooze.com",
-  "content_security_policy": "script-src 'self' 'sha256-GgRxrVOKNdB4LrRsVPDSbzvfdV4UqglmviH9GoBJ5jk='; object-src 'self'",
 
   "permissions": [
     "tabs",

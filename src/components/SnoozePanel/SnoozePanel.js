@@ -1,15 +1,18 @@
 // @flow
 import type { SnoozeOption } from './calcSnoozeOptions';
+import type { Props as SnoozeButtonProps } from './SnoozeButton';
+
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import calcSnoozeOptions, {
   SNOOZE_TYPE_REPEATED,
   SNOOZE_TYPE_SPECIFIC_DATE,
 } from './calcSnoozeOptions';
-import SnoozeButtons from './SnoozeButtons';
+import SnoozeButtonsGrid from './SnoozeButtonsGrid';
 import SnoozeFooter from './SnoozeFooter';
 import PeriodSelector from './PeriodSelector';
 import DateSelector from './DateSelector';
+import { snoozeCurrentTab } from '../../core/snooze';
 
 type Props = {};
 type State = {
@@ -38,7 +41,46 @@ export default class SnoozePanel extends Component<Props, State> {
     selectedSnoozeOptionId: null, //SNOOZE_TYPE_SPECIFIC_DATE,
   };
 
-  onSnoozeOptionClicked(snoozeOption: SnoozeOption) {
+  onSnoozeButtonMouseEnter(snoozeOption: SnoozeOption) {
+    const { tooltipVisible } = this.state;
+
+    this.setState({
+      tooltipText: snoozeOption.tooltip,
+    });
+
+    if (this.tooltipHideTimeout) {
+      clearTimeout(this.tooltipHideTimeout);
+    }
+
+    // if tooltip already visible
+    if (!tooltipVisible && !this.tooltipShowTimeout) {
+      this.tooltipShowTimeout = setTimeout(() => {
+        this.tooltipShowTimeout = null;
+        this.setState({ tooltipVisible: true });
+      }, TOOLTIP_SHOW_TIMEOUT);
+    }
+  }
+
+  onSnoozeButtonMouseLeave(snoozeOption: SnoozeOption) {
+    if (this.tooltipShowTimeout) {
+      clearTimeout(this.tooltipShowTimeout);
+      this.tooltipShowTimeout = null;
+      this.setState({ tooltipVisible: false });
+    }
+
+    this.tooltipHideTimeout = setTimeout(() => {
+      this.setState({ tooltipVisible: false });
+    }, TOOLTIP_HIDE_TIMEOUT);
+  }
+
+  onSnoozeButtonClicked(snoozeOption: SnoozeOption) {
+    const { selectedSnoozeOptionId } = this.state;
+
+    if (selectedSnoozeOptionId != null) {
+      // ignore additional selections after first one
+      return;
+    }
+
     this.setState({
       selectedSnoozeOptionId: snoozeOption.id,
     });
@@ -51,7 +93,49 @@ export default class SnoozePanel extends Component<Props, State> {
     if (snoozeOption.when) {
       // Perform snooze
       snoozeSound.play();
+
+      setTimeout(() =>
+        snoozeCurrentTab({
+          type: snoozeOption.id,
+          wakeupDate: snoozeOption.when,
+        })
+      );
+    } else {
+      // either period or date selector opens as dialog
     }
+  }
+
+  onSnoozeSpecificDateSelected(date: Date) {
+    const { selectedSnoozeOptionId } = this.state;
+
+    snoozeCurrentTab({
+      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      wakeupDate: date,
+    });
+  }
+
+  onSnoozePeriodSelected(period: SnoozePeriod) {
+    const { selectedSnoozeOptionId } = this.state;
+
+    snoozeCurrentTab({
+      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      period,
+    });
+  }
+
+  getSnoozeButtons() {
+    const { selectedSnoozeOptionId } = this.state;
+    const snoozeOptions = calcSnoozeOptions();
+
+    return snoozeOptions.map<SnoozeButtonProps>(
+      (snoozeOpt: SnoozeOption) => ({
+        ...snoozeOpt,
+        pressed: selectedSnoozeOptionId === snoozeOpt.id,
+        onClick: () => this.onSnoozeButtonClicked(snoozeOpt),
+        onMouseEnter: () => this.onSnoozeButtonMouseEnter(snoozeOpt),
+        onMouseLeave: () => this.onSnoozeButtonMouseLeave(snoozeOpt),
+      })
+    );
   }
 
   render() {
@@ -60,48 +144,14 @@ export default class SnoozePanel extends Component<Props, State> {
       tooltipText,
       tooltipVisible,
     } = this.state;
-    const snoozeOptions = calcSnoozeOptions();
 
-    const snoozeButtons = snoozeOptions.map(snoozeOpt => ({
-      ...snoozeOpt,
-      pressed: selectedSnoozeOptionId === snoozeOpt.id,
-      onClick: () => this.onSnoozeOptionClicked(snoozeOpt),
-      onMouseEnter: () => {
-        this.setState({
-          tooltipText: snoozeOpt.tooltip,
-        });
-
-        if (this.tooltipHideTimeout) {
-          clearTimeout(this.tooltipHideTimeout);
-        }
-
-        // if tooltip already visible
-        if (!tooltipVisible && !this.tooltipShowTimeout) {
-          this.tooltipShowTimeout = setTimeout(() => {
-            this.tooltipShowTimeout = null;
-            this.setState({ tooltipVisible: true });
-          }, TOOLTIP_SHOW_TIMEOUT);
-        }
-      },
-      onMouseLeave: () => {
-        if (this.tooltipShowTimeout) {
-          clearTimeout(this.tooltipShowTimeout);
-          this.tooltipShowTimeout = null;
-          this.setState({ tooltipVisible: false });
-        }
-
-        this.tooltipHideTimeout = setTimeout(() => {
-          this.setState({ tooltipVisible: false });
-        }, TOOLTIP_HIDE_TIMEOUT);
-      },
-    }));
+    const snoozeButtons = this.getSnoozeButtons();
 
     return (
       <Root>
-        <SnoozeButtons buttons={snoozeButtons} />
+        <SnoozeButtonsGrid buttons={snoozeButtons} />
         <SnoozeFooter
           tooltip={{ visible: tooltipVisible, text: tooltipText }}
-          sleepingTabsCount={2}
         />
 
         <PeriodSelector

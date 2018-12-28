@@ -10,7 +10,7 @@ import {
   cancelWakeupAlarm,
 } from './snooze';
 
-// Adding chrome manually to scope, for ESLint
+// Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
 
 export function runBackgroundScript() {

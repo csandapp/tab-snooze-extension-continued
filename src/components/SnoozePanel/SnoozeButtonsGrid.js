@@ -1,23 +1,14 @@
 // @flow
+import type { Props as SnoozeButtonProps } from './SnoozeButton';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import SnoozeButton from './SnoozeButton';
 
 type Props = {
-  buttons: Array<{
-    id: string,
-    title: string,
-    icon: string,
-    activeIcon: string,
-    pressed: boolean,
-    isPro?: boolean,
-    onClick: () => void,
-    onMouseEnter: () => void,
-    onMouseLeave: () => void,
-  }>,
+  buttons: Array<SnoozeButtonProps>,
 };
 
-export default class SnoozeButtons extends Component<Props> {
+export default class SnoozeButtonsGrid extends Component<Props> {
   render() {
     const { buttons } = this.props;
     return (

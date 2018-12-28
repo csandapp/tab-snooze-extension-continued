@@ -9,18 +9,21 @@ import {
   createTabs,
   notifyUserAboutNewTabs,
   addMinutes,
-  delayedCloseTab,
+  //   delayedCloseTab,
   getActiveTab,
   calcNextOccurrenceForPeriod,
   playSound,
 } from './utils';
 import { trackTabSnooze } from './analytics';
 
-type SnoozeOptions = {
+// Adding chrome manually to global scope, for ESLint
+const chrome = window.chrome;
+
+type SnoozeOptions = {|
   wakeupDate?: Date,
   period?: SnoozePeriod,
-  type: number,
-};
+  type: string, // 'later_today' , ...
+|};
 
 /*
     the previously selected snooze date for the last action.
@@ -116,7 +119,10 @@ export async function wakeupReadyTabs() {
   wakeupTabs(readyTabs, false);
 }
 
-async function snoozeTab(tab: ChromeTab, options: SnoozeOptions) {
+export async function snoozeTab(
+  tab: ChromeTab,
+  options: SnoozeOptions
+) {
   let { wakeupDate, period, type } = options;
 
   if (period) {
@@ -140,7 +146,7 @@ async function snoozeTab(tab: ChromeTab, options: SnoozeOptions) {
     url: tab.url,
     title: tab.title,
     favicon: tab.favIconUrl,
-    snoozeOptionIndex: type,
+    type,
     sleepStart: new Date().getTime(),
     period,
     when: wakeupDate.getTime(), // convert to number since storage can't handle Date
@@ -157,13 +163,13 @@ async function snoozeTab(tab: ChromeTab, options: SnoozeOptions) {
   // usage tracking
   trackTabSnooze(snoozedTab);
 
-  delayedCloseTab(tab.id);
+  //   delayedCloseTab(tab.id);
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
 }
 
-async function snoozeCurrentTab(options: SnoozeOptions) {
+export async function snoozeCurrentTab(options: SnoozeOptions) {
   const activeTab = await getActiveTab();
   return snoozeTab(activeTab, options);
 }
@@ -228,7 +234,7 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
     alarmTime = new Date().getTime() + 1000 * 60;
   }
 
-  return chromep.alarms.create('WAKEUP_TABS_ALARM', {
+  chrome.alarms.create('WAKEUP_TABS_ALARM', {
     when: alarmTime,
   });
 }

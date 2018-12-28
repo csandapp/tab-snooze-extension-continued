@@ -94,7 +94,7 @@ export function saveSettings(settings: Settings): Promise<void> {
   });
 }
 
-export async function printTabs() {
+window.printTabs = async function() {
   const tabs = await getSnoozedTabs();
 
   console.log('## Snoozed Tabs ##');
@@ -103,4 +103,4 @@ export async function printTabs() {
       `${index}. ${tab.title}\n   ${new Date(tab.when).toString()}`
     )
   );
-}
+};

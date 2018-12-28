@@ -16,7 +16,7 @@ declare type SnoozedTab = {
   // URL of tab
   url: string,
   // the selected snooze button index (0 - 8)
-  snoozeOptionIndex: number,
+  type: string,
   // Favicon of tab
   favicon: string,
   // ???

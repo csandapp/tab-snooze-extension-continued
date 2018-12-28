@@ -4,7 +4,8 @@ import styled, { css } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
 import { Collapse } from '@material-ui/core';
 
-type Props = {
+export type Props = {
+  id: string,
   title: string,
   icon: string,
   activeIcon: string,

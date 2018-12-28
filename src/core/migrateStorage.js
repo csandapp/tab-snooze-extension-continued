@@ -10,3 +10,5 @@
 
 // rewrite settings too. (remove uncessery keys)
 // Write everything to local.oldData just in case
+
+// snooze.snoozeOptionIndex (number) => type (string)

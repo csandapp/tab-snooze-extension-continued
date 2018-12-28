@@ -14,7 +14,7 @@ export type SnoozeOption = {
   isPro?: boolean,
 };
 
-export default () => {
+export default function calcSnoozeOptions(): Array<SnoozeOption> {
   // constants from user settings
   const WEEK_START_DAY = 0;
   const WEEK_END_DAY = 5;
@@ -64,7 +64,7 @@ export default () => {
       icon: require('./icons/coffee.svg'),
       activeIcon: require('./icons/coffee_white.svg'),
       tooltip: `${laterTodayTime.calendar()} (${LATER_TODAY} hours from now)`,
-      when: laterTodayTime,
+      when: laterTodayTime.toDate(),
     },
     {
       id: 'evening',
@@ -72,7 +72,7 @@ export default () => {
       icon: require('./icons/moon.svg'),
       activeIcon: require('./icons/moon_white.svg'),
       tooltip: thisEveningTime.calendar(),
-      when: thisEveningTime,
+      when: thisEveningTime.toDate(),
     },
     {
       id: 'tomorrow',
@@ -80,7 +80,7 @@ export default () => {
       icon: require('./icons/sun.svg'),
       activeIcon: require('./icons/sun_white.svg'),
       tooltip: tomorrowTime.calendar(),
-      when: tomorrowTime,
+      when: tomorrowTime.toDate(),
     },
     {
       id: 'weekend',
@@ -88,7 +88,7 @@ export default () => {
       icon: require('./icons/soffa.svg'),
       activeIcon: require('./icons/soffa_white.svg'),
       tooltip: weekendTime.calendar(),
-      when: weekendTime,
+      when: weekendTime.toDate(),
     },
     {
       id: 'next_week',
@@ -96,7 +96,7 @@ export default () => {
       icon: require('./icons/breifcase.svg'),
       activeIcon: require('./icons/breifcase_white.svg'),
       tooltip: nextWeekTime.calendar(),
-      when: nextWeekTime,
+      when: nextWeekTime.toDate(),
     },
     {
       id: 'in_a_month',
@@ -104,7 +104,7 @@ export default () => {
       icon: require('./icons/mailbox.svg'),
       activeIcon: require('./icons/mailbox_white.svg'),
       tooltip: inAMonthTime.format('ll'),
-      when: inAMonthTime,
+      when: inAMonthTime.toDate(),
     },
     {
       id: 'someday',
@@ -114,7 +114,7 @@ export default () => {
       tooltip: `${somedayTime.format(
         'll'
       )} (${SOMEDAY} months from now)`,
-      when: somedayTime,
+      when: somedayTime.toDate(),
     },
     {
       id: SNOOZE_TYPE_REPEATED,
@@ -133,4 +133,4 @@ export default () => {
       isPro: true,
     },
   ];
-};
+}

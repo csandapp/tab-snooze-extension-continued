@@ -1,33 +1,36 @@
 // @flow
+
 import React from 'react';
+import { HashRouter, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import OptionsPage from './components/OptionsPage';
 
-export const POPUP_ROUTE = 'popup';
-export const OPTIONS_ROUTE = 'options';
-export const SLEEPING_TABS_ROUTE = 'options/tabs';
-export const SETTINGS_ROUTE = 'options/settings';
-export const TODO_ROUTE = 'todo';
+export const POPUP_ROUTE = '/popup';
+export const OPTIONS_ROUTE = '/options';
+export const SLEEPING_TABS_ROUTE = '/options/tabs';
+export const SETTINGS_ROUTE = '/options/settings';
+export const TODO_ROUTE = '/todo';
+export const SHARE_ROUTE = '/share-tab-snooze';
+export const FIRST_SNOOZE_ROUTE = '/first-snooze';
+export const UPGRADE_ROUTE = '/upgrade';
 // A special route that is meant to execute the background.js
 // script, and not any GUI rendering.
+// **NOTE**: intentionally without a preceding '/'
 export const BACKGROUND_ROUTE = 'background';
 
-const routes = {
-  [POPUP_ROUTE]: () => <SnoozePanel />,
-  [OPTIONS_ROUTE]: () => <OptionsPage />,
-};
+const Popup = () => <SnoozePanel />;
+const Options = () => <OptionsPage />;
+// const SleepingTabs = () => <h2>About</h2>;
+// const Users = () => <h2>Users</h2>;
 
-export default () => {
-  const path = window.location.hash.substring(1);
-  const activeRoutePath = Object.keys(routes).find(routePath =>
-    path.startsWith(routePath)
-  );
+const Router = () => (
+  // "noslash" - creates hashes like # and #sunshine/lollipops
+  <HashRouter hashType="noslash">
+    <div>
+      <Route path={POPUP_ROUTE} component={Popup} />
+      <Route path={OPTIONS_ROUTE} component={Options} />
+    </div>
+  </HashRouter>
+);
 
-  if (!activeRoutePath) {
-    return <div>No matching route found</div>;
-  }
-
-  const activeRoute = routes[activeRoutePath];
-
-  return activeRoute();
-};
+export default Router;

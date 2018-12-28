@@ -15,6 +15,7 @@ declare var chrome: {
     onInstalled: ChromeEvent,
   },
   alarms: {
+    create: (string, { when: number }) => void,
     onAlarm: ChromeEvent,
   },
   idle: {

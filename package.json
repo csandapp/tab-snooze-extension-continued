@@ -17,6 +17,7 @@
     "react-app-rewired": "1.6.2",
     "react-day-picker": "7.2.4",
     "react-dom": "^16.7.0",
+    "react-router-dom": "4.3.1",
     "react-scripts": "2.1.1",
     "rimraf": "2.6.2",
     "sanitize.css": "8.0.0",
@@ -25,7 +26,6 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "postbuild_____TEMP": "rimraf build/**/*.map",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "storybook": "start-storybook -p 9009 -s public",

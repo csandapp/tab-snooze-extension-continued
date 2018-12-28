@@ -1,31 +1,56 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import {
+  SLEEPING_TABS_ROUTE,
+  TODO_ROUTE,
+  SETTINGS_ROUTE,
+} from '../../Router';
+import { getSnoozedTabs } from '../../core/storage';
 
 type Props = {
-  sleepingTabsCount: number,
   tooltip: {
     visible: boolean,
     text: ?string,
   },
 };
+type State = {
+  sleepingTabsCount: number,
+};
 
-export default class SnoozeFooter extends Component<Props> {
+export default class SnoozeFooter extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      sleepingTabsCount: 0,
+    };
+
+    // Fetch sleeping tabs count from storage
+    getSnoozedTabs().then(snoozedTabs =>
+      this.setState({
+        sleepingTabsCount: snoozedTabs.length,
+      })
+    );
+  }
+
   render() {
-    const { sleepingTabsCount = 0, tooltip } = this.props;
+    const { tooltip } = this.props;
+    const { sleepingTabsCount } = this.state;
 
     return (
       <Footer>
         <Buttons>
-          <SleepingTabsBtn>
+          <SleepingTabsBtn as={Link} to={SLEEPING_TABS_ROUTE}>
             <Badge>{sleepingTabsCount}</Badge>
             Sleeping Tabs
           </SleepingTabsBtn>
-          <UpgradeButton>
+          <UpgradeButton onClick={() => {}}>
             <UpgradeBadge>Upgrade</UpgradeBadge>
           </UpgradeButton>
-          <NewTodoBtn />
-          <SettingsBtn />
+          <NewTodoBtn as={Link} to={TODO_ROUTE} />
+          <SettingsBtn as={Link} to={SETTINGS_ROUTE} />
         </Buttons>
         <SnoozeTooltip visible={tooltip.visible}>
           {tooltip.text}

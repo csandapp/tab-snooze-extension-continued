@@ -13,11 +13,10 @@ module.exports = function override(config, env) {
 
     // also remove HotModuleReplacementPlugin
     config.plugins.splice(4, 1); // removes plugins[4]
-    console.log(env);
   }
 
   // Debug:
-  //   console.log(config);
+  // console.log(config.plugins);
 
   return config;
 };
