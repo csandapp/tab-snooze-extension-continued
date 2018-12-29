@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { Checkbox } from '@material-ui/core';
 import Select from './Select';
+import { ordinalNum } from '../../core/utils';
 
 const PERIOD_TYPES = [
   { value: 'daily', label: 'Every day' },
@@ -105,19 +106,10 @@ function getHoursInDay() {
   return hours;
 }
 
-function ordinalNumbers(n) {
+function ordinalNumbers(n: number) {
   const nums = [];
   for (let i = 1; i <= n; i++) {
     nums.push(ordinalNum(i));
   }
   return nums;
-}
-
-function ordinalNum(n) {
-  return (
-    n +
-    ([undefined, 'st', 'nd', 'rd'][
-      ~~((n / 10) % 10) - 1 ? n % 10 : 0
-    ] || 'th')
-  );
 }

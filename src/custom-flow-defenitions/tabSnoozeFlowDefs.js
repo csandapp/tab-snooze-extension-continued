@@ -1,14 +1,34 @@
-declare type SnoozePeriod = {
-  type: 'daily' | 'weekly' | 'monthly' | 'yearly',
-  // Hour - 0 to 23 (all periods)
-  hour: number,
-  // day of the month (0 to 31) (monthly period)
-  day: number,
-  // list of weekdays index (weekly period)
-  days: Array<number>,
-  // date: [monthIndex, dayIndex]  (yearly period)
-  date: [number, number],
-};
+// declare type SnoozePeriod = {
+//   type: 'daily' | 'weekly' | 'monthly' | 'yearly',
+//   // Hour - 0 to 23 (all periods)
+//   hour: number,
+//   // day of the month (0 to 31) (monthly period)
+//   day?: number,
+//   // list of weekdays index (weekly period)
+//   days?: Array<number>,
+//   // date: [monthIndex, dayIndex]  (yearly period)
+//   date?: [number, number],
+// };
+declare type SnoozePeriod =
+  | {
+      type: 'daily',
+      hour: number, // Hour - 0 to 23 (all periods)
+    }
+  | {
+      type: 'weekly',
+      hour: number,
+      days: Array<number>, // list of weekdays index (weekly period)
+    }
+  | {
+      type: 'monthly',
+      hour: number,
+      day: number, // day of the month (0 to 31) (monthly period)
+    }
+  | {
+      type: 'yearly',
+      hour: number,
+      date: [number, number], // date: [monthIndex, dayIndex]  (yearly period)
+    };
 
 declare type SnoozedTab = {
   // Document title of tab

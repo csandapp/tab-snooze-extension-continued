@@ -13,7 +13,10 @@ import {
 } from './periodOptions';
 import Button from './Button';
 
-type Props = { visible: boolean };
+type Props = {
+  visible: boolean,
+  onPeriodSelected: SnoozePeriod => void,
+};
 type State = {
   periodType: 'daily' | 'weekly' | 'monthly' | 'yearly',
   selectedHour: number,
@@ -49,7 +52,7 @@ export default class PeriodSelector extends Component<Props, State> {
     this.state.selectedWeekdays[moment().weekday()] = true;
   }
 
-  commit() {
+  onSnoozeClicked() {
     const {
       periodType,
       selectedHour,
@@ -58,27 +61,46 @@ export default class PeriodSelector extends Component<Props, State> {
       selectedWeekdays,
     } = this.state;
 
-    const periodOptions = {
-      type: periodType,
-      time: selectedHour,
-      day: undefined,
-      days: undefined,
-      date: undefined,
-    };
+    let snoozePeriod: ?SnoozePeriod;
 
     if (periodType === 'weekly') {
-      periodOptions.days = getSelectedWeekdaysIndexes(
+      const daysIndexes = getSelectedWeekdaysIndexes(
         selectedWeekdays
       );
 
       // Must select at least one day
-      if (!periodOptions.days.length) return;
+      if (daysIndexes.length === 0) {
+        return;
+      }
+
+      snoozePeriod = {
+        type: 'weekly',
+        hour: selectedHour,
+        days: daysIndexes,
+      };
     }
 
-    if (periodType === 'monthly') periodOptions.day = selectedDay;
+    if (periodType === 'monthly') {
+      snoozePeriod = {
+        type: 'monthly',
+        hour: selectedHour,
+        day: selectedDay,
+      };
+    }
 
-    if (periodType === 'yearly')
-      periodOptions.date = [selectedMonth, selectedDay];
+    if (periodType === 'yearly') {
+      snoozePeriod = {
+        type: 'yearly',
+        hour: selectedHour,
+        date: [selectedMonth, selectedDay],
+      };
+    }
+
+    if (!snoozePeriod) {
+      throw new Error('unrecognized periodType');
+    }
+
+    this.props.onPeriodSelected(snoozePeriod);
   }
 
   render() {
@@ -137,7 +159,9 @@ export default class PeriodSelector extends Component<Props, State> {
           <HourOptions {...bindField('selectedHour')} />
 
           <Spacer />
-          <SaveButton>SNOOZE</SaveButton>
+          <SaveButton onClick={this.onSnoozeClicked}>
+            SNOOZE
+          </SaveButton>
         </Root>
       </SnoozeModal>
     );

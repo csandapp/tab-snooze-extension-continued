@@ -9,10 +9,11 @@ import {
   createTabs,
   notifyUserAboutNewTabs,
   addMinutes,
-  //   delayedCloseTab,
   getActiveTab,
   calcNextOccurrenceForPeriod,
   playSound,
+  areTabsEqual,
+  delayedCloseTab,
 } from './utils';
 import { trackTabSnooze } from './analytics';
 
@@ -42,13 +43,10 @@ let wakeupThreshold = new Date(0);
 /*
     Delete tabs from storage
 */
-async function deleteSnoozedTabs(
+export async function deleteSnoozedTabs(
   tabsToDelete: Array<SnoozedTab>
 ): Promise<void> {
   const snoozedTabs = await getSnoozedTabs();
-
-  const areTabsEqual = (tab1, tab2) =>
-    tab1.url === tab2.url && tab1.when === tab2.when;
 
   // Is given tab marked for deletion?
   const shouldDeleteTab = tab =>
@@ -66,10 +64,10 @@ async function deleteSnoozedTabs(
 /*
     Create tabs, notify user, and delete from storage
 */
-async function wakeupTabs(
+export async function wakeupTabs(
   tabsToWakeUp: Array<SnoozedTab>,
   makeActive: boolean
-) {
+): Promise<Array<ChromeTab>> {
   console.log(`Waking up ${tabsToWakeUp.length} tabs`);
 
   // delete waking tabs from storage
@@ -77,16 +75,6 @@ async function wakeupTabs(
 
   // re-create tabs
   const createdTabs = await createTabs(tabsToWakeUp, makeActive);
-
-  const settings = await getSettings();
-  if (settings.showNotifications) {
-    // Show desktop notification
-    notifyUserAboutNewTabs(createdTabs, createdTabs[0]);
-  }
-
-  if (settings.playNotificationSound) {
-    playSound('notification');
-  }
 
   // Reschedule repeated tabs, if any
   const periodicTabs = tabsToWakeUp.filter(tab => tab.period);
@@ -96,9 +84,12 @@ async function wakeupTabs(
 
   // schedule wakeup for next tabs in list
   await scheduleWakeupAlarm('auto');
+
+  return createdTabs;
 }
 
 export async function wakeupReadyTabs() {
+  const settings = await getSettings();
   const snoozedTabs = await getSnoozedTabs();
   let now = new Date();
 
@@ -115,8 +106,20 @@ export async function wakeupReadyTabs() {
     snoozedTab => new Date(snoozedTab.when) <= wakeupThreshold
   );
 
-  // create inactive tabs & notify user
-  wakeupTabs(readyTabs, false);
+  if (readyTabs.length > 0) {
+    // create inactive tabs & notify user
+    const createdTabs = await wakeupTabs(readyTabs, false);
+
+    // Notify user
+    if (settings.showNotifications) {
+      // Show desktop notification
+      notifyUserAboutNewTabs(createdTabs, createdTabs[0]);
+    }
+
+    if (settings.playNotificationSound) {
+      playSound('notification');
+    }
+  }
 }
 
 export async function snoozeTab(
@@ -163,7 +166,7 @@ export async function snoozeTab(
   // usage tracking
   trackTabSnooze(snoozedTab);
 
-  //   delayedCloseTab(tab.id);
+  delayedCloseTab(tab.id);
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);

@@ -7,7 +7,8 @@ import { styledComponentsTheme } from '../theme';
 const chrome = window.chrome;
 
 // update badge after chrome startup
-chrome.runtime.onStartup.addListener(updateBadge);
+updateBadge();
+// chrome.runtime.onStartup.addListener(updateBadge);
 
 // Update badge (visible/hidden + count) on any storage change (tabs snoozed/awoken)
 chrome.storage.onChanged.addListener(updateBadge);

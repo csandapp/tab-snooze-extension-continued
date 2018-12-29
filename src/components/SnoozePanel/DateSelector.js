@@ -9,7 +9,7 @@ import 'react-day-picker/lib/style.css';
 import './MyDayPickerStyle.css';
 import { HourOptions } from './periodOptions';
 
-type Props = { visible: boolean };
+type Props = { visible: boolean, onDateSelected: Date => void };
 type State = {
   selectedDate: any,
   selectedHour: number,
@@ -28,6 +28,18 @@ export default class DateSelector extends Component<Props, State> {
     this.datePicker = React.createRef();
   }
 
+  onSnoozeClicked() {
+    const { onDateSelected } = this.props;
+    const { selectedDate, selectedHour } = this.state;
+
+    // combine date + time, and handle minutes (e.g. 9.5 => 09:30)
+    const selectedDateTime = moment(selectedDate)
+      .hour(selectedHour)
+      .minutes(selectedHour % 1 ? 30 : 0)
+      .toDate();
+    onDateSelected(selectedDateTime);
+  }
+
   render() {
     const { visible } = this.props;
     const { selectedDate, selectedHour } = this.state;
@@ -40,8 +52,10 @@ export default class DateSelector extends Component<Props, State> {
             onDayClick={date => this.setState({ selectedDate: date })}
             // Don't allow going to past months
             fromMonth={new Date()}
-            // Disable selection of past dates
-            disabledDays={date => moment(date).diff(moment()) < 0}
+            // Disable selection of past days
+            disabledDays={date =>
+              moment(date).diff(moment().startOf('day')) < 0
+            }
             // Disable caption element
             captionElement={<Fragment />}
             navbarElement={props => (
@@ -60,7 +74,9 @@ export default class DateSelector extends Component<Props, State> {
             )}
             ref={this.datePicker}
           />
-          <SaveButton>SNOOZE</SaveButton>
+          <SaveButton onClick={this.onSnoozeClicked}>
+            SNOOZE
+          </SaveButton>
         </Root>
       </SnoozeModal>
     );

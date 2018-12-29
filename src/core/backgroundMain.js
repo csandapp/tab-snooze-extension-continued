@@ -8,12 +8,16 @@ import {
   scheduleWakeupAlarm,
   wakeupReadyTabs,
   cancelWakeupAlarm,
+  repeatLastSnooze,
 } from './snooze';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
 
 export function runBackgroundScript() {
+  // import badge so it can update the extension badge automatically
+  import('./badge');
+
   chrome.runtime.onStartup.addListener(() => {
     // Give 1 mintue for Chrome to load after startup before
     // waking up tabs so chrome is not stuck
@@ -53,20 +57,24 @@ export function runBackgroundScript() {
     }
   });
 
-  // chrome.commands.onCommand.addListener(function(command) {
-  //   // create a new todo window!, and focus on it
-  //   if (command === 'new_todo_page') {
-  //     openNewTodo();
-  //   }
+  chrome.commands.onCommand.addListener(function(command) {
+    // create a new todo window!, and focus on it
+    // if (command === 'new_todo_page') {
+    //   openNewTodo();
+    // }
 
-  //   if (command === 'repeat_last_snooze') {
-  //     repeatLastSnooze();
-  //   }
+    if (command === 'repeat_last_snooze') {
+      repeatLastSnooze();
+    }
 
-  //   if (command === 'open_snoozed_list') {
-  //     openSnoozedList();
-  //   }
-  // });
+    // if (command === 'open_snoozed_list') {
+    //   chromep.tabs.create({
+    //     url: tabInfo.url,
+    //     active: true,
+    //   })
+    //   openSnoozedList();
+    // }
+  });
 
   // Show CHANGELOG doc when extension updates
   chrome.runtime.onInstalled.addListener(function(details) {

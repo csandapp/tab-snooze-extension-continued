@@ -1,13 +1,13 @@
 // @flow
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import OptionsPage from './components/OptionsPage';
 
 export const POPUP_ROUTE = '/popup';
 export const OPTIONS_ROUTE = '/options';
-export const SLEEPING_TABS_ROUTE = '/options/tabs';
+export const SLEEPING_TABS_ROUTE = '/options/sleeping-tabs';
 export const SETTINGS_ROUTE = '/options/settings';
 export const TODO_ROUTE = '/todo';
 export const SHARE_ROUTE = '/share-tab-snooze';
@@ -26,10 +26,10 @@ const Options = () => <OptionsPage />;
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
   <HashRouter hashType="noslash">
-    <div>
+    <Fragment>
       <Route path={POPUP_ROUTE} component={Popup} />
       <Route path={OPTIONS_ROUTE} component={Options} />
-    </div>
+    </Fragment>
   </HashRouter>
 );
 

@@ -14,9 +14,7 @@ export function isMacOS() {
   delay is for User Experience purposes (to see what they selected)
 */
 export function delayedCloseTab(tabId: string) {
-  setTimeout(function() {
-    chromep.tabs.remove(tabId);
-  }, 400);
+  setTimeout(() => chromep.tabs.remove(tabId), 800);
 }
 
 /*
@@ -152,15 +150,15 @@ export function calcNextOccurrenceForPeriod(
 
   if (period.type === 'weekly') {
     // occurences for this week and the next week
-    [0, 1].forEach(weekIndex =>
-      period.days.forEach(weekdayIndex =>
+    for (let weekIndex = 0; weekIndex < 2; weekIndex++) {
+      for (let weekdayIndex of period.days) {
         occurrences.push(
           moment()
             .add(weekIndex, 'week')
             .day(weekdayIndex)
-        )
-      )
-    );
+        );
+      }
+    }
   }
 
   if (period.type === 'monthly') {
@@ -209,4 +207,21 @@ function momentWithHour(aMoment: any, hour: number) {
     .hour(h)
     .minutes(m)
     .seconds(0);
+}
+
+export const compareTabs = (tab1: SnoozedTab, tab2: SnoozedTab) =>
+  tab1.when === tab2.when
+    ? tab1.sleepStart - tab2.sleepStart
+    : tab1.when - tab2.when;
+
+export const areTabsEqual = (tab1: SnoozedTab, tab2: SnoozedTab) =>
+  tab1.url === tab2.url && tab1.when === tab2.when;
+
+export function ordinalNum(n: number) {
+  return (
+    n +
+    ([undefined, 'st', 'nd', 'rd'][
+      ~~((n / 10) % 10) - 1 ? n % 10 : 0
+    ] || 'th')
+  );
 }

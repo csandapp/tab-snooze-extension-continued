@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "3.7.1",
+    "@material-ui/icons": "3.0.1",
     "chrome-promise": "3.0.2",
     "clone": "2.1.2",
     "eslint-config-prettier": "3.3.0",

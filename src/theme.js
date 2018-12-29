@@ -24,7 +24,7 @@ export const styledComponentsTheme = {
 // Material UI Theme
 export const muiTheme = createMuiTheme({
   palette: {
-    primary: { main: styledComponentsTheme.primary },
+    primary: { main: '#21c1f4' }, // styledComponentsTheme.primary
     // secondary: green,
   },
   ripple: {
@@ -32,27 +32,19 @@ export const muiTheme = createMuiTheme({
   },
   typography: {
     useNextVariants: true,
+
+    // Tell Material-UI what's the font-size on the html element is.
+    htmlFontSize: 10,
   },
+
   overrides: {
     ripple: {
       color: '#fff',
     },
     // Name of the component ⚛️ / style sheet
     MuiButton: {
-      ripple: {
-        color: '#fff',
-      },
-      //     // Name of the rule
       root: {
-        //       // Some CSS
-        //       // background:
-        //       //   `linear-gradient(45deg, ${styledComponentsTheme.primary} 30%, ${styledComponentsTheme.primary} 90%)`,
-        //       borderRadius: 3,
-        //       border: 0,
         color: 'white',
-        //       height: 48,
-        // padding: '0 30px',
-        //       boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
       },
     },
   },

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="407px" height="80px" viewBox="0 0 407 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>navbar_logo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="navbar_logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" fill="#FFFFFF">
+            <g id="Logo_white" fill-rule="nonzero">
+                <g id="Group">
+                    <g id="Group-5-Copy-5">
+                        <path d="M40,80 C17.90861,80 1.42108547e-13,62.09139 1.42108547e-13,40 C1.42108547e-13,17.90861 17.90861,2.84217094e-14 40,2.84217094e-14 C62.09139,2.84217094e-14 80,17.90861 80,40 C80,62.09139 62.09139,80 40,80 Z M34.022981,14.7368421 C21.7499797,17.5592227 12.6315789,28.1043545 12.6315789,40.68164 C12.6315789,55.4203422 25.1532797,67.3684211 40.5995803,67.3684211 C49.8591792,67.3684211 58.0677803,63.0747036 63.1578947,56.4600452 C61.0487696,56.9450736 58.8464807,57.2020283 56.5812954,57.2020283 C41.1349948,57.2020283 28.613294,45.2539494 28.613294,30.5152473 C28.613294,24.6119597 30.6220756,19.1563552 34.022981,14.7368421 Z" id="Combined-Shape"></path>
+                    </g>
+                </g>
+            </g>
+            <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="56" font-weight="normal">
+                <tspan x="98" y="58">Tab Snooze</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

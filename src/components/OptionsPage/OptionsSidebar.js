@@ -17,7 +17,7 @@ export default class OptionsSidebar extends Component<Props, State> {
         {/* <Spacer /> */}
         <NavButton
           active
-          caption="Tabs"
+          caption="Sleeping Tabs"
           icon={require('./images/sleeping_tabs.svg')}
         />
         {/* <NavButton icon={require('./images/history.svg')} /> */}

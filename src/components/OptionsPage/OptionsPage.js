@@ -1,36 +1,134 @@
 // @flow
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import OptionsSidebar from './OptionsSidebar';
+
+import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+// import IconButton from '@material-ui/core/IconButton';
+import styled, { css } from 'styled-components';
+import Toolbar from '@material-ui/core/Toolbar';
+import SettingsIcon from '@material-ui/icons/Settings';
+import SleepingIcon from '@material-ui/icons/Hotel';
 import SleepingTabs from './SleepingTabs';
+import { NavLink } from 'react-router-dom';
+import { SLEEPING_TABS_ROUTE, SETTINGS_ROUTE } from '../../Router';
+import { Route } from 'react-router-dom';
 
-type Props = {};
-type State = {};
+// import { createMuiTheme } from '@material-ui/core/styles';
 
-export default class OptionsPage extends Component<Props, State> {
-  state = {};
+/// <MuiThemeProvider theme={theme}>
 
-  render() {
-    // const {} = this.props;
+// const theme = createMuiTheme({
+//   palette: {
+//     primary: { main: '#fff' },
+//     secondary: green,
+//     textColor: { main: '#333' },
+//   },
+//   typography: {
+//     useNextVariants: true,
 
-    return (
-      <Root>
-        <OptionsSidebar />
-        <Main>
-          <SleepingTabs />
-        </Main>
-      </Root>
-    );
-  }
+//     // Tell Material-UI what's the font-size on the html element is.
+//     htmlFontSize: 10,
+//   },
+// });
+
+const styles = theme => ({
+  navIcon: { marginRight: 10 },
+});
+
+function OptionsPage(props) {
+  const { classes } = props;
+  return (
+    <Root>
+      <AppBar position="static">
+        <Toolbar>
+          <Logo src={require('./images/navbar_logo.svg')} />
+          <Spacer />
+          <NavButton
+            component={NavLink}
+            // activeClassName="linkIsActive"
+            to={SLEEPING_TABS_ROUTE}
+          >
+            <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
+          </NavButton>
+          <NavButton component={NavLink} to={SETTINGS_ROUTE}>
+            <SettingsIcon className={classes.navIcon} /> Settings
+          </NavButton>
+        </Toolbar>
+      </AppBar>
+      <Main>
+        <Route path={SLEEPING_TABS_ROUTE} component={SleepingTabs} />
+        <Route path={SETTINGS_ROUTE} component={() => <div />} />
+      </Main>
+    </Root>
+  );
 }
 
+export default withStyles(styles)(OptionsPage);
+
 const Root = styled.div`
-  width: 700px;
-  height: 600px;
-  display: flex;
-  align-items: stretch;
+  min-width: 700px;
+  min-height: 600px;
+  /* height: 600px; */
+  overflow-y: scroll;
+  /* display: flex; */
+  /* align-items: stretch; */
 `;
 
+const Logo = styled.img`
+  height: 34px;
+`;
+
+const Spacer = styled.div`
+  width: 24px;
+`;
 const Main = styled.div`
   flex: 1;
 `;
+const NavButton = styled(Button).attrs({
+  activeClassName: 'linkIsActive',
+})`
+  margin-right: 10px !important;
+
+  &.linkIsActive {
+    background-color: #0000001f !important;
+  }
+  ${props =>
+    props.active &&
+    css`
+      background-color: #0000001f !important;
+    `}
+`;
+
+// import React, { Component } from 'react';
+// import styled from 'styled-components';
+// import OptionsSidebar from './OptionsSidebar';
+// import SleepingTabs from './SleepingTabs';
+
+// type Props = {};
+// type State = {};
+
+// export default class OptionsPage extends Component<Props, State> {
+//   state = {};
+
+//   render() {
+//     // const {} = this.props;
+
+//     return (
+//       <Root>
+//         <OptionsSidebar />
+//         <Main>
+//           <SleepingTabs />
+//         </Main>
+//       </Root>
+//     );
+//   }
+// }
+
+// const Root = styled.div`
+//   min-width: 700px;
+//   min-height: 600px;
+//   height: 600px;
+//   display: flex;
+//   align-items: stretch;
+// `;
