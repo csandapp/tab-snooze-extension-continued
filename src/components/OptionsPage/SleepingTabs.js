@@ -142,29 +142,34 @@ class SleepingTabs extends Component<Props, State> {
         <List className={classes.list}>
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
         </List>
-        <Zoom
-          in
-          style={{
-            transitionDelay: `500ms`,
-          }}
-        >
-          <Fab
-            component={Link}
-            to={TODO_ROUTE}
-            target="_blank"
-            color="secondary"
-            aria-label="Add"
-            className={classes.fabButton}
-          >
-            <AddIcon />
-          </Fab>
-        </Zoom>
+        <NewTodoBtn />
       </Root>
     );
   }
 }
 
+const NewTodoBtn = withStyles(styles)(({ classes }) => (
+  <Zoom
+    in
+    style={{
+      transitionDelay: `500ms`,
+    }}
+  >
+    <Fab
+      component={Link}
+      to={TODO_ROUTE}
+      target="_blank"
+      color="secondary"
+      aria-label="Add"
+      className={classes.fabButton}
+    >
+      <AddIcon />
+    </Fab>
+  </Zoom>
+));
+
 const Root = styled.div``;
+
 const Icon = styled.img`
   width: 32px;
   height: 32px;
