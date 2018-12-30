@@ -16,6 +16,8 @@ import Zoom from '@material-ui/core/Zoom';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { Link } from 'react-router-dom';
+import { TODO_ROUTE } from '../../Router';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -26,47 +28,27 @@ type TabGroup = {
   timeRange: WakeupTimeRange,
   tabs: Array<SnoozedTab>,
 };
-type Props = {};
+type Props = { classes: Object };
 type State = {
   visibleTabGroups: Array<TabGroup>,
   hidePeriodic: boolean,
 };
 
 const styles = theme => ({
-  grow: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
-  text: {
-    paddingTop: theme.spacing.unit * 2,
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2,
-  },
-  paper: {
-    paddingBottom: 50,
-  },
   list: {
     marginBottom: theme.spacing.unit * 2,
   },
   subHeader: {
     backgroundColor: theme.palette.background.paper,
   },
-  appBar: {
-    top: 'auto',
-    bottom: 0,
-  },
-  toolbar: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   fabButton: {
     zIndex: 100,
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing.unit * 3,
     right: theme.spacing.unit * 3,
+  },
+  deleteBtn: {
+    marginRight: theme.spacing.unit * 2,
   },
 });
 
@@ -97,8 +79,7 @@ class SleepingTabs extends Component<Props, State> {
     // so that openTab() won't be called
     event.stopPropagation();
 
-    // delay wakeup for click ripple animation to finish
-    setTimeout(() => deleteSnoozedTabs([tab]), 200);
+    setTimeout(() => deleteSnoozedTabs([tab]), 150);
   }
 
   wakeupTab(tab: SnoozedTab, event: any) {
@@ -119,7 +100,7 @@ class SleepingTabs extends Component<Props, State> {
 
     return (
       <Fragment key={index}>
-        <ListSubheader className={classes.subHeader}>
+        <ListSubheader disableSticky className={classes.subHeader}>
           {tabGroup.timeRange.title}
         </ListSubheader>
         {tabGroup.tabs.map((tab, index2) => (
@@ -131,9 +112,6 @@ class SleepingTabs extends Component<Props, State> {
             }}
           >
             <Icon src={tab.favicon} alt="" />
-            {/* <Avatar alt="favicon">
-              <Icon src={tab.favicon} alt="" />
-            </Avatar> */}
             <ListItemText
               primary={tab.title}
               secondary={formatWakeupDescription(
@@ -141,7 +119,7 @@ class SleepingTabs extends Component<Props, State> {
                 tab
               )}
             />
-            <ListItemSecondaryAction style={{ marginRight: 20 }}>
+            <ListItemSecondaryAction className={classes.deleteBtn}>
               <IconButton
                 onClick={event => this.deleteTab(tab, event)}
                 aria-label="Delete"
@@ -161,18 +139,19 @@ class SleepingTabs extends Component<Props, State> {
 
     return (
       <Root>
-        {/* <Typography
-          className={classes.text}
-          variant="h5"
-          gutterBottom
-        >
-          Sleeping Tabs
-        </Typography> */}
         <List className={classes.list}>
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
         </List>
-        <Zoom in>
+        <Zoom
+          in
+          style={{
+            transitionDelay: `500ms`,
+          }}
+        >
           <Fab
+            component={Link}
+            to={TODO_ROUTE}
+            target="_blank"
             color="secondary"
             aria-label="Add"
             className={classes.fabButton}

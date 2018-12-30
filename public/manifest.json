@@ -26,7 +26,7 @@
       "32": "images/browser_action_32.png"
     }
   },
-  "options_page": "index.html#options",
+  "options_page": "index.html#options/settings",
   "background": {
     "page": "index.html#background",
     "persistent": false
@@ -35,7 +35,7 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Alt+S"
+        "default": "Ctrl+S"
       },
       "description": "Snooze active tab"
     },

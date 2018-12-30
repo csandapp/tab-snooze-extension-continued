@@ -1,6 +1,6 @@
 // @flow
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -14,24 +14,6 @@ import { NavLink } from 'react-router-dom';
 import { SLEEPING_TABS_ROUTE, SETTINGS_ROUTE } from '../../Router';
 import { Route } from 'react-router-dom';
 
-// import { createMuiTheme } from '@material-ui/core/styles';
-
-/// <MuiThemeProvider theme={theme}>
-
-// const theme = createMuiTheme({
-//   palette: {
-//     primary: { main: '#fff' },
-//     secondary: green,
-//     textColor: { main: '#333' },
-//   },
-//   typography: {
-//     useNextVariants: true,
-
-//     // Tell Material-UI what's the font-size on the html element is.
-//     htmlFontSize: 10,
-//   },
-// });
-
 const styles = theme => ({
   navIcon: { marginRight: 10 },
 });
@@ -39,16 +21,12 @@ const styles = theme => ({
 function OptionsPage(props) {
   const { classes } = props;
   return (
-    <Root>
-      <AppBar position="static">
+    <Fragment>
+      <AppBar position="fixed">
         <Toolbar>
           <Logo src={require('./images/navbar_logo.svg')} />
           <Spacer />
-          <NavButton
-            component={NavLink}
-            // activeClassName="linkIsActive"
-            to={SLEEPING_TABS_ROUTE}
-          >
+          <NavButton component={NavLink} to={SLEEPING_TABS_ROUTE}>
             <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
           </NavButton>
           <NavButton component={NavLink} to={SETTINGS_ROUTE}>
@@ -56,11 +34,18 @@ function OptionsPage(props) {
           </NavButton>
         </Toolbar>
       </AppBar>
-      <Main>
-        <Route path={SLEEPING_TABS_ROUTE} component={SleepingTabs} />
-        <Route path={SETTINGS_ROUTE} component={() => <div />} />
-      </Main>
-    </Root>
+      <Root>
+        {/* Toolbar is a palceholder for paddingTop */}
+        <Toolbar style={{ opacity: 0 }} />
+        <Main>
+          <Route
+            path={SLEEPING_TABS_ROUTE}
+            component={SleepingTabs}
+          />
+          <Route path={SETTINGS_ROUTE} component={() => <div />} />
+        </Main>
+      </Root>
+    </Fragment>
   );
 }
 
@@ -68,11 +53,8 @@ export default withStyles(styles)(OptionsPage);
 
 const Root = styled.div`
   min-width: 700px;
-  min-height: 600px;
-  /* height: 600px; */
-  overflow-y: scroll;
-  /* display: flex; */
-  /* align-items: stretch; */
+  display: flex;
+  flex-direction: column;
 `;
 
 const Logo = styled.img`
@@ -83,10 +65,13 @@ const Spacer = styled.div`
   width: 24px;
 `;
 const Main = styled.div`
-  flex: 1;
+  min-height: 600px;
+  overflow-y: scroll;
 `;
+
 const NavButton = styled(Button).attrs({
   activeClassName: 'linkIsActive',
+  replace: true,
 })`
   margin-right: 10px !important;
 
@@ -99,36 +84,3 @@ const NavButton = styled(Button).attrs({
       background-color: #0000001f !important;
     `}
 `;
-
-// import React, { Component } from 'react';
-// import styled from 'styled-components';
-// import OptionsSidebar from './OptionsSidebar';
-// import SleepingTabs from './SleepingTabs';
-
-// type Props = {};
-// type State = {};
-
-// export default class OptionsPage extends Component<Props, State> {
-//   state = {};
-
-//   render() {
-//     // const {} = this.props;
-
-//     return (
-//       <Root>
-//         <OptionsSidebar />
-//         <Main>
-//           <SleepingTabs />
-//         </Main>
-//       </Root>
-//     );
-//   }
-// }
-
-// const Root = styled.div`
-//   min-width: 700px;
-//   min-height: 600px;
-//   height: 600px;
-//   display: flex;
-//   align-items: stretch;
-// `;

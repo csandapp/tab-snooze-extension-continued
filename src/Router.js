@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import OptionsPage from './components/OptionsPage';
+import TodoPage from './components/TodoPage';
 
 export const POPUP_ROUTE = '/popup';
 export const OPTIONS_ROUTE = '/options';
@@ -18,17 +19,13 @@ export const UPGRADE_ROUTE = '/upgrade';
 // **NOTE**: intentionally without a preceding '/'
 export const BACKGROUND_ROUTE = 'background';
 
-const Popup = () => <SnoozePanel />;
-const Options = () => <OptionsPage />;
-// const SleepingTabs = () => <h2>About</h2>;
-// const Users = () => <h2>Users</h2>;
-
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
   <HashRouter hashType="noslash">
     <Fragment>
-      <Route path={POPUP_ROUTE} component={Popup} />
-      <Route path={OPTIONS_ROUTE} component={Options} />
+      <Route path={POPUP_ROUTE} component={SnoozePanel} />
+      <Route path={OPTIONS_ROUTE} component={OptionsPage} />
+      <Route path={TODO_ROUTE} component={TodoPage} />
     </Fragment>
   </HashRouter>
 );

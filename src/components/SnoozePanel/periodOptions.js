@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { Checkbox } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
 import Select from './Select';
 import { ordinalNum } from '../../core/utils';
 

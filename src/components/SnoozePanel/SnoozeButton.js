@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
-import { Collapse } from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
 
 export type Props = {
   id: string,

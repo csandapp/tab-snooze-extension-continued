@@ -28,7 +28,7 @@ const TOOLTIP_HIDE_TIMEOUT = 100;
 var snoozeSound = new window.Audio();
 snoozeSound.src = 'sounds/DefaultMac-StringScale1.mp3';
 snoozeSound.preload = 'auto';
-snoozeSound.volume = 0.4; // lower volume to we don't annoy user
+snoozeSound.volume = 0.2; // lower volume to we don't annoy user
 // snoozeSound.currentTime = 0.02;
 
 export default class SnoozePanel extends Component<Props, State> {
@@ -113,6 +113,8 @@ export default class SnoozePanel extends Component<Props, State> {
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       wakeupDate: date,
     });
+
+    snoozeSound.play();
   }
 
   onSnoozePeriodSelected(period: SnoozePeriod) {
@@ -122,6 +124,8 @@ export default class SnoozePanel extends Component<Props, State> {
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       period,
     });
+
+    snoozeSound.play();
   }
 
   getSnoozeButtons() {
@@ -156,11 +160,13 @@ export default class SnoozePanel extends Component<Props, State> {
         />
 
         <PeriodSelector
-          onPeriodSelected={this.onSnoozePeriodSelected}
+          onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
           visible={selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED}
         />
         <DateSelector
-          onDateSelected={this.onSnoozeSpecificDateSelected}
+          onDateSelected={this.onSnoozeSpecificDateSelected.bind(
+            this
+          )}
           visible={
             selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
           }

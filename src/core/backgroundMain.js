@@ -10,6 +10,8 @@ import {
   cancelWakeupAlarm,
   repeatLastSnooze,
 } from './snooze';
+import { TODO_ROUTE, SLEEPING_TABS_ROUTE } from '../Router';
+import chromep from 'chrome-promise';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -59,21 +61,17 @@ export function runBackgroundScript() {
 
   chrome.commands.onCommand.addListener(function(command) {
     // create a new todo window!, and focus on it
-    // if (command === 'new_todo_page') {
-    //   openNewTodo();
-    // }
+    if (command === 'new_todo_page') {
+      openTab(TODO_ROUTE);
+    }
 
     if (command === 'repeat_last_snooze') {
       repeatLastSnooze();
     }
 
-    // if (command === 'open_snoozed_list') {
-    //   chromep.tabs.create({
-    //     url: tabInfo.url,
-    //     active: true,
-    //   })
-    //   openSnoozedList();
-    // }
+    if (command === 'open_snoozed_list') {
+      openTab(SLEEPING_TABS_ROUTE);
+    }
   });
 
   // Show CHANGELOG doc when extension updates
@@ -88,14 +86,11 @@ export function runBackgroundScript() {
   });
 }
 
-// function openNewTodo() {
-//   chrome.tabs.create(
-//     {
-//       url: PAGE_URLS.newTodo,
-//       active: true,
-//     },
-//     function(newTab) {
-//       chrome.windows.update(newTab.windowId, { focused: true });
-//     }
-//   );
-// }
+async function openTab(path) {
+  const newTab = await chromep.tabs.create({
+    url: 'index.html#' + path,
+    active: true,
+  });
+
+  chromep.windows.update(newTab.windowId, { focused: true });
+}
