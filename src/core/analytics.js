@@ -54,19 +54,17 @@ import { getSnoozedTabs } from './storage';
 // }
 
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
-  const snoozedTabs = await getSnoozedTabs();
-
-  mixpanel.track('Tab Snooze', {
-    'Snooze Type': snoozedTab.type,
-    'Sleeping Tabs': snoozedTabs.length,
-  });
-
-  mixpanel.people.increment('tabs snoozed');
-  mixpanel.people.set({
-    'Sleeping Tabs': snoozedTabs.length,
-  });
+  // const snoozedTabs = await getSnoozedTabs();
+  // mixpanel.track('Tab Snooze', {
+  //   'Snooze Type': snoozedTab.type,
+  //   'Sleeping Tabs': snoozedTabs.length,
+  // });
+  // mixpanel.people.increment('tabs snoozed');
+  // mixpanel.people.set({
+  //   'Sleeping Tabs': snoozedTabs.length,
+  // });
 }
 
 export function track(eventName: string) {
-  mixpanel.track(eventName);
+  // mixpanel.track(eventName);
 }

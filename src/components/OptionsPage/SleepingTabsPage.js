@@ -48,21 +48,35 @@ const styles = theme => ({
     right: theme.spacing.unit * 3,
   },
   deleteBtn: {
+    transition: 'opacity 0.2s',
+    opacity: 0,
     marginRight: theme.spacing.unit * 2,
+  },
+  listItem: {
+    '&:hover $deleteBtn': {
+      opacity: 1,
+    },
   },
 });
 
-class SleepingTabs extends Component<Props, State> {
+class SleepingTabsPage extends Component<Props, State> {
   state = { visibleTabGroups: [], hidePeriodic: false };
+  storageListener: any;
 
   constructor(props: Props) {
     super(props);
+
+    this.storageListener = this.refreshSnoozedTabs.bind(this);
+
+    // init
     this.refreshSnoozedTabs();
 
     // listen to storage changes
-    chrome.storage.onChanged.addListener(() =>
-      this.refreshSnoozedTabs()
-    );
+    chrome.storage.onChanged.addListener(this.storageListener);
+  }
+
+  componentWillUnmount() {
+    chrome.storage.onChanged.removeListener(this.storageListener);
   }
 
   async refreshSnoozedTabs() {
@@ -107,6 +121,9 @@ class SleepingTabs extends Component<Props, State> {
           <ListItem
             key={index2}
             button
+            classes={{
+              container: classes.listItem,
+            }}
             onClick={event => {
               this.wakeupTab(tab, event);
             }}
@@ -175,4 +192,4 @@ const Icon = styled.img`
   height: 32px;
 `;
 
-export default withStyles(styles)(SleepingTabs);
+export default withStyles(styles)(SleepingTabsPage);

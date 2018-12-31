@@ -9,7 +9,8 @@ import styled, { css } from 'styled-components';
 import Toolbar from '@material-ui/core/Toolbar';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SleepingIcon from '@material-ui/icons/Hotel';
-import SleepingTabs from './SleepingTabs';
+import SleepingTabsPage from './SleepingTabsPage';
+import SettingsPage from './SettingsPage';
 import { NavLink } from 'react-router-dom';
 import { SLEEPING_TABS_ROUTE, SETTINGS_ROUTE } from '../../Router';
 import { Route } from 'react-router-dom';
@@ -40,9 +41,9 @@ function OptionsPage(props) {
         <Main>
           <Route
             path={SLEEPING_TABS_ROUTE}
-            component={SleepingTabs}
+            component={SleepingTabsPage}
           />
-          <Route path={SETTINGS_ROUTE} component={() => <div />} />
+          <Route path={SETTINGS_ROUTE} component={SettingsPage} />
         </Main>
       </Root>
     </Fragment>
@@ -52,9 +53,9 @@ function OptionsPage(props) {
 export default withStyles(styles)(OptionsPage);
 
 const Root = styled.div`
-  min-width: 700px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 const Logo = styled.img`
@@ -65,8 +66,11 @@ const Spacer = styled.div`
   width: 24px;
 `;
 const Main = styled.div`
+  min-width: 600px;
   min-height: 600px;
-  overflow-y: scroll;
+
+  /* For wide screen */
+  max-width: 1200px;
 `;
 
 const NavButton = styled(Button).attrs({

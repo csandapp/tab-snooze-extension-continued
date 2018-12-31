@@ -11,8 +11,9 @@ export const STORAGE_KEY_SETTINGS = 'settings';
 
 const DEFAULT_SETTINGS: Settings = {
   // General
-  closeTabAfterSnooze: true,
-  showBadge: true,
+  // closeTabAfterSnooze: true,
+  // showBadge: false,
+  playSoundEffects: true,
   playNotificationSound: true,
   showNotifications: true,
 

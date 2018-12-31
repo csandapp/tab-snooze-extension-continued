@@ -14,10 +14,17 @@ export const TODO_ROUTE = '/todo';
 export const SHARE_ROUTE = '/share-tab-snooze';
 export const FIRST_SNOOZE_ROUTE = '/first-snooze';
 export const UPGRADE_ROUTE = '/upgrade';
+
 // A special route that is meant to execute the background.js
 // script, and not any GUI rendering.
 // **NOTE**: intentionally without a preceding '/'
 export const BACKGROUND_ROUTE = 'background';
+
+// External links
+export const CHROME_WEB_STORE_REVIEW =
+  'https://chrome.google.com/webstore/detail/tab-snooze/pdiebiamhaleloakpcgmpnenggpjbcbm/reviews';
+export const CHROME_SETTINGS_SHORTCUTS =
+  'chrome://extensions/shortcuts';
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops

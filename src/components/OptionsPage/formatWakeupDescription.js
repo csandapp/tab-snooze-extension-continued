@@ -2,6 +2,8 @@
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import moment from 'moment';
 import { ordinalNum } from '../../core/utils';
+import React, { Fragment } from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 export function formatWakeupDescription(
   timeRange: WakeupTimeRange,
@@ -9,9 +11,14 @@ export function formatWakeupDescription(
 ) {
   const wakeupDateText = formatWakeupTime(timeRange, tab);
 
-  return tab.period
-    ? `${wakeupDateText} (${formatWakeupPeriod(tab)})`
-    : wakeupDateText;
+  return tab.period ? (
+    <Fragment>
+      <RefreshIcon style={{ marginRight: 4 }} />
+      {`${formatWakeupPeriod(tab)} (Next time: ${wakeupDateText})`}
+    </Fragment>
+  ) : (
+    wakeupDateText
+  );
 }
 
 function formatWakeupTime(

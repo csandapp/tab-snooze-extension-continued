@@ -38,10 +38,16 @@ export const muiTheme = createMuiTheme({
   },
 
   overrides: {
-    ripple: {
-      color: '#fff',
-    },
+    // ripple: {
+    //   color: '#fff',
+    // },
     // Name of the component ⚛️ / style sheet
+    MuiToolbar: {
+      root: {
+        height: 68,
+      },
+    },
+
     MuiButton: {
       root: {
         color: 'white',

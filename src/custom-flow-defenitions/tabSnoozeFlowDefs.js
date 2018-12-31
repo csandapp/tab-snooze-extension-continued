@@ -1,14 +1,3 @@
-// declare type SnoozePeriod = {
-//   type: 'daily' | 'weekly' | 'monthly' | 'yearly',
-//   // Hour - 0 to 23 (all periods)
-//   hour: number,
-//   // day of the month (0 to 31) (monthly period)
-//   day?: number,
-//   // list of weekdays index (weekly period)
-//   days?: Array<number>,
-//   // date: [monthIndex, dayIndex]  (yearly period)
-//   date?: [number, number],
-// };
 declare type SnoozePeriod =
   | {
       type: 'daily',
@@ -59,9 +48,10 @@ declare type KeyCombo = Array<string>;
 
 declare type Settings = {
   // General
-  closeTabAfterSnooze: boolean,
+  // showBadge: boolean,
+  // closeTabAfterSnooze: boolean,
+  playSoundEffects: boolean,
   playNotificationSound: boolean,
-  showBadge: boolean,
   showNotifications: boolean,
 
   // Time preference

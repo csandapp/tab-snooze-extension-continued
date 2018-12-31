@@ -12,6 +12,11 @@ import {
 } from './snooze';
 import { TODO_ROUTE, SLEEPING_TABS_ROUTE } from '../Router';
 import chromep from 'chrome-promise';
+import {
+  COMMAND_NEW_TODO,
+  COMMAND_REPEAT_LAST_SNOOZE,
+  COMMAND_OPEN_SLEEPING_TABS,
+} from './commands';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -61,15 +66,15 @@ export function runBackgroundScript() {
 
   chrome.commands.onCommand.addListener(function(command) {
     // create a new todo window!, and focus on it
-    if (command === 'new_todo_page') {
+    if (command === COMMAND_NEW_TODO) {
       openTab(TODO_ROUTE);
     }
 
-    if (command === 'repeat_last_snooze') {
+    if (command === COMMAND_REPEAT_LAST_SNOOZE) {
       repeatLastSnooze();
     }
 
-    if (command === 'open_snoozed_list') {
+    if (command === COMMAND_OPEN_SLEEPING_TABS) {
       openTab(SLEEPING_TABS_ROUTE);
     }
   });

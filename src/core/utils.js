@@ -185,7 +185,7 @@ export function calcNextOccurrenceForPeriod(
 
   // Add specific hour to occurrences
   occurrences = occurrences.map(occurrence =>
-    momentWithHour(occurrences, period.hour)
+    momentWithHour(occurrence, period.hour)
   );
 
   const nextFutureOccurrence = occurrences.find(occurrence =>
@@ -204,7 +204,7 @@ function momentWithHour(aMoment: any, hour: number) {
   const m = Math.floor((hour - h) * 60); // 0.5h--> 30m
 
   return aMoment
-    .hour(h)
+    .hours(h)
     .minutes(m)
     .seconds(0);
 }

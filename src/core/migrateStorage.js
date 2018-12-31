@@ -1,5 +1,7 @@
 // @flow
 
+// StorageArea.remove(string or array of string keys, function callback)
+
 // .tsVersion
 // tabCount
 // keys => arraw

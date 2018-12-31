@@ -28,7 +28,7 @@ const TOOLTIP_HIDE_TIMEOUT = 100;
 var snoozeSound = new window.Audio();
 snoozeSound.src = 'sounds/DefaultMac-StringScale1.mp3';
 snoozeSound.preload = 'auto';
-snoozeSound.volume = 0.2; // lower volume to we don't annoy user
+snoozeSound.volume = 0.5; // lower volume to we don't annoy user
 // snoozeSound.currentTime = 0.02;
 
 export default class SnoozePanel extends Component<Props, State> {

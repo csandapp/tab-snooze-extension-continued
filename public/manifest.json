@@ -41,13 +41,13 @@
     },
     "repeat_last_snooze": {
       "suggested_key": {
-        "default": "Alt+Shift+S"
+        "default": "Ctrl+Shift+S"
       },
       "description": "Repeat last snooze action"
     },
     "open_snoozed_list": {
       "suggested_key": {
-        "default": "Alt+Shift+L"
+        "default": "Alt+S"
       },
       "description": "Open snoozed tabs list"
     },

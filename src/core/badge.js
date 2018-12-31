@@ -19,11 +19,12 @@ chrome.storage.onChanged.addListener(updateBadge);
 async function updateBadge() {
   // dont show '0', remove badge with empty string;
   const snoozedTabs = await getSnoozedTabs();
-  const settings = await getSettings();
+  // const {showBadge} = await getSettings();
+  const showBadge = false;
 
   let snoozedCount = snoozedTabs.length || '';
 
-  if (!settings.showBadge) {
+  if (!showBadge) {
     snoozedCount = '';
   }
 

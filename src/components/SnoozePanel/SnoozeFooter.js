@@ -8,7 +8,7 @@ import {
   SETTINGS_ROUTE,
 } from '../../Router';
 import { getSnoozedTabs } from '../../core/storage';
-import Tooltip from '@material-ui/core/Tooltip';
+// import Tooltip from '@material-ui/core/Tooltip';
 
 type Props = {
   tooltip: {
@@ -51,7 +51,11 @@ export default class SnoozeFooter extends Component<Props, State> {
             <UpgradeBadge>Upgrade</UpgradeBadge>
           </UpgradeButton>
           <NewTodoBtn as={Link} to={TODO_ROUTE} target="_blank" />
-          <SettingsBtn as={Link} to={SETTINGS_ROUTE} />
+          <SettingsBtn
+            as={Link}
+            to={SETTINGS_ROUTE}
+            target="_blank"
+          />
         </Buttons>
         <SnoozeTooltip visible={tooltip.visible}>
           {tooltip.text}
@@ -99,9 +103,9 @@ const Buttons = styled.div`
 `;
 
 const TooltipButton = props => (
-  <Tooltip title={'props.title'} placement="top">
-    <button {...props} />
-  </Tooltip>
+  // <Tooltip title={'props.title'} placement="top">
+  <button {...props} />
+  // </Tooltip>
 );
 
 const FooterBtn = styled(TooltipButton)`
