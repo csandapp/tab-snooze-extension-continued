@@ -11,19 +11,20 @@ import {
   repeatLastSnooze,
 } from './snooze';
 import { TODO_ROUTE, SLEEPING_TABS_ROUTE } from '../Router';
-import chromep from 'chrome-promise';
 import {
   COMMAND_NEW_TODO,
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
+import { createTab } from './utils';
+import { FirstSnoozeDialog } from '../components/dialogs';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
 
 export function runBackgroundScript() {
   // import badge so it can update the extension badge automatically
-  import('./badge');
+  // import('./badge');
 
   chrome.runtime.onStartup.addListener(() => {
     // Give 1 mintue for Chrome to load after startup before
@@ -67,7 +68,7 @@ export function runBackgroundScript() {
   chrome.commands.onCommand.addListener(function(command) {
     // create a new todo window!, and focus on it
     if (command === COMMAND_NEW_TODO) {
-      openTab(TODO_ROUTE);
+      createTab(TODO_ROUTE);
     }
 
     if (command === COMMAND_REPEAT_LAST_SNOOZE) {
@@ -75,9 +76,11 @@ export function runBackgroundScript() {
     }
 
     if (command === COMMAND_OPEN_SLEEPING_TABS) {
-      openTab(SLEEPING_TABS_ROUTE);
+      createTab(SLEEPING_TABS_ROUTE);
     }
   });
+
+  FirstSnoozeDialog.open();
 
   // Show CHANGELOG doc when extension updates
   chrome.runtime.onInstalled.addListener(function(details) {
@@ -86,16 +89,7 @@ export function runBackgroundScript() {
     // if (details.reason === 'update')
     // chrome.tabs.create({ url: 'html/changelog.html' });
     // if (details.reason === 'install') {
-    //   newCenteredWindow('html/tutorial.html');
+    //   createCenteredWindow('html/tutorial.html');
     // }
   });
-}
-
-async function openTab(path) {
-  const newTab = await chromep.tabs.create({
-    url: 'index.html#' + path,
-    active: true,
-  });
-
-  chromep.windows.update(newTab.windowId, { focused: true });
 }

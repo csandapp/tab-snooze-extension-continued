@@ -1,7 +1,7 @@
 // @flow
-import mixpanel from 'mixpanel-browser';
+// import mixpanel from 'mixpanel-browser';
 // import chromep from 'chrome-promise';
-import { getSnoozedTabs } from './storage';
+// import { getSnoozedTabs } from './storage';
 
 // Init Mixpanel
 // mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);

@@ -65,9 +65,10 @@ const Logo = styled.img`
 const Spacer = styled.div`
   width: 24px;
 `;
+
 const Main = styled.div`
   min-width: 600px;
-  min-height: 600px;
+  min-height: 500px;
 
   /* For wide screen */
   max-width: 1200px;

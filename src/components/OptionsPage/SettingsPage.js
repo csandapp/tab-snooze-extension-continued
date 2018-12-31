@@ -1,6 +1,6 @@
 // @flow
 import type { Node } from 'react';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import List from '@material-ui/core/List';
@@ -11,7 +11,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AudioIcon from '@material-ui/icons/Audiotrack';
 import SunIcon from '@material-ui/icons/WbSunny';
 import WeekendIcon from '@material-ui/icons/Weekend';
-import DateIcon from '@material-ui/icons/Today';
+import WorkIcon from '@material-ui/icons/Work';
 import SomedayIcon from '@material-ui/icons/BeachAccess';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
@@ -26,7 +26,10 @@ import { getSettings, saveSettings } from '../../core/storage';
 import chromep from 'chrome-promise';
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
-import { CHROME_WEB_STORE_REVIEW } from '../../Router';
+import {
+  CHROME_WEB_STORE_REVIEW,
+  CHROME_SETTINGS_SHORTCUTS,
+} from '../../Router';
 
 type ChromeCommand = {
   description: string,
@@ -72,10 +75,6 @@ class SettingsPage extends Component<Props, State> {
 
     this.setState({ settings, commands });
   }
-
-  // openChromeExtensionShortcutsSettings() {
-  //   chromep.tabs.create({ url:'chrome://extensions/shortcuts' });
-  // }
 
   bindSettings(stateKey, valueProp = 'value') {
     const currentSettings = this.state.settings;
@@ -252,7 +251,7 @@ class SettingsPage extends Component<Props, State> {
             })),
           })}
           {this.renderDropdownSetting({
-            icon: <DateIcon />,
+            icon: <WorkIcon />,
             title: 'Week starts at',
             stateKey: 'weekStartDay',
             options: weekdayOptions,
@@ -293,6 +292,7 @@ class SettingsPage extends Component<Props, State> {
               shortcut: command.shortcut,
             })
           )}
+          <EditShortcutsInstructions />
 
           <Header>Misc</Header>
           {this.renderButtonSetting({
@@ -314,7 +314,29 @@ class SettingsPage extends Component<Props, State> {
   }
 }
 
+const EditShortcutsInstructions = () => (
+  <ListItem>
+    <ListItemText
+      secondary={
+        <Fragment>
+          To edit the shortcuts{' '}
+          <MyLink
+            onClick={() =>
+              chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
+            }
+          >
+            please click here
+          </MyLink>
+        </Fragment>
+      }
+    />
+  </ListItem>
+);
+
 const Root = styled.div``;
+const MyLink = styled.a`
+  text-decoration: underline;
+`;
 
 const Header = styled(ListSubheader).attrs({ disableSticky: true })`
   margin-top: 10px;

@@ -1,6 +1,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import moment from 'moment';
+import { APP_BASE_PATH } from '../Router';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -35,20 +36,17 @@ export function createTabs(
   return allTabsCreatedPromise;
 }
 
-export async function newCenteredWindow(
-  url: string,
-  width: number,
-  height: number
+export async function createCenteredWindow(
+  path: string,
+  width?: number,
+  height?: number
 ) {
-  // var WIN_WIDTH = Math.max(screen.width * 0.5, 1000);
-  // var WIN_HEIGHT = Math.max(screen.height * 0.5, 600);
-
   var WIN_WIDTH = width || 548;
   var WIN_HEIGHT = height || 597;
 
   const newWindow = await chromep.windows.create({
     type: 'popup',
-    url: url,
+    url: APP_BASE_PATH + path,
     left: Math.round((window.screen.width - WIN_WIDTH) / 2),
     top: Math.round((window.screen.height - WIN_HEIGHT) / 3),
     width: WIN_WIDTH,
@@ -57,6 +55,15 @@ export async function newCenteredWindow(
   });
 
   chromep.windows.update(newWindow.id, { focused: true });
+}
+
+export async function createTab(path: string) {
+  const newTab = await chromep.tabs.create({
+    url: APP_BASE_PATH + path,
+    active: true,
+  });
+
+  chromep.windows.update(newTab.windowId, { focused: true });
 }
 
 /* 

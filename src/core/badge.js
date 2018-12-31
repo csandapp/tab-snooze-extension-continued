@@ -1,5 +1,5 @@
 // @flow
-import { getSnoozedTabs, getSettings } from './storage';
+import { getSnoozedTabs } from './storage';
 import chromep from 'chrome-promise';
 import { styledComponentsTheme } from '../theme';
 

@@ -5,12 +5,22 @@ const fs = require('fs-extra');
 
 module.exports = function override(config, env) {
   if (env === 'development') {
+    // Instead of serving built files by server, we write them to
+    // disk, because Chrome Extension can only be read from disk
     config = enableWriteToDisk(config);
 
+    // Disabling live reload, because couldn't manage to get Chrome
+    // CSP working with this + the write to disk plugin.
     config = disableLiveReload(config);
 
     // This gives you nicer generated class names that include the components' name, minification of styles and many more goodies
     config = rewireStyledComponents(config, env);
+  }
+
+  if (env === 'production') {
+    // Disable code mangling (obfuscation/uglification)
+    // because Chrome Web Store do not allow it in review process
+    config = disableCodeObfuscation(config);
   }
 
   // Do the following for production + development:
@@ -23,7 +33,8 @@ module.exports = function override(config, env) {
   });
 
   // Debug:
-  // console.log(config.plugins);
+  // console.log(config);
+  // return;
 
   return config;
 };
@@ -57,6 +68,12 @@ function disableLiveReload(config) {
   // also remove HotModuleReplacementPlugin
   config.plugins.splice(4, 1); // removes plugins[4]
 
+  return config;
+}
+
+function disableCodeObfuscation(config) {
+  const terserPlugin = config.optimization.minimizer[0];
+  terserPlugin.options.terserOptions.mangle = false;
   return config;
 }
 

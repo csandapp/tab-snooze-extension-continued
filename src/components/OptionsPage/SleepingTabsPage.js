@@ -160,6 +160,7 @@ class SleepingTabsPage extends Component<Props, State> {
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
         </List>
         <NewTodoBtn />
+        {/* <BottomSpace /> */}
       </Root>
     );
   }
@@ -185,7 +186,9 @@ const NewTodoBtn = withStyles(styles)(({ classes }) => (
   </Zoom>
 ));
 
-const Root = styled.div``;
+const Root = styled.div`
+  padding-bottom: 50px;
+`;
 
 const Icon = styled.img`
   width: 32px;

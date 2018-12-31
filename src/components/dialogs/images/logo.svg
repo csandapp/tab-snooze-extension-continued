@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="158px" height="40px" viewBox="0 0 158 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo Text</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Share-&amp;-Rate-Dialogs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1stSnoozeDialog2.0" transform="translate(-20.000000, -18.000000)">
+            <g id="Logo-Text" transform="translate(20.000000, 18.000000)">
+                <g id="small-tile">
+                    <g id="Group-2">
+                        <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="21.8979311" font-weight="normal" fill="#333333">
+                            <tspan x="45.3934471" y="26.6217213">Tab Snooze</tspan>
+                        </text>
+                        <g id="Logo">
+                            <g id="Group">
+                                <g id="Group-5-Copy-5" fill="#45C9F4" fill-rule="nonzero">
+                                    <ellipse id="Oval" cx="19.1041201" cy="19.6068601" rx="19.1041201" ry="19.6068601"></ellipse>
+                                </g>
+                                <path d="M16.2494778,7.22358002 C14.6251952,9.38989938 13.6657951,12.0640813 13.6657951,14.9577046 C13.6657951,22.1821963 19.646197,28.0388041 27.0233965,28.0388041 C28.1052558,28.0388041 29.1570756,27.9128522 30.1644001,27.6751051 C27.7333461,30.9174222 23.8128936,33.0220801 19.3904814,33.0220801 C12.0132819,33.0220801 6.03288002,27.1654724 6.03288002,19.9409806 C6.03288002,13.7759536 10.3878556,8.60703057 16.2494778,7.22358002 Z" id="Combined-Shape-Copy-3" fill="#FFFFFF" fill-rule="nonzero"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
