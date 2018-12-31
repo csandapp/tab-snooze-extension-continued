@@ -5,11 +5,12 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { Helmet } from 'react-helmet';
 import Fade from '@material-ui/core/Fade';
+import Button from '../SnoozePanel/Button';
 
 export default class TSDialog extends Component<{
   image: string,
   title: string,
-  headline: string,
+  headline: string | Node,
   subheader: string | Node,
   children: Node,
 }> {
@@ -30,7 +31,7 @@ export default class TSDialog extends Component<{
         <Fade in timeout={600}>
           <Root>
             <Logo />
-            <CloseBtn onClick={() => window.close()} />
+            {/* <CloseBtn onClick={() => window.close()} /> */}
             <Content>
               <picture>
                 <source srcSet={`${image} 2x`} />
@@ -39,6 +40,7 @@ export default class TSDialog extends Component<{
               <Headline>{headline}</Headline>
               <Subheader>{subheader}</Subheader>
               {children}
+              <NoThanksButton />
             </Content>
           </Root>
         </Fade>
@@ -63,7 +65,7 @@ const Root = styled.div`
 
 const Content = styled.div`
   padding: ${PADDING}px;
-  padding-top: 70px;
+  padding-top: 50px;
 
   display: flex;
   flex-direction: column;
@@ -79,24 +81,24 @@ const Logo = styled.img.attrs({
   left: ${PADDING}px;
 `;
 
-const CloseBtn = styled.img.attrs({
-  src: require('./images/close.svg'),
-})`
-  position: absolute;
-  top: ${PADDING}px;
-  right: ${PADDING}px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 20;
+// const CloseBtn = styled.img.attrs({
+//   src: require('./images/close.svg'),
+// })`
+//   position: absolute;
+//   top: ${PADDING}px;
+//   right: ${PADDING}px;
+//   border-radius: 50%;
+//   cursor: pointer;
+//   z-index: 20;
 
-  opacity: 0.17;
-  :hover {
-    opacity: 0.3;
-  }
-  :active {
-    opacity: 0.5;
-  }
-`;
+//   opacity: 0.17;
+//   :hover {
+//     opacity: 0.3;
+//   }
+//   :active {
+//     opacity: 0.5;
+//   }
+// `;
 
 const Headline = styled.div`
   font-weight: 300;
@@ -115,4 +117,17 @@ const Subheader = styled.div`
   margin-bottom: 38px;
   text-align: center;
   padding: 0 30px;
+`;
+
+const NoThanksButton = styled(Button).attrs(props => ({
+  color: '#fff',
+  onClick: () => window.close(),
+}))`
+  :after {
+    content: 'No thanks';
+  }
+  margin-top: 20px;
+  color: #999;
+  border-radius: 10px;
+  padding: 8px 12px;
 `;

@@ -12,7 +12,7 @@ import Button from '../SnoozePanel/Button';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(FIRST_SNOOZE_ROUTE, 640, 520);
+    createCenteredWindow(FIRST_SNOOZE_ROUTE, 640, 540);
   }
 
   render() {

@@ -17,7 +17,7 @@ import {
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
 import { createTab } from './utils';
-import { FirstSnoozeDialog } from '../components/dialogs';
+import { RateTSDialog } from '../components/dialogs';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -80,7 +80,7 @@ export function runBackgroundScript() {
     }
   });
 
-  FirstSnoozeDialog.open();
+  RateTSDialog.open();
 
   // Show CHANGELOG doc when extension updates
   chrome.runtime.onInstalled.addListener(function(details) {

@@ -9,7 +9,7 @@ import Button from '../SnoozePanel/Button';
 
 export default class RateTSDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(RATE_TS_ROUTE, 500, 610);
+    createCenteredWindow(RATE_TS_ROUTE, 500, 630);
   }
 
   render() {
@@ -50,6 +50,7 @@ const RateUsButton = styled(Button)`
   align-items: center;
   padding: 14px 20px;
 `;
+
 const CWSLogo = styled.img.attrs({
   src: require('./images/chrome_web_store.png'),
 })`

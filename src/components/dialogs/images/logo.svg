@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="158px" height="40px" viewBox="0 0 158 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="122px" height="30px" viewBox="0 0 122 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>Logo Text</title>
+    <title>logo</title>
     <desc>Created with Sketch.</desc>
-    <g id="Share-&amp;-Rate-Dialogs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="1stSnoozeDialog2.0" transform="translate(-20.000000, -18.000000)">
-            <g id="Logo-Text" transform="translate(20.000000, 18.000000)">
-                <g id="small-tile">
-                    <g id="Group-2">
-                        <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="21.8979311" font-weight="normal" fill="#333333">
-                            <tspan x="45.3934471" y="26.6217213">Tab Snooze</tspan>
-                        </text>
-                        <g id="Logo">
-                            <g id="Group">
-                                <g id="Group-5-Copy-5" fill="#45C9F4" fill-rule="nonzero">
-                                    <ellipse id="Oval" cx="19.1041201" cy="19.6068601" rx="19.1041201" ry="19.6068601"></ellipse>
-                                </g>
-                                <path d="M16.2494778,7.22358002 C14.6251952,9.38989938 13.6657951,12.0640813 13.6657951,14.9577046 C13.6657951,22.1821963 19.646197,28.0388041 27.0233965,28.0388041 C28.1052558,28.0388041 29.1570756,27.9128522 30.1644001,27.6751051 C27.7333461,30.9174222 23.8128936,33.0220801 19.3904814,33.0220801 C12.0132819,33.0220801 6.03288002,27.1654724 6.03288002,19.9409806 C6.03288002,13.7759536 10.3878556,8.60703057 16.2494778,7.22358002 Z" id="Combined-Shape-Copy-3" fill="#FFFFFF" fill-rule="nonzero"></path>
+    <g id="logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Logo-Text">
+            <g id="small-tile">
+                <g id="Group-2">
+                    <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="16.8445624" font-weight="normal" fill="#333333">
+                        <tspan x="34.9842231" y="21.2239422">Tab Snooze</tspan>
+                    </text>
+                    <g id="Logo">
+                        <g id="Group">
+                            <g id="Group-5-Copy-5" fill="#45C9F4" fill-rule="nonzero">
+                                <ellipse id="Oval" cx="14.3551607" cy="14.8501662" rx="14.3551607" ry="14.8501662"></ellipse>
                             </g>
+                            <path d="M12.210134,5.47111386 C10.9896204,7.11187646 10.2687108,9.13729231 10.2687108,11.3289123 C10.2687108,16.8007168 14.7624865,21.2364907 20.3058396,21.2364907 C21.1187671,21.2364907 21.9091224,21.1410952 22.6660431,20.9610264 C20.8393079,23.4167458 17.8934132,25.0108062 14.5703375,25.0108062 C9.02698427,25.0108062 4.53320863,20.5750323 4.53320863,15.1032279 C4.53320863,10.4338584 7.80561133,6.5189344 12.210134,5.47111386 Z" id="Combined-Shape-Copy-3" fill="#FFFFFF" fill-rule="nonzero"></path>
                         </g>
                     </g>
                 </g>
