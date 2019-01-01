@@ -3,6 +3,9 @@ const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
 
+const OUTPUT_PATH = './build';
+const PUBLIC_PATH = './public/';
+
 module.exports = function override(config, env) {
   if (env === 'development') {
     // Instead of serving built files by server, we write them to
@@ -52,9 +55,6 @@ function enableWriteToDisk(config, env) {
 }
 
 function copyPublicFolder() {
-  let OUTPUT_PATH = './build';
-  let PUBLIC_PATH = './public/';
-
   fs.removeSync(OUTPUT_PATH);
   fs.copySync(PUBLIC_PATH, OUTPUT_PATH);
 }

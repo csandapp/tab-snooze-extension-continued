@@ -2,6 +2,8 @@
 
 // StorageArea.remove(string or array of string keys, function callback)
 
+// migrate old todo path to current
+
 // .tsVersion
 // tabCount
 // keys => arraw

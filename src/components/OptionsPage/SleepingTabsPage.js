@@ -11,6 +11,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
+import HotelIcon from '@material-ui/icons/Hotel';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Zoom from '@material-ui/core/Zoom';
 import Fab from '@material-ui/core/Fab';
@@ -154,6 +155,10 @@ class SleepingTabsPage extends Component<Props, State> {
     const { visibleTabGroups } = this.state;
     const { classes } = this.props;
 
+    if (!visibleTabGroups.length) {
+      return <NoTabsPlaceholder />;
+    }
+
     return (
       <Root>
         <List className={classes.list}>
@@ -186,8 +191,34 @@ const NewTodoBtn = withStyles(styles)(({ classes }) => (
   </Zoom>
 ));
 
+const NoTabsPlaceholder = () => (
+  <Placeholder>
+    <HotelIcon />
+    <span>No tab is sleeping</span>
+  </Placeholder>
+);
+
 const Root = styled.div`
   padding-bottom: 50px;
+`;
+
+const Placeholder = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 130px;
+
+  span {
+    font-size: 20px;
+    color: #bbb;
+  }
+  svg {
+    color: #e6e6e6;
+    width: 140px;
+    height: 140px;
+  }
 `;
 
 const Icon = styled.img`

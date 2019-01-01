@@ -74,26 +74,21 @@ export async function notifyUserAboutNewTabs(
   tabs: Array<ChromeTab>,
   jumpToTab: ChromeTab
 ) {
-  var notifItems = tabs.map(tab => ({
-    title: tab.title,
-    message: '',
-  }));
+  const message = tabs.map(tab => tab.title).join(', ');
 
-  var notifTitle = `Tab Snooze woke up ${tabs.length} tab ${
+  const title = `Tab Snooze woke up ${tabs.length} tab${
     tabs.length > 1 ? 's' : '' // plural handling
   }`;
 
   // Console log
-  console.log(notifTitle);
+  console.log(title);
 
   // Desktop notification
   const createdNotifId = await chromep.notifications.create('', {
-    type: 'list',
-    title: notifTitle,
-    message: '',
+    type: 'basic',
+    title,
+    message,
     iconUrl: 'images/extension_icon_128.png',
-    items: notifItems,
-    isClickable: true,
   });
 
   // chrome.windows.update(jumpToTab.windowId, {drawAttention: true});
