@@ -31,7 +31,7 @@ type TabGroup = {
 };
 type Props = { classes: Object };
 type State = {
-  visibleTabGroups: Array<TabGroup>,
+  visibleTabGroups: ?Array<TabGroup>,
   hidePeriodic: boolean,
 };
 
@@ -61,7 +61,7 @@ const styles = theme => ({
 });
 
 class SleepingTabsPage extends Component<Props, State> {
-  state = { visibleTabGroups: [], hidePeriodic: false };
+  state = { visibleTabGroups: null, hidePeriodic: false };
   storageListener: any;
 
   constructor(props: Props) {
@@ -155,7 +155,11 @@ class SleepingTabsPage extends Component<Props, State> {
     const { visibleTabGroups } = this.state;
     const { classes } = this.props;
 
-    if (!visibleTabGroups.length) {
+    if (!visibleTabGroups) {
+      // avoid showing placeholder while loading, because
+      // it causes placeholder to flicker before the list renders on screen
+      return null;
+    } else if (visibleTabGroups.length === 0) {
       return <NoTabsPlaceholder />;
     }
 

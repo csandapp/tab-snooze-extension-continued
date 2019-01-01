@@ -1,9 +1,5 @@
 // @flow
-import {
-  getSnoozedTabs,
-  getSettings,
-  saveSnoozedTabs,
-} from './storage';
+import { getSnoozedTabs, saveSnoozedTabs } from './storage';
 import chromep from 'chrome-promise';
 import {
   createTabs,
@@ -16,6 +12,7 @@ import {
   delayedCloseTab,
 } from './utils';
 import { trackTabSnooze } from './analytics';
+import { getSettings } from './settings';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;

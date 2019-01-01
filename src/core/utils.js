@@ -220,10 +220,5 @@ export const areTabsEqual = (tab1: SnoozedTab, tab2: SnoozedTab) =>
   tab1.url === tab2.url && tab1.when === tab2.when;
 
 export function ordinalNum(n: number) {
-  return (
-    n +
-    ([undefined, 'st', 'nd', 'rd'][
-      ~~((n / 10) % 10) - 1 ? n % 10 : 0
-    ] || 'th')
-  );
+  return moment.localeData().ordinal(n);
 }

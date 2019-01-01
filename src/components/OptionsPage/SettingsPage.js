@@ -22,7 +22,7 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Switch from '@material-ui/core/Switch';
 import Select from '../SnoozePanel/Select';
-import { getSettings, saveSettings } from '../../core/storage';
+import { getSettings, saveSettings } from '../../core/settings';
 import chromep from 'chrome-promise';
 import moment from 'moment';
 import KeyCombo from './KeyCombo';

@@ -1,6 +1,6 @@
 // @flow
 import moment from 'moment';
-import { getSettings } from '../../core/storage';
+import { getSettings } from '../../core/settings';
 
 export type WakeupTimeRange = {
   title: string,

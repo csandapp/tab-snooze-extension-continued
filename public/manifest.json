@@ -35,25 +35,25 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Ctrl+S"
+        "default": "Alt+S"
       },
       "description": "Snooze active tab"
     },
     "repeat_last_snooze": {
       "suggested_key": {
-        "default": "Ctrl+Shift+S"
+        "default": "Alt+Shift+S"
       },
       "description": "Repeat last snooze action"
     },
     "open_snoozed_list": {
       "suggested_key": {
-        "default": "Alt+S"
+        "default": "Alt+Ctrl+S"
       },
       "description": "Open snoozed tabs list"
     },
     "new_todo_page": {
       "suggested_key": {
-        "default": "Ctrl+Shift+1"
+        "default": "Alt+1"
       },
       "description": "New todo tab",
       "global": true

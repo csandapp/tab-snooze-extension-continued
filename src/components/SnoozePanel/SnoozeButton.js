@@ -10,7 +10,7 @@ export type Props = {
   icon: string,
   activeIcon: string,
   pressed: boolean,
-  isPro: boolean,
+  proBadge: boolean,
   onClick: () => void,
   onMouseEnter: () => void,
   onMouseLeave: () => void,
@@ -25,7 +25,7 @@ export default class SnoozeButton extends Component<Props> {
       icon,
       activeIcon,
       pressed,
-      isPro,
+      proBadge,
       onClick,
       onMouseLeave,
       onMouseEnter,
@@ -45,7 +45,7 @@ export default class SnoozeButton extends Component<Props> {
         <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
           <Title pressed={pressed}>{title}</Title>
         </Collapse>
-        {isPro && <ProCornerRibbon white={pressed} />}
+        {proBadge && <ProCornerRibbon white={pressed} />}
       </Button>
     );
   }

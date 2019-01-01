@@ -1,30 +1,9 @@
 // @flow
 import chromep from 'chrome-promise';
-// import { isMacOS } from './utils';
 import clone from 'clone';
 
-// const cmdCtrl = isMacOS() ? 'super' : 'ctrl';
-
-export const STORAGE_KEY_SETTINGS = 'settings';
 // export const STORAGE_KEY_HISTORY = 'history';
 // export const STORAGE_KEY_SLEEPING_TABS = 'sleepingTabs';
-
-const DEFAULT_SETTINGS: Settings = {
-  // General
-  // closeTabAfterSnooze: true,
-  // showBadge: false,
-  playSoundEffects: true,
-  playNotificationSound: true,
-  showNotifications: true,
-
-  // Snooze times
-  weekStartDay: 1, // Monday
-  weekEndDay: 6, // Saturday
-  workdayStart: 8,
-  workdayEnd: 19,
-  laterTodayHoursDelta: 3,
-  somedayMonthsDelta: 3,
-};
 
 /*
     Storage sync has a QUOTA_BYTES_PER_ITEM of 4000, so we save
@@ -72,28 +51,6 @@ export function saveSnoozedTabs(
 
 //   return history;
 // }
-
-export async function getSettings(): Promise<Settings> {
-  let { settings } = await chromep.storage.local.get(
-    STORAGE_KEY_SETTINGS
-  );
-
-  // Add new settings keys, preserve user old preferences
-  const defaults = clone(DEFAULT_SETTINGS);
-  settings = Object.assign(defaults, settings);
-
-  return settings;
-}
-
-export function saveSettings(settings: Settings): Promise<void> {
-  // using local instead of sync beacuse I fear that
-  // user will make many changes in the options page that
-  // will trigger many 'set' api calls on storage.local which
-  // will reach the api quota limit.
-  return chromep.storage.local.set({
-    [STORAGE_KEY_SETTINGS]: settings,
-  });
-}
 
 window.printTabs = async function() {
   const tabs = await getSnoozedTabs();

@@ -11,24 +11,28 @@ export type SnoozeOption = {
   activeIcon: string,
   tooltip: string,
   when?: Date,
-  isPro?: boolean,
+  isProFeature?: boolean,
 };
 
-export default function calcSnoozeOptions(): Array<SnoozeOption> {
+export default function calcSnoozeOptions(
+  settings: Settings
+): Array<SnoozeOption> {
   // constants from user settings
-  const WEEK_START_DAY = 0;
-  const WEEK_END_DAY = 5;
-  const DAY_START = 9;
-  const DAY_END = 19;
-  const LATER_TODAY = 3;
-  const SOMEDAY = 3;
+  const {
+    workdayEnd,
+    weekStartDay,
+    weekEndDay,
+    workdayStart,
+    laterTodayHoursDelta,
+    somedayMonthsDelta,
+  } = settings;
 
   const isVeryLateAtNight = moment().hour() <= 3;
   const isNightTime =
-    moment().hour() >= DAY_END || moment().hour() < 3;
+    moment().hour() >= workdayEnd || moment().hour() < 3;
   const isWeekend =
-    moment().day() === WEEK_END_DAY ||
-    moment().day() === (WEEK_END_DAY + 1) % 7;
+    moment().day() === weekEndDay ||
+    moment().day() === (weekEndDay + 1) % 7;
 
   const roundDate = momentDate =>
     momentDate
@@ -37,25 +41,27 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       .millisecond(0);
 
   const dayStart = momentDate =>
-    roundDate(momentDate.hour(DAY_START));
+    roundDate(momentDate.hour(workdayStart));
 
-  const laterTodayTime = moment().add(LATER_TODAY, 'hours');
+  const laterTodayTime = moment().add(laterTodayHoursDelta, 'hours');
   const thisEveningTime = roundDate(
-    moment().hour() >= DAY_END
+    moment().hour() >= workdayEnd
       ? moment()
           .add(1, 'day')
-          .hour(DAY_END)
-      : moment().hour(DAY_END)
+          .hour(workdayEnd)
+      : moment().hour(workdayEnd)
   );
   const tomorrowTime = isVeryLateAtNight
     ? dayStart(moment()) // if its very late, tomorrow = today.
     : dayStart(moment().add(1, 'days'));
   const weekendTime = isWeekend
-    ? dayStart(moment().day(7 + WEEK_END_DAY)) // choose next weekend
-    : dayStart(moment().day(WEEK_END_DAY));
-  const nextWeekTime = dayStart(moment().day(WEEK_START_DAY + 7)); // next day which start the week
+    ? dayStart(moment().day(7 + weekEndDay)) // choose next weekend
+    : dayStart(moment().day(weekEndDay));
+  const nextWeekTime = dayStart(moment().day(weekStartDay + 7)); // next day which start the week
   const inAMonthTime = dayStart(moment().add(1, 'months'));
-  const somedayTime = dayStart(moment().add(SOMEDAY, 'months'));
+  const somedayTime = dayStart(
+    moment().add(somedayMonthsDelta, 'months')
+  );
 
   return [
     {
@@ -63,7 +69,7 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       title: 'Later Today',
       icon: require('./icons/coffee.svg'),
       activeIcon: require('./icons/coffee_white.svg'),
-      tooltip: `${laterTodayTime.calendar()} (${LATER_TODAY} hours from now)`,
+      tooltip: `${laterTodayTime.calendar()} (${laterTodayHoursDelta} hours from now)`,
       when: laterTodayTime.toDate(),
     },
     {
@@ -103,7 +109,7 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       title: 'In a Month',
       icon: require('./icons/mailbox.svg'),
       activeIcon: require('./icons/mailbox_white.svg'),
-      tooltip: inAMonthTime.format('ll'),
+      tooltip: inAMonthTime.format('LL'),
       when: inAMonthTime.toDate(),
     },
     {
@@ -112,8 +118,8 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       icon: require('./icons/pine.svg'),
       activeIcon: require('./icons/pine_white.svg'),
       tooltip: `${somedayTime.format(
-        'll'
-      )} (${SOMEDAY} months from now)`,
+        'LL'
+      )} (${somedayMonthsDelta} months from now)`,
       when: somedayTime.toDate(),
     },
     {
@@ -122,7 +128,7 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       icon: require('./icons/refresh.svg'),
       activeIcon: require('./icons/refresh_white.svg'),
       tooltip: 'Open this tab on a periodic basis',
-      isPro: true,
+      isProFeature: true,
     },
     {
       id: SNOOZE_TYPE_SPECIFIC_DATE,
@@ -130,7 +136,7 @@ export default function calcSnoozeOptions(): Array<SnoozeOption> {
       icon: require('./icons/calendar.svg'),
       activeIcon: require('./icons/calendar_white.svg'),
       tooltip: 'Select a specific date & time',
-      isPro: true,
+      isProFeature: true,
     },
   ];
 }
