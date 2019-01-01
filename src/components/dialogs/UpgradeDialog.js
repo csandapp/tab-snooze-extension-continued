@@ -12,7 +12,7 @@ import Button from '../SnoozePanel/Button';
 
 export default class UpgradeDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(UPGRADE_ROUTE, 560, 780);
+    createCenteredWindow(UPGRADE_ROUTE, 560, 710);
   }
 
   render() {

@@ -17,10 +17,12 @@ import {
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
 import { createTab } from './utils';
-import { RateTSDialog } from '../components/dialogs';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
+
+// Uncomment for Debug:
+// require('../components/dialogs').open();
 
 export function runBackgroundScript() {
   // import badge so it can update the extension badge automatically
@@ -79,8 +81,6 @@ export function runBackgroundScript() {
       createTab(SLEEPING_TABS_ROUTE);
     }
   });
-
-  RateTSDialog.open();
 
   // Show CHANGELOG doc when extension updates
   chrome.runtime.onInstalled.addListener(function(details) {

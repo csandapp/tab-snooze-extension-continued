@@ -24,3 +24,4 @@ yarn-error.log*
 
 /.idea/workspace.xml
 *.cache
+/dist

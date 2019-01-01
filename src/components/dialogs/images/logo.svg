@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="122px" height="30px" viewBox="0 0 122 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="155px" height="38px" viewBox="0 0 155 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
     <title>logo</title>
     <desc>Created with Sketch.</desc>
@@ -7,15 +7,15 @@
         <g id="Logo-Text">
             <g id="small-tile">
                 <g id="Group-2">
-                    <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="16.8445624" font-weight="normal" fill="#333333">
-                        <tspan x="34.9842231" y="21.2239422">Tab Snooze</tspan>
+                    <text id="Tab-Snooze" font-family="Roboto-Regular, Roboto" font-size="21.3364457" font-weight="normal" fill="#333333">
+                        <tspan x="44.2366464" y="26.4735076">Tab Snooze</tspan>
                     </text>
                     <g id="Logo">
                         <g id="Group">
                             <g id="Group-5-Copy-5" fill="#45C9F4" fill-rule="nonzero">
-                                <ellipse id="Oval" cx="14.3551607" cy="14.8501662" rx="14.3551607" ry="14.8501662"></ellipse>
+                                <ellipse id="Oval" cx="18.7090804" cy="19.2147312" rx="18.7090804" ry="19.2147312"></ellipse>
                             </g>
-                            <path d="M12.210134,5.47111386 C10.9896204,7.11187646 10.2687108,9.13729231 10.2687108,11.3289123 C10.2687108,16.8007168 14.7624865,21.2364907 20.3058396,21.2364907 C21.1187671,21.2364907 21.9091224,21.1410952 22.6660431,20.9610264 C20.8393079,23.4167458 17.8934132,25.0108062 14.5703375,25.0108062 C9.02698427,25.0108062 4.53320863,20.5750323 4.53320863,15.1032279 C4.53320863,10.4338584 7.80561133,6.5189344 12.210134,5.47111386 Z" id="Combined-Shape-Copy-3" fill="#FFFFFF" fill-rule="nonzero"></path>
+                            <path d="M15.9134671,7.07911148 C14.3227718,9.20210538 13.3832104,11.8228047 13.3832104,14.6585568 C13.3832104,21.7385618 19.2399481,27.4780399 26.4646,27.4780399 C27.5240884,27.4780399 28.5541584,27.354607 29.5406532,27.1216148 C27.1598692,30.2990868 23.3204848,32.3616525 18.9895203,32.3616525 C11.7648683,32.3616525 5.90813064,26.6221744 5.90813064,19.5421694 C5.90813064,13.5004404 10.173053,8.43489361 15.9134671,7.07911148 Z" id="Combined-Shape-Copy-3" fill="#FFFFFF" fill-rule="nonzero"></path>
                         </g>
                     </g>
                 </g>

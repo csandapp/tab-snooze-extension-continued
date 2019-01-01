@@ -35,12 +35,29 @@ module.exports = function override(config, env) {
     camel2DashComponentName: false, // default: true
   });
 
-  // Debug:
-  // console.log(config);
-  // return;
+  // Disable service worker, we don't use it
+  config = disableServiceWorker(config);
+
+  // For Debug:
+  if (false) {
+    printConfig(config);
+  }
 
   return config;
 };
+
+function printConfig(config) {
+  console.log(
+    require('util').inspect(
+      config,
+      false, // show hidden
+      null, // print depth
+      true // enable colors
+    )
+  );
+
+  process.exit();
+}
 
 function enableWriteToDisk(config, env) {
   config = reactAppRewireBuildDev(config, env, {
@@ -65,7 +82,7 @@ function disableLiveReload(config) {
   // removing the first entry, which is the webpackHotDevClient.
   config.entry.splice(0, 1); // removes entry[0]
 
-  // also remove HotModuleReplacementPlugin
+  // Remove plugin "HotModuleReplacementPlugin"
   config.plugins.splice(4, 1); // removes plugins[4]
 
   return config;
@@ -74,6 +91,20 @@ function disableLiveReload(config) {
 function disableCodeObfuscation(config) {
   const terserPlugin = config.optimization.minimizer[0];
   terserPlugin.options.terserOptions.mangle = false;
+  return config;
+}
+
+function disableServiceWorker(config) {
+  /*
+    CRA adds 2 plugins under workbox-webpack-plugin related 
+    to enabling a service worker. one is GenerateSW the other is
+    ManifestPlugin. I remove them both
+  */
+  // Remove plugin "GenerateSW"
+  config.plugins.splice(7, 1); // removes plugins[7]
+  // Remove plugin "ManifestPlugin"
+  config.plugins.splice(5, 1); // removes plugins[5]
+
   return config;
 }
 

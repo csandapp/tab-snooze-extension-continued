@@ -28,10 +28,9 @@ export default class TSDialog extends Component<{
         <Helmet>
           <title>{title}</title>
         </Helmet>
-        <Fade in timeout={600}>
+        <Fade in timeout={700}>
           <Root>
             <Logo />
-            {/* <CloseBtn onClick={() => window.close()} /> */}
             <Content>
               <picture>
                 <source srcSet={`${image} 2x`} />
@@ -65,7 +64,7 @@ const Root = styled.div`
 
 const Content = styled.div`
   padding: ${PADDING}px;
-  padding-top: 50px;
+  padding-top: 60px;
 
   display: flex;
   flex-direction: column;
@@ -80,25 +79,6 @@ const Logo = styled.img.attrs({
   top: ${PADDING}px;
   left: ${PADDING}px;
 `;
-
-// const CloseBtn = styled.img.attrs({
-//   src: require('./images/close.svg'),
-// })`
-//   position: absolute;
-//   top: ${PADDING}px;
-//   right: ${PADDING}px;
-//   border-radius: 50%;
-//   cursor: pointer;
-//   z-index: 20;
-
-//   opacity: 0.17;
-//   :hover {
-//     opacity: 0.3;
-//   }
-//   :active {
-//     opacity: 0.5;
-//   }
-// `;
 
 const Headline = styled.div`
   font-weight: 300;
