@@ -30,7 +30,7 @@ export async function snoozeTab(
   }
 
   // Uncomment for debugging only:
-  wakeupTime = Date.now() + 1000 * 10;
+  // wakeupTime = Date.now() + 1000 * 10;
 
   console.log(
     'Snoozing tab until ' + new Date(wakeupTime).toString()

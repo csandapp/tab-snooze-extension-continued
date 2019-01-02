@@ -1,6 +1,7 @@
 // @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { Component, Fragment } from 'react';
+import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
@@ -165,6 +166,9 @@ class SleepingTabsPage extends Component<Props, State> {
 
     return (
       <Root>
+        <Helmet>
+          <title>Tab Snooze - Sleeping Tabs</title>
+        </Helmet>
         <List className={classes.list}>
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
         </List>

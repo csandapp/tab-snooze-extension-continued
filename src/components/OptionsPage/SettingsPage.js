@@ -2,6 +2,7 @@
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -208,6 +209,9 @@ class SettingsPage extends Component<Props, State> {
 
     return (
       <Root>
+        <Helmet>
+          <title>Tab Snooze - Settings</title>
+        </Helmet>
         <List className={classes.list}>
           <Header>General</Header>
           {this.renderCheckboxSetting({

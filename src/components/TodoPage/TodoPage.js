@@ -2,7 +2,6 @@
 
 import React, { Component, Fragment } from 'react';
 import styled, { css } from 'styled-components';
-import { Helmet } from 'react-helmet';
 import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_ROUTE } from '../../Router';
@@ -15,14 +14,32 @@ type Props = {
   history: any, // from react-router-dom
 };
 type State = {
-  todoText: string,
+  text: string,
+  colorIndex: number,
 };
 
 export default class TodoPage extends Component<Props, State> {
   todoTextRef: any = React.createRef();
+  updateUrlTimer: ?TimeoutID;
+
+  constructor(props: Props) {
+    super(props);
+
+    // init state with color & text from url
+    this.state = this.getTextAndColorFromUrl();
+
+    // const { text, colorIndex } = this.state;
+    // const { favicon } = COLORS[colorIndex];
+
+    // document.title = text;
+    // document
+    //   .getElementById('faviconEl')
+    //   .setAttribute('href', favicon);
+  }
 
   componentDidMount() {
-    const { text } = this.getTextAndColor();
+    // const { text } = this.state;
+    const { text } = this.state;
 
     if (!text) {
       this.todoTextRef.current.focus();
@@ -39,22 +56,18 @@ export default class TodoPage extends Component<Props, State> {
       .replace(/<\/div>/g, '')
       .replace(/<br>/g, '');
 
-    setTimeout(
-      () =>
-        this.props.history.push({
-          pathname: TODO_ROUTE,
-          search:
-            '?' +
-            queryString.stringify({
-              color: colorIndex,
-              text: text,
-            }),
+    this.props.history.replace({
+      pathname: TODO_ROUTE,
+      search:
+        '?' +
+        queryString.stringify({
+          color: colorIndex,
+          text: text,
         }),
-      0
-    );
+    });
   }
 
-  getTextAndColor() {
+  getTextAndColorFromUrl() {
     const { location } = this.props;
 
     let { text, color: colorIndexStr } = queryString.parse(
@@ -86,8 +99,21 @@ export default class TodoPage extends Component<Props, State> {
   }
 
   changeColor() {
-    const { text, colorIndex } = this.getTextAndColor();
-    this.updateAddressBar(text, (colorIndex + 1) % COLORS.length);
+    const { text, colorIndex } = this.state;
+    this.setTextAndColor(text, (colorIndex + 1) % COLORS.length);
+  }
+
+  setTextAndColor(text: string, colorIndex: number) {
+    this.setState({ text, colorIndex });
+
+    if (this.updateUrlTimer) {
+      clearTimeout(this.updateUrlTimer);
+    }
+
+    this.updateUrlTimer = setTimeout(() => {
+      this.updateUrlTimer = null;
+      this.updateAddressBar(text, colorIndex);
+    }, 700);
   }
 
   onKeyDown(event: any) {
@@ -121,32 +147,43 @@ export default class TodoPage extends Component<Props, State> {
     }
   }
 
+  renderDocumentHead(text: string, favicon: string) {
+    document.title = text.replace(/&nbsp;/g, ' ') || 'New Todo';
+    const faviconEl = document.getElementById('faviconEl');
+
+    if (faviconEl) {
+      faviconEl.setAttribute('href', favicon);
+    }
+  }
+
   render() {
-    const { text, colorIndex } = this.getTextAndColor();
+    const { text, colorIndex } = this.state;
     const { hex: colorHex, favicon } = COLORS[colorIndex];
+
+    this.renderDocumentHead(text, favicon);
 
     return (
       <Fragment>
-        <Helmet>
-          <title>{text || 'New Todo'}</title>
-          <link rel="icon" type="image/png" href={favicon} />
-        </Helmet>
         <Fade in timeout={1000}>
-          <Root color={colorHex}>
+          <Root
+            color={colorHex}
+            onKeyDown={this.onKeyDown.bind(this)}
+          >
             <TodoText
               innerRef={this.todoTextRef}
               dir="auto"
               html={text}
               onChange={event =>
-                this.updateAddressBar(event.target.value, colorIndex)
+                this.setTextAndColor(event.target.value, colorIndex)
               }
               // goes to dom, so is written as string
               isplaceholder={text === '' ? 'true' : 'false'}
-              onKeyDown={this.onKeyDown.bind(this)}
+            />
+            <ChangeColorButton
+              onClick={this.changeColor.bind(this)}
             />
           </Root>
         </Fade>
-        <ChangeColorButton onClick={this.changeColor.bind(this)} />
       </Fragment>
     );
   }
@@ -170,7 +207,7 @@ const COLORS = [
   { favicon: require('./images/todo_favicon_0.png'), hex: '#F2B32A' },
   { favicon: require('./images/todo_favicon_1.png'), hex: '#4688F1' },
   { favicon: require('./images/todo_favicon_2.png'), hex: '#1D9C5A' },
-  { favicon: require('./images/todo_favicon_3.png'), hex: '#D9453D' },
+  { favicon: require('./images/todo_favicon_3.png'), hex: '#EB2249' },
 ];
 
 function randomColorIndex() {
