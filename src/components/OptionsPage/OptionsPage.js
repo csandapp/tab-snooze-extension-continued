@@ -67,11 +67,11 @@ const Spacer = styled.div`
 `;
 
 const Main = styled.div`
-  min-width: 600px;
+  /* min-width: 600px; */
   min-height: 500px;
 
   /* For wide screen */
-  max-width: 1200px;
+  width: 600px;
 `;
 
 const NavButton = styled(Button).attrs({

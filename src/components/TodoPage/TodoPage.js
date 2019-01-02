@@ -95,7 +95,6 @@ export default class TodoPage extends Component<Props, State> {
     const TAB = event.keyCode === 9;
     const RETURN = event.keyCode === 13;
 
-    // if (RETURN) $scope.selectOption(focusedOption);
     if (TAB) {
       event.preventDefault();
       this.changeColor();

@@ -16,6 +16,14 @@ import { snoozeCurrentTab } from '../../core/snooze';
 import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import { isProUser } from '../../core/license';
+import {
+  loadAudio,
+  SOUND_TAB_SNOOZE1,
+  SOUND_TAB_SNOOZE2,
+  SOUND_TAB_SNOOZE3,
+} from '../../core/audio';
+import { getSnoozedTabs } from '../../core/storage';
+import { countConsecutiveSnoozes } from '../../core/utils';
 
 type Props = {
   // Props passed by TooltipHelper
@@ -29,15 +37,21 @@ type State = {
   selectedSnoozeOptionId: ?string,
   snoozeOptions: Array<SnoozeOption>,
   isProUser: boolean,
+  // We delay date/period selection dialogs openining
+  // to give time for click animation to finish gracefuly
+  selectorDialogOpen: boolean,
 };
 
-var snoozeSound = new window.Audio();
-snoozeSound.src = 'sounds/DefaultMac-StringScale1.mp3';
-snoozeSound.preload = 'auto';
-snoozeSound.volume = 0.5; // lower volume to we don't annoy user
-// snoozeSound.currentTime = 0.02;
+const CONSECUTIVE_SNOOZE_TIMEOUT = 15 * 1000; //10s
+const SNOOZE_SOUNDS = [
+  SOUND_TAB_SNOOZE1,
+  SOUND_TAB_SNOOZE2,
+  SOUND_TAB_SNOOZE3,
+];
 
 class SnoozePanel extends Component<Props, State> {
+  snoozeSound: HTMLAudioElement;
+
   constructor(props: Props) {
     super(props);
 
@@ -49,6 +63,8 @@ class SnoozePanel extends Component<Props, State> {
       snoozeOptions: calcSnoozeOptions(DEFAULT_SETTINGS),
       // cache of license info
       isProUser: false,
+
+      selectorDialogOpen: false,
     };
 
     getSettings().then(settings =>
@@ -56,6 +72,9 @@ class SnoozePanel extends Component<Props, State> {
     );
 
     isProUser().then(isProUser => this.setState({ isProUser }));
+
+    // load the next snooze sound to play
+    this.loadSnoozeSound();
   }
 
   onSnoozeButtonClicked(snoozeOption: SnoozeOption) {
@@ -74,30 +93,37 @@ class SnoozePanel extends Component<Props, State> {
     // Avoid showing tooltip after user already selected, its distructing
     preventTooltip();
 
-    if (snoozeOption.when) {
+    if (snoozeOption.when != null) {
       // Perform snooze
-      snoozeSound.play();
+      const wakeupTime = snoozeOption.when.getTime();
 
-      setTimeout(() =>
-        snoozeCurrentTab({
-          type: snoozeOption.id,
-          wakeupDate: snoozeOption.when,
-        })
-      );
+      this.playSnoozeSound();
+
+      snoozeCurrentTab({
+        type: snoozeOption.id,
+        wakeupTime,
+      });
     } else {
       // either period or date selector opens as dialog
+      setTimeout(
+        () =>
+          this.setState({
+            selectorDialogOpen: true,
+          }),
+        400
+      );
     }
   }
 
   onSnoozeSpecificDateSelected(date: Date) {
     const { selectedSnoozeOptionId } = this.state;
 
+    this.playSnoozeSound();
+
     snoozeCurrentTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
-      wakeupDate: date,
+      wakeupTime: date.getTime(),
     });
-
-    snoozeSound.play();
   }
 
   onSnoozePeriodSelected(period: SnoozePeriod) {
@@ -108,7 +134,7 @@ class SnoozePanel extends Component<Props, State> {
       period,
     });
 
-    snoozeSound.play();
+    this.playSnoozeSound();
   }
 
   getSnoozeButtons(snoozeOptions: Array<SnoozeOption>) {
@@ -132,11 +158,33 @@ class SnoozePanel extends Component<Props, State> {
     );
   }
 
+  /**
+   * We play 3 sounds, one after the other, on each snooze.
+   * when too much time passes by, it resets to first sound.
+   * e.g.
+   * example 1: soundA -> soundB -> soundC -> soundA
+   * example 2: soundA -> soundB -> (much time has passed, reset) soundA
+   */
+  async loadSnoozeSound() {
+    const snoozedTabs = await getSnoozedTabs();
+    const consecutiveCount = countConsecutiveSnoozes(
+      snoozedTabs,
+      CONSECUTIVE_SNOOZE_TIMEOUT
+    );
+    const nextSoundIndex = consecutiveCount % SNOOZE_SOUNDS.length;
+    this.snoozeSound = loadAudio(SNOOZE_SOUNDS[nextSoundIndex]);
+  }
+
+  playSnoozeSound() {
+    this.snoozeSound.play();
+  }
+
   render() {
     const {
       selectedSnoozeOptionId,
       snoozeOptions,
       isProUser,
+      selectorDialogOpen,
     } = this.state;
     const { tooltipText, tooltipVisible } = this.props;
 
@@ -157,13 +205,17 @@ class SnoozePanel extends Component<Props, State> {
 
         <PeriodSelector
           onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
-          visible={selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED}
+          visible={
+            selectorDialogOpen &&
+            selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
+          }
         />
         <DateSelector
           onDateSelected={this.onSnoozeSpecificDateSelected.bind(
             this
           )}
           visible={
+            selectorDialogOpen &&
             selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
           }
         />

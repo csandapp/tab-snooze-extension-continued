@@ -35,18 +35,14 @@ declare type SnoozedTab = {
   period?: SnoozePeriod,
 };
 
-// As defined by the chrome API
-declare type ChromeTab = {
-  id: string,
-  title: string,
-  url: string,
-  favIconUrl: string,
-  windowId: string,
-};
+declare type SnoozeConfig = {|
+  // Must have either wakeupTime or period
+  wakeupTime?: number,
+  period?: SnoozePeriod,
+  type: string, // 'later_today' , ...
+|};
 
-declare type KeyCombo = Array<string>;
-
-declare type Settings = {
+declare type Settings = {|
   // General
   // showBadge: boolean,
   // closeTabAfterSnooze: boolean,
@@ -56,9 +52,13 @@ declare type Settings = {
 
   // Time preference
   laterTodayHoursDelta: number,
-  somedayMonthsDelta: 3,
-  weekEndDay: 6,
-  weekStartDay: 1,
-  workdayEnd: 19,
-  workdayStart: 8,
-};
+  somedayMonthsDelta: number,
+  weekEndDay: number,
+  weekStartDay: number,
+  workdayEnd: number,
+  workdayStart: number,
+
+  // General data
+  version: number,
+  totalSnoozeCount: number,
+|};

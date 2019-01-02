@@ -111,17 +111,6 @@ export function addMinutes(date: Date, minutes: number) {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-export function playSound(soundName: 'notification') {
-  if (!window.Audio) return;
-
-  var soundCache = {
-    notification: new window.Audio('sounds/wakeup_notification.mp3'),
-  };
-
-  var audio = soundCache[soundName];
-  audio.play();
-}
-
 export async function getActiveTab() {
   const tabs = await chromep.tabs.query({
     active: true,
@@ -221,4 +210,37 @@ export const areTabsEqual = (tab1: SnoozedTab, tab2: SnoozedTab) =>
 
 export function ordinalNum(n: number) {
   return moment.localeData().ordinal(n);
+}
+
+/**
+ * Returns how many snooze events occured consecutively, with no more
+ * than 10s between them.
+ */
+export function countConsecutiveSnoozes(
+  snoozedTabs: Array<SnoozedTab>,
+  consecutiveSnoozeTimeout: number
+): number {
+  // Sort tabs by sleep start. Most recently snoozed first.
+  snoozedTabs.sort((tabA, tabB) => tabB.sleepStart - tabA.sleepStart);
+
+  for (let i = 0; i < snoozedTabs.length; i++) {
+    const previousTime =
+      i === 0 ? Date.now() : snoozedTabs[i - 1].sleepStart;
+    const timeGap = previousTime - snoozedTabs[i].sleepStart;
+
+    if (timeGap > consecutiveSnoozeTimeout) {
+      return i;
+    }
+  }
+
+  return snoozedTabs.length;
+}
+
+export function getMostRecentSnooze(
+  snoozedTabs: Array<SnoozedTab>
+): SnoozedTab {
+  // Sort tabs by sleep start. Most recently snoozed first.
+  snoozedTabs.sort((tabA, tabB) => tabB.sleepStart - tabA.sleepStart);
+
+  return snoozedTabs[0];
 }

@@ -5,6 +5,15 @@ type ChromeEvent = {
   removeListener: any,
 };
 
+// As defined by the chrome API
+declare type ChromeTab = {
+  id: string,
+  title: string,
+  url: string,
+  favIconUrl: string,
+  windowId: string,
+};
+
 declare var chrome: {
   // This is where we'll list the module's exported interface(s)
   notifications: {

@@ -1,6 +1,5 @@
 // @flow
 import chromep from 'chrome-promise';
-import clone from 'clone';
 
 export const STORAGE_KEY_SETTINGS = 'settings';
 
@@ -19,6 +18,10 @@ export const DEFAULT_SETTINGS: Settings = {
   workdayEnd: 19,
   laterTodayHoursDelta: 3,
   somedayMonthsDelta: 3,
+
+  // general data
+  version: 3,
+  totalSnoozeCount: 0,
 };
 
 export async function getSettings(): Promise<Settings> {
@@ -27,18 +30,17 @@ export async function getSettings(): Promise<Settings> {
   );
 
   // Add new settings keys, preserve user old preferences
-  const defaults = clone(DEFAULT_SETTINGS);
-  settings = Object.assign(defaults, settings);
-
-  return settings;
+  return Object.assign({}, DEFAULT_SETTINGS, settings);
 }
 
-export function saveSettings(settings: Settings): Promise<void> {
-  // using local instead of sync beacuse I fear that
-  // user will make many changes in the options page that
-  // will trigger many 'set' api calls on storage.local which
-  // will reach the api quota limit.
+export async function saveSettings(
+  newSettings: $Shape<Settings>
+): Promise<void> {
+  const currentSettings = await getSettings();
+
+  newSettings = Object.assign(currentSettings, newSettings);
+
   return chromep.storage.local.set({
-    [STORAGE_KEY_SETTINGS]: settings,
+    [STORAGE_KEY_SETTINGS]: newSettings,
   });
 }

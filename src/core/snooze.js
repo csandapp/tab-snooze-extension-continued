@@ -7,26 +7,20 @@ import {
   addMinutes,
   getActiveTab,
   calcNextOccurrenceForPeriod,
-  playSound,
   areTabsEqual,
   delayedCloseTab,
+  getMostRecentSnooze,
 } from './utils';
 import { trackTabSnooze } from './analytics';
-import { getSettings } from './settings';
+import { getSettings, saveSettings } from './settings';
+import { playAudio, SOUND_NOTIFICATION } from './audio';
+import {
+  FirstSnoozeDialog,
+  RateTSDialog,
+} from '../components/dialogs';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
-
-type SnoozeOptions = {|
-  wakeupDate?: Date,
-  period?: SnoozePeriod,
-  type: string, // 'later_today' , ...
-|};
-
-/*
-    the previously selected snooze date for the last action.
-*/
-let lastSnoozeOptions: ?SnoozeOptions = null;
 
 /*
     This timestamp prevents several alarms from going off at the same
@@ -114,32 +108,32 @@ export async function wakeupReadyTabs() {
     }
 
     if (settings.playNotificationSound) {
-      playSound('notification');
+      playAudio(SOUND_NOTIFICATION);
     }
   }
 }
 
 export async function snoozeTab(
   tab: ChromeTab,
-  options: SnoozeOptions
+  config: SnoozeConfig
 ) {
-  let { wakeupDate, period, type } = options;
+  let { wakeupTime, period, type } = config;
 
   if (period) {
-    wakeupDate = calcNextOccurrenceForPeriod(period);
+    const nextOccurrenceDate = calcNextOccurrenceForPeriod(period);
+    wakeupTime = nextOccurrenceDate.getTime();
   }
 
-  if (!wakeupDate) {
+  if (!wakeupTime) {
     throw new Error('No wakeup date and no period given');
   }
 
   // Uncomment for testing only:
   // snoozeDate = addMinutes(new Date(), 1);
 
-  console.log('Snoozing tab until ' + wakeupDate.toString());
-
-  // For 'repeat_last_snooze' command
-  lastSnoozeOptions = options;
+  console.log(
+    'Snoozing tab until ' + new Date(wakeupTime).toString()
+  );
 
   // The info to store about this tab
   const snoozedTab: SnoozedTab = {
@@ -147,9 +141,9 @@ export async function snoozeTab(
     title: tab.title,
     favicon: tab.favIconUrl,
     type,
-    sleepStart: new Date().getTime(),
+    sleepStart: Date.now(),
     period,
-    when: wakeupDate.getTime(), // convert to number since storage can't handle Date
+    when: wakeupTime, // convert to number since storage can't handle Date
   };
 
   // Store & persist snoozed tab for later
@@ -165,21 +159,45 @@ export async function snoozeTab(
 
   delayedCloseTab(tab.id);
 
+  const settings = await getSettings();
+  await saveSettings({
+    totalSnoozeCount: settings.totalSnoozeCount + 1,
+  });
+
+  if (settings.totalSnoozeCount === 1) {
+    FirstSnoozeDialog.open();
+  }
+  if (settings.totalSnoozeCount === 10) {
+    RateTSDialog.open();
+  }
+
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
 }
 
-export async function snoozeCurrentTab(options: SnoozeOptions) {
+export async function snoozeCurrentTab(config: SnoozeConfig) {
   const activeTab = await getActiveTab();
-  return snoozeTab(activeTab, options);
+  return snoozeTab(activeTab, config);
 }
 
-export function repeatLastSnooze() {
-  if (!lastSnoozeOptions) {
+export async function repeatLastSnooze() {
+  const snoozedTabs = await getSnoozedTabs();
+  const lastSnooze = getMostRecentSnooze(snoozedTabs);
+
+  // ignore "Repeat snooze" if no last snooze,
+  // or last snooze was more than 10 minutes ago
+  if (
+    !lastSnooze ||
+    Date.now() - lastSnooze.sleepStart > 1000 * 60 * 10
+  ) {
     return;
   }
 
-  snoozeCurrentTab(lastSnoozeOptions);
+  return snoozeCurrentTab({
+    wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,
+    period: lastSnooze.period,
+    type: lastSnooze.type,
+  });
 }
 
 async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
@@ -231,7 +249,7 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
     });
     alarmTime = nearestWakeupTime;
   } else {
-    alarmTime = new Date().getTime() + 1000 * 60;
+    alarmTime = Date.now() + 1000 * 60;
   }
 
   chrome.alarms.create('WAKEUP_TABS_ALARM', {

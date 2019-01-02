@@ -4,6 +4,14 @@
 
 // migrate old todo path to current
 
+// migrate settings too
+
+// todo address
+
+// 'history' ==> totalTabsSnoozedCount ?? or just implement history and thats it
+
+// tabs array instead of keys
+
 // .tsVersion
 // tabCount
 // keys => arraw

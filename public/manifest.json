@@ -47,7 +47,7 @@
     },
     "open_snoozed_list": {
       "suggested_key": {
-        "default": "Alt+Ctrl+S"
+        "default": "Alt+L"
       },
       "description": "Open snoozed tabs list"
     },
