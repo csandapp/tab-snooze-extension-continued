@@ -3,7 +3,7 @@ import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import { wakeupTabs, deleteSnoozedTabs } from '../../core/snooze';
+import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@material-ui/core/List';

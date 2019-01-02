@@ -33,6 +33,7 @@ export function createTabs(
       })
     )
   );
+
   return allTabsCreatedPromise;
 }
 
@@ -71,24 +72,31 @@ export async function createTab(path: string) {
   and make the jumpToTab active, if notification is clicked.
 */
 export async function notifyUserAboutNewTabs(
-  tabs: Array<ChromeTab>,
+  tabs: Array<SnoozedTab>,
   jumpToTab: ChromeTab
 ) {
-  const message = tabs.map(tab => tab.title).join(', ');
+  const message = tabs.map(tab => tab.title).join('\n');
 
-  const title = `Tab Snooze woke up ${tabs.length} tab${
-    tabs.length > 1 ? 's' : '' // plural handling
-  }`;
-
+  const title =
+    'Tab Snooze woke up ' +
+    (tabs.length > 1 ? `${tabs.length} tabs` : 'a tab'); // plural handling
   // Console log
   console.log(title);
+
+  const faviconUrl = tabs[0].favicon;
+  let base64Favicon = await imageUrlToBase64(faviconUrl); //
+
+  // if failed to fetch favicon (CORS is annoying!)
+  if (!base64Favicon) {
+    base64Favicon = 'images/extension_icon_128.png';
+  }
 
   // Desktop notification
   const createdNotifId = await chromep.notifications.create('', {
     type: 'basic',
     title,
     message,
-    iconUrl: 'images/extension_icon_128.png',
+    iconUrl: base64Favicon,
   });
 
   // chrome.windows.update(jumpToTab.windowId, {drawAttention: true});
@@ -252,6 +260,46 @@ export function getFirstTabToWakeup(
   snoozedTabs.sort((tabA, tabB) => tabA.when - tabB.when);
 
   return snoozedTabs[0];
+}
+
+// export async function imageUrlToBase64(url: string): Promise<string> {
+//   return new Promise((resolve, reject) =>
+//     base64Img.requestBase64(url, (err, res, body) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(body);
+//       }
+//     })
+//   );
+// }
+
+export async function imageUrlToBase64(url: string): Promise<string> {
+  // if already base64 encoded, just return url.
+  if (url.startsWith('data:')) {
+    return url;
+  }
+
+  return new Promise((resolve, reject) =>
+    require('request')(
+      {
+        url,
+        encoding: 'binary',
+      },
+      function(err, res, body) {
+        if (err) {
+          return null;
+        } else {
+          var type = res.headers['content-type'];
+          var prefix = 'data:' + type + ';base64,';
+          var base64 = new Buffer(body, 'binary').toString('base64');
+          var dataURI = prefix + base64;
+
+          resolve(dataURI);
+        }
+      }
+    )
+  );
 }
 
 // function findMinimum<T>(items: Array<T>, getValue: T => number) {

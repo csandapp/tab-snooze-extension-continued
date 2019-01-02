@@ -42,7 +42,7 @@ type State = {
   selectorDialogOpen: boolean,
 };
 
-const CONSECUTIVE_SNOOZE_TIMEOUT = 15 * 1000; //10s
+const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
 const SNOOZE_SOUNDS = [
   SOUND_TAB_SNOOZE1,
   SOUND_TAB_SNOOZE2,

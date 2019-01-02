@@ -58,5 +58,8 @@
     "@storybook/react": "^4.1.2",
     "babel-loader": "^8.0.4"
   },
-  "engines" : { "node" : "8.11.4", "npm": "5.6.0" }
+  "engines": {
+    "node": "8.11.4",
+    "npm": "5.6.0"
+  }
 }

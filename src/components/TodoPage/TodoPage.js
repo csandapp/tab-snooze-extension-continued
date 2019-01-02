@@ -123,13 +123,13 @@ export default class TodoPage extends Component<Props, State> {
 
   render() {
     const { text, colorIndex } = this.getTextAndColor();
-    const { hex: colorHex, favicon } = COLORS[colorIndex || 0];
+    const { hex: colorHex, favicon } = COLORS[colorIndex];
 
     return (
       <Fragment>
         <Helmet>
           <title>{text || 'New Todo'}</title>
-          <link rel="shortcut icon" href={favicon} />
+          <link rel="icon" type="image/png" href={favicon} />
         </Helmet>
         <Fade in timeout={1000}>
           <Root color={colorHex}>
