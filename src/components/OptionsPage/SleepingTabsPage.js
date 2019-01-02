@@ -169,7 +169,6 @@ class SleepingTabsPage extends Component<Props, State> {
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
         </List>
         <NewTodoBtn />
-        {/* <BottomSpace /> */}
       </Root>
     );
   }

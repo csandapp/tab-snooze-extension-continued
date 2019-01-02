@@ -9,7 +9,8 @@ import {
   calcNextOccurrenceForPeriod,
   areTabsEqual,
   delayedCloseTab,
-  getMostRecentSnooze,
+  getRecentlySnoozedTab,
+  getFirstTabToWakeup,
 } from './utils';
 import { trackTabSnooze } from './analytics';
 import { getSettings, saveSettings } from './settings';
@@ -129,7 +130,7 @@ export async function snoozeTab(
   }
 
   // Uncomment for testing only:
-  // snoozeDate = addMinutes(new Date(), 1);
+  wakeupTime = Date.now() + 1000 * 60;
 
   console.log(
     'Snoozing tab until ' + new Date(wakeupTime).toString()
@@ -159,15 +160,18 @@ export async function snoozeTab(
 
   delayedCloseTab(tab.id);
 
-  const settings = await getSettings();
+  let { totalSnoozeCount } = await getSettings();
+  totalSnoozeCount++;
+
   await saveSettings({
-    totalSnoozeCount: settings.totalSnoozeCount + 1,
+    totalSnoozeCount,
   });
 
-  if (settings.totalSnoozeCount === 1) {
+  // open share / rate dialog
+  if (totalSnoozeCount === 1) {
     FirstSnoozeDialog.open();
   }
-  if (settings.totalSnoozeCount === 10) {
+  if (totalSnoozeCount === 10) {
     RateTSDialog.open();
   }
 
@@ -182,7 +186,7 @@ export async function snoozeCurrentTab(config: SnoozeConfig) {
 
 export async function repeatLastSnooze() {
   const snoozedTabs = await getSnoozedTabs();
-  const lastSnooze = getMostRecentSnooze(snoozedTabs);
+  const lastSnooze = getRecentlySnoozedTab(snoozedTabs);
 
   // ignore "Repeat snooze" if no last snooze,
   // or last snooze was more than 10 minutes ago
@@ -240,14 +244,9 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
 
   if (when === 'auto') {
     // Automatically find earliest tab ready to wake up
-    let nearestWakeupTime = snoozedTabs[0].when;
-
-    snoozedTabs.forEach(snoozedTab => {
-      if (snoozeCurrentTab.when < nearestWakeupTime) {
-        nearestWakeupTime = snoozeCurrentTab.when;
-      }
-    });
-    alarmTime = nearestWakeupTime;
+    const nextTabToWakeup = getFirstTabToWakeup(snoozedTabs);
+    alert(nextTabToWakeup.title);
+    alarmTime = nextTabToWakeup.when;
   } else {
     alarmTime = Date.now() + 1000 * 60;
   }

@@ -45,42 +45,42 @@ export async function getWakeupTimeRanges(): Promise<
       maxDate: moment()
         .add(1, 'week')
         .endOf('week'),
-      // dateFormat: 'dddd',
+      dateFormat: 'dddd [at] h:mm A',
     },
     {
       title: 'In Two Weeks',
       maxDate: moment()
         .add(2, 'weeks')
         .endOf('week'),
-      dateFormat: 'LL',
+      dateFormat: 'LL [at] h:mm A',
     },
     {
       title: 'In Three Weeks',
       maxDate: moment()
         .add(3, 'weeks')
         .endOf('week'),
-      dateFormat: 'LL',
+      dateFormat: 'LL [at] h:mm A',
     },
     {
       title: 'In One Month',
       maxDate: moment()
         .add(6, 'weeks')
         .endOf('week'),
-      dateFormat: 'LL',
+      dateFormat: 'LL [at] h:mm A',
     },
     {
       title: 'In Two Months',
       maxDate: moment()
         .add(10, 'weeks')
         .endOf('week'),
-      dateFormat: 'LL',
+      dateFormat: 'LL [at] h:mm A',
     },
     {
       title: 'In Three Months',
       maxDate: moment()
         .add(14, 'weeks')
         .endOf('week'),
-      dateFormat: 'LL', // [at] h:mm A',
+      dateFormat: 'LL [at] h:mm A',
     },
     {
       title: 'In The Future',

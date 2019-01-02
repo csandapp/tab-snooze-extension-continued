@@ -42,7 +42,6 @@ export default class FirstSnoozeDialog extends Component<{}> {
             icon={require('./images/twitter.svg')}
             color="#00ACEE"
             href={`https://twitter.com/home?status=${shareText}`}
-            target="_blank"
             onClick={() => window.close()}
           >
             Share on Twitter

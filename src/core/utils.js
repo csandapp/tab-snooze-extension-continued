@@ -236,7 +236,7 @@ export function countConsecutiveSnoozes(
   return snoozedTabs.length;
 }
 
-export function getMostRecentSnooze(
+export function getRecentlySnoozedTab(
   snoozedTabs: Array<SnoozedTab>
 ): SnoozedTab {
   // Sort tabs by sleep start. Most recently snoozed first.
@@ -244,3 +244,24 @@ export function getMostRecentSnooze(
 
   return snoozedTabs[0];
 }
+
+export function getFirstTabToWakeup(
+  snoozedTabs: Array<SnoozedTab>
+): SnoozedTab {
+  // Sort tabs by sleep start. Most recently snoozed first.
+  snoozedTabs.sort((tabA, tabB) => tabA.when - tabB.when);
+
+  return snoozedTabs[0];
+}
+
+// function findMinimum<T>(items: Array<T>, getValue: T => number) {
+//   let minimumItem = items[0];
+
+//   items.forEach(item => {
+//     if (getValue(item) < getValue(minimumItem)) {
+//       minimumItem = item;
+//     }
+//   });
+
+//   return minimumItem;
+// }
