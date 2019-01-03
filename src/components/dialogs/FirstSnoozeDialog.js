@@ -23,7 +23,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
         title="Congrats!"
         image={require('./images/congrats.png')}
         headline="You snoozed your first Tab!"
-        subheader="Your tab will sleep and magically re-open when you asked for it. Awesome!"
+        subheader="Your tab will sleep and magically reopen when you asked for it. Awesome!"
       >
         <Root>
           <Button

@@ -75,7 +75,7 @@ export async function snoozeTab(
     if (totalSnoozeCount === 10) {
       RateTSDialog.open();
     }
-  }, 1000);
+  }, 200);
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);

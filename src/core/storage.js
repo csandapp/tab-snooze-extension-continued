@@ -57,13 +57,13 @@ export function saveSnoozedTabs(
 //   return history;
 // }
 
-window.printTabs = async function() {
+window.tabSnoozeDebug_printTabs = async function() {
   const tabs = await getSnoozedTabs();
 
   console.log('## Snoozed Tabs ##');
   tabs.forEach((tab, index) =>
     console.log(
-      `${index}. ${tab.title}\n   ${new Date(tab.when).toString()}`
+      `${index}.\t${tab.title}\n\t${new Date(tab.when).toString()}`
     )
   );
 };

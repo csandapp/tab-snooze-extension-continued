@@ -44,3 +44,12 @@ export async function saveSettings(
     [STORAGE_KEY_SETTINGS]: newSettings,
   });
 }
+
+window.tabSnoozeDebug_resetSettings = () => {
+  chromep.storage.local.remove(STORAGE_KEY_SETTINGS);
+};
+
+window.tabSnoozeDebug_printSettings = async () => {
+  const settings = await getSettings();
+  console.table(settings);
+};
