@@ -20,6 +20,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Link } from 'react-router-dom';
 import { TODO_ROUTE } from '../../Router';
+import { track, EVENTS } from '../../core/analytics';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -75,6 +76,10 @@ class SleepingTabsPage extends Component<Props, State> {
 
     // listen to storage changes
     chrome.storage.onChanged.addListener(this.storageListener);
+  }
+
+  componentDidMount() {
+    track(EVENTS.SLEEPING_TABS_VIEW);
   }
 
   componentWillUnmount() {
@@ -167,7 +172,7 @@ class SleepingTabsPage extends Component<Props, State> {
     return (
       <Root>
         <Helmet>
-          <title>Tab Snooze - Sleeping Tabs</title>
+          <title>Sleeping Tabs - Tab Snooze</title>
         </Helmet>
         <List className={classes.list}>
           {visibleTabGroups.map(this.renderTabGroup.bind(this))}
@@ -201,7 +206,7 @@ const NewTodoBtn = withStyles(styles)(({ classes }) => (
 const NoTabsPlaceholder = () => (
   <Placeholder>
     <HotelIcon />
-    <span>No tab is sleeping</span>
+    <span>No tabs are sleeping</span>
   </Placeholder>
 );
 

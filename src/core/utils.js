@@ -84,7 +84,7 @@ export async function notifyUserAboutNewTabs(
   console.log(title);
 
   const faviconUrl = tabs[0].favicon;
-  let base64Favicon = await imageUrlToBase64(faviconUrl); //
+  let base64Favicon = await imageUrlToBase64(faviconUrl);
 
   // if failed to fetch favicon (CORS is annoying!)
   if (!base64Favicon) {

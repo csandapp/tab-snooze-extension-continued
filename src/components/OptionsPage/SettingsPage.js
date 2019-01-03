@@ -31,6 +31,7 @@ import {
   CHROME_WEB_STORE_REVIEW,
   CHROME_SETTINGS_SHORTCUTS,
 } from '../../Router';
+import { EVENTS, track } from '../../core/analytics';
 
 type ChromeCommand = {
   description: string,
@@ -62,6 +63,10 @@ class SettingsPage extends Component<Props, State> {
     // when user comes back from Shortcuts screen,
     // we want the shortcuts to show fresh values
     window.onfocus = this.loadSettings.bind(this);
+  }
+
+  componentDidMount() {
+    track(EVENTS.SETTINGS_VIEW);
   }
 
   componentWillUnmount() {
@@ -210,7 +215,7 @@ class SettingsPage extends Component<Props, State> {
     return (
       <Root>
         <Helmet>
-          <title>Tab Snooze - Settings</title>
+          <title>Settings - Tab Snooze</title>
         </Helmet>
         <List className={classes.list}>
           <Header>General</Header>

@@ -39,7 +39,7 @@ export default class TSDialog extends Component<{
               <Headline>{headline}</Headline>
               <Subheader>{subheader}</Subheader>
               {children}
-              <NoThanksButton />
+              <NoThanksButton>No thanks</NoThanksButton>
             </Content>
           </Root>
         </Fade>
@@ -103,9 +103,6 @@ const NoThanksButton = styled(Button).attrs(props => ({
   color: '#fff',
   onClick: () => window.close(),
 }))`
-  :after {
-    content: 'No thanks';
-  }
   margin-top: 20px;
   color: #999;
   border-radius: 10px;

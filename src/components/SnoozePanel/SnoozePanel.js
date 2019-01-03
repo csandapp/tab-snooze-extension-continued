@@ -17,7 +17,7 @@ import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import { isProUser } from '../../core/license';
 import {
-  loadAudio,
+  loadSoundEffect,
   SOUND_TAB_SNOOZE1,
   SOUND_TAB_SNOOZE2,
   SOUND_TAB_SNOOZE3,
@@ -172,7 +172,7 @@ class SnoozePanel extends Component<Props, State> {
       CONSECUTIVE_SNOOZE_TIMEOUT
     );
     const nextSoundIndex = consecutiveCount % SNOOZE_SOUNDS.length;
-    this.snoozeSound = loadAudio(SNOOZE_SOUNDS[nextSoundIndex]);
+    this.snoozeSound = loadSoundEffect(SNOOZE_SOUNDS[nextSoundIndex]);
   }
 
   playSnoozeSound() {

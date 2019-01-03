@@ -1,10 +1,21 @@
 // @flow
-// import mixpanel from 'mixpanel-browser';
+import mixpanel from 'mixpanel-browser';
 // import chromep from 'chrome-promise';
-// import { getSnoozedTabs } from './storage';
+import { getSnoozedTabs } from './storage';
+
+export const EVENTS = {
+  EXT_INSTALLED: 'Extension Installed',
+  EXT_UPDATED: 'Extension Updated',
+  EXT_UNINSTALLED: 'Extension Uninstalled',
+  TAB_SNOOZE: 'Tab Snooze',
+  REPEAT_SNOOZE: 'Repeat Snooze',
+  NEW_TODO: 'New Todo',
+  SLEEPING_TABS_VIEW: 'Sleeping Tabs View',
+  SETTINGS_VIEW: 'Settings View',
+};
 
 // Init Mixpanel
-// mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
+mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 
 // identify user
 // initUserTracking();
@@ -13,6 +24,8 @@
 //   const { betaTester } = await chromep.storage.local.get(
 //     'betaTester'
 //   );
+
+// mixpanel.people.set({ "Plan": "Premium" });
 
 //   if (!betaTester) {
 //     // Not registered yet, show welcome page
@@ -54,17 +67,18 @@
 // }
 
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
-  // const snoozedTabs = await getSnoozedTabs();
-  // mixpanel.track('Tab Snooze', {
-  //   'Snooze Type': snoozedTab.type,
-  //   'Sleeping Tabs': snoozedTabs.length,
-  // });
-  // mixpanel.people.increment('tabs snoozed');
-  // mixpanel.people.set({
-  //   'Sleeping Tabs': snoozedTabs.length,
-  // });
+  const snoozedTabs = await getSnoozedTabs();
+
+  mixpanel.track(EVENTS.TAB_SNOOZE, {
+    'Snooze Type': snoozedTab.type,
+    'Sleeping Tabs': snoozedTabs.length,
+  });
+  mixpanel.people.increment('tabs snoozed');
+  mixpanel.people.set({
+    'Sleeping Tabs': snoozedTabs.length,
+  });
 }
 
-export function track(eventName: string) {
-  // mixpanel.track(eventName);
+export function track(eventName: string, properties?: Object) {
+  mixpanel.track(eventName, properties);
 }

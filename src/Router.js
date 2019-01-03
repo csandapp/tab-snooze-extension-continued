@@ -36,6 +36,8 @@ export const CHROME_WEB_STORE_REVIEW =
   'https://chrome.google.com/webstore/detail/tab-snooze/pdiebiamhaleloakpcgmpnenggpjbcbm/reviews';
 export const CHROME_SETTINGS_SHORTCUTS =
   'chrome://extensions/shortcuts';
+export const UNINSTALL_SURVERY_URL =
+  'https://goo.gl/forms/2BOeqD3s4iZ4s3JH2';
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops

@@ -63,6 +63,13 @@ export default class PeriodSelector extends Component<Props, State> {
 
     let snoozePeriod: ?SnoozePeriod;
 
+    if (periodType === 'daily') {
+      snoozePeriod = {
+        type: 'daily',
+        hour: selectedHour,
+      };
+    }
+
     if (periodType === 'weekly') {
       const daysIndexes = getSelectedWeekdaysIndexes(
         selectedWeekdays

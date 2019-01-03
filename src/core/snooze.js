@@ -6,7 +6,7 @@ import {
   delayedCloseTab,
   getRecentlySnoozedTab,
 } from './utils';
-import { trackTabSnooze } from './analytics';
+import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
 import {
   FirstSnoozeDialog,
@@ -68,12 +68,14 @@ export async function snoozeTab(
   });
 
   // open share / rate dialog
-  if (totalSnoozeCount === 1) {
-    FirstSnoozeDialog.open();
-  }
-  if (totalSnoozeCount === 10) {
-    RateTSDialog.open();
-  }
+  setTimeout(() => {
+    if (totalSnoozeCount === 1) {
+      FirstSnoozeDialog.open();
+    }
+    if (totalSnoozeCount === 10) {
+      RateTSDialog.open();
+    }
+  }, 1000);
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
@@ -96,6 +98,8 @@ export async function repeatLastSnooze() {
   ) {
     return;
   }
+
+  track(EVENTS.REPEAT_SNOOZE);
 
   return snoozeCurrentTab({
     wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,

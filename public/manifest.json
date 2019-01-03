@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Tab Snooze",
   "short_name": "Tab Snooze",
-  "version": "2.0.0",
+  "version": "2.0.1",
 
   "description": "Save articles, videos and todos for later. They'll magically reopen when you need them.",
   "icons": { "128": "images/extension_icon_128.png" },
@@ -54,7 +54,7 @@
     },
     "new_todo_page": {
       "suggested_key": {
-        "default": "Alt+1"
+        "default": "Ctrl+Shift+1"
       },
       "description": "New todo tab",
       "global": true

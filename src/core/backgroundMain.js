@@ -6,13 +6,18 @@
  */
 import { repeatLastSnooze } from './snooze';
 import { init as initWakeupModule } from './wakeup';
-import { TODO_ROUTE, SLEEPING_TABS_ROUTE } from '../Router';
+import {
+  TODO_ROUTE,
+  SLEEPING_TABS_ROUTE,
+  UNINSTALL_SURVERY_URL,
+} from '../Router';
 import {
   COMMAND_NEW_TODO,
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
 import { createTab } from './utils';
+import { track, EVENTS } from './analytics';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -42,13 +47,24 @@ export function runBackgroundScript() {
   });
 
   // Show CHANGELOG doc when extension updates
-  chrome.runtime.onInstalled.addListener(function(details) {
-    // Don't show changelog for 'install', or 'chrome_update'
-    // just for extension update
-    // if (details.reason === 'update')
-    // chrome.tabs.create({ url: 'html/changelog.html' });
-    // if (details.reason === 'install') {
-    //   createCenteredWindow('html/tutorial.html');
-    // }
+  chrome.runtime.onInstalled.addListener(function({
+    reason,
+    previousVersion,
+  }) {
+    const app_version = chrome.runtime.getManifest().version;
+
+    chrome.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
+
+    if (reason === 'install') {
+      track(EVENTS.EXT_INSTALLED, {
+        'App Version': app_version,
+      });
+    }
+
+    if (reason === 'update') {
+      track(EVENTS.EXT_UPDATED, {
+        'App Version': app_version,
+      });
+    }
   });
 }

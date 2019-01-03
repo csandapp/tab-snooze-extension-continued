@@ -8,6 +8,7 @@ import { TODO_ROUTE } from '../../Router';
 import Fade from '@material-ui/core/Fade';
 import IconButton from '@material-ui/core/IconButton';
 import ColorIcon from '@material-ui/icons/ColorLens';
+import { track, EVENTS } from '../../core/analytics';
 
 type Props = {
   location: any, // from react-router-dom
@@ -27,14 +28,6 @@ export default class TodoPage extends Component<Props, State> {
 
     // init state with color & text from url
     this.state = this.getTextAndColorFromUrl();
-
-    // const { text, colorIndex } = this.state;
-    // const { favicon } = COLORS[colorIndex];
-
-    // document.title = text;
-    // document
-    //   .getElementById('faviconEl')
-    //   .setAttribute('href', favicon);
   }
 
   componentDidMount() {
@@ -43,6 +36,8 @@ export default class TodoPage extends Component<Props, State> {
 
     if (!text) {
       this.todoTextRef.current.focus();
+
+      track(EVENTS.NEW_TODO);
     }
   }
 
