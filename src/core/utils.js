@@ -59,8 +59,12 @@ export async function createCenteredWindow(
 }
 
 export async function createTab(path: string) {
+  if (!path.startsWith('http')) {
+    path = APP_BASE_PATH + path;
+  }
+
   const newTab = await chromep.tabs.create({
-    url: APP_BASE_PATH + path,
+    url: path,
     active: true,
   });
 
@@ -301,6 +305,8 @@ export async function imageUrlToBase64(url: string): Promise<string> {
     )
   );
 }
+
+export const IS_BETA = process.env.REACT_APP_IS_BETA === 'true';
 
 // function findMinimum<T>(items: Array<T>, getValue: T => number) {
 //   let minimumItem = items[0];

@@ -12,7 +12,7 @@ import Button from '../SnoozePanel/Button';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(FIRST_SNOOZE_ROUTE, 640, 500);
+    createCenteredWindow(FIRST_SNOOZE_ROUTE, 640, 490);
   }
 
   render() {
@@ -20,7 +20,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
 
     return (
       <TSDialog
-        title="Congrats!"
+        // title="Congrats!"
         image={require('./images/congrats.png')}
         headline="You snoozed your first Tab!"
         subheader="Your tab will sleep and magically reopen when you asked for it. Awesome!"

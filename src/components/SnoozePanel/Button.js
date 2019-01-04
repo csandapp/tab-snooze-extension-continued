@@ -17,6 +17,11 @@ export default styled.button.attrs(props => ({
   font-weight: 500;
   font-size: 17px;
 
+  svg {
+    margin-right: 10px;
+    vertical-align: center;
+  }
+
   ${props =>
     props.raised &&
     css`

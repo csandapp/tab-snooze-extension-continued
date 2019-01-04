@@ -32,10 +32,11 @@
     "zip-folder": "1.0.0"
   },
   "scripts": {
+    "start-beta": "REACT_APP_IS_BETA=true npm run start",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "deploy": "npm run build && node ./deploy",
-    "deploy-beta": "BETA_DEPLOY=true npm run deploy",
+    "deploy-beta": "REACT_APP_IS_BETA=true npm run deploy",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "storybook": "start-storybook -p 9009 -s public",

@@ -23,7 +23,7 @@ import {
   SOUND_TAB_SNOOZE3,
 } from '../../core/audio';
 import { getSnoozedTabs } from '../../core/storage';
-import { countConsecutiveSnoozes } from '../../core/utils';
+import { countConsecutiveSnoozes, IS_BETA } from '../../core/utils';
 
 type Props = {
   // Props passed by TooltipHelper
@@ -201,6 +201,7 @@ class SnoozePanel extends Component<Props, State> {
         <SnoozeFooter
           tooltip={{ visible: tooltipVisible, text: tooltipText }}
           proBadge={!isProUser}
+          betaBadge={IS_BETA}
         />
 
         <PeriodSelector

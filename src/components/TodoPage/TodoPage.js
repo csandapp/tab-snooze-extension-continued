@@ -31,7 +31,6 @@ export default class TodoPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    // const { text } = this.state;
     const { text } = this.state;
 
     if (!text) {

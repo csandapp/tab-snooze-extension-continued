@@ -9,7 +9,7 @@ import Button from '../SnoozePanel/Button';
 
 export default class RateTSDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(RATE_TS_ROUTE, 500, 570);
+    createCenteredWindow(RATE_TS_ROUTE, 500, 540);
   }
 
   render() {

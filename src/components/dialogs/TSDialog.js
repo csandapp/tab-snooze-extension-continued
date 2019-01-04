@@ -9,9 +9,10 @@ import Button from '../SnoozePanel/Button';
 
 export default class TSDialog extends Component<{
   image: string,
-  title: string,
+  title?: string,
   headline: string | Node,
   subheader: string | Node,
+  closeBtnText?: ?string,
   children: Node,
 }> {
   render() {
@@ -21,6 +22,7 @@ export default class TSDialog extends Component<{
       headline,
       subheader,
       children,
+      closeBtnText,
     } = this.props;
 
     return (
@@ -39,7 +41,11 @@ export default class TSDialog extends Component<{
               <Headline>{headline}</Headline>
               <Subheader>{subheader}</Subheader>
               {children}
-              <NoThanksButton>No thanks</NoThanksButton>
+              {closeBtnText !== null && (
+                <NoThanksButton>
+                  {closeBtnText || 'No thanks'}
+                </NoThanksButton>
+              )}
             </Content>
           </Root>
         </Fade>
@@ -58,8 +64,8 @@ const Root = styled.div`
 
   height: 100%;
 
-  background: #fff url(${require('./images/bg_decoration.svg')})
-    no-repeat bottom right;
+  /* background: #fff url(${require('./images/bg_decoration.svg')})
+    no-repeat bottom right; */
 `;
 
 const Content = styled.div`
@@ -86,6 +92,7 @@ const Headline = styled.div`
   color: #1f1f1f;
   margin-top: 10px;
   margin-bottom: 20px;
+  text-align: center;
 `;
 
 const Subheader = styled.div`

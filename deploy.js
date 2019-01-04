@@ -15,7 +15,7 @@ const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const EXTENSION_ID = process.env.EXTENSION_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CLIENT_ID = process.env.CLIENT_ID;
-const IS_BETA_DEPLOY = process.env.BETA_DEPLOY === 'true';
+const IS_BETA_DEPLOY = process.env.REACT_APP_IS_BETA === 'true';
 
 const appName = `tab_snooze${IS_BETA_DEPLOY ? '_beta' : ''}`;
 const appVersion = require(MANIFEST_PATH).version;
@@ -71,7 +71,8 @@ function zipBuild() {
   });
 }
 
-function uploadZip() {
+// remove module.TEMP_TS
+module.TEMP_TS = function uploadZip() {
   const webStore = chromeWebstore({
     extensionId: EXTENSION_ID,
     clientId: CLIENT_ID,
@@ -105,4 +106,4 @@ function uploadZip() {
       console.log(`Error while uploading ZIP: ${error}`);
       process.exit(1);
     });
-}
+};

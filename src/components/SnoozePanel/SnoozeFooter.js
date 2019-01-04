@@ -8,6 +8,7 @@ import {
   SETTINGS_ROUTE,
 } from '../../Router';
 import { getSnoozedTabs } from '../../core/storage';
+import BetaDialog from '../dialogs/BetaDialog';
 // import Tooltip from '@material-ui/core/Tooltip';
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
   },
   // show/hide pro badge
   proBadge: boolean,
+  betaBadge: boolean,
 };
 type State = {
   sleepingTabsCount: number,
@@ -39,20 +41,30 @@ export default class SnoozeFooter extends Component<Props, State> {
   }
 
   render() {
-    const { tooltip, proBadge } = this.props;
+    const { tooltip, proBadge, betaBadge } = this.props;
     const { sleepingTabsCount } = this.state;
 
     return (
       <Footer>
         <Buttons>
           <SleepingTabsBtn as={Link} to={SLEEPING_TABS_ROUTE}>
-            <Badge>{sleepingTabsCount}</Badge>
+            <SleepinCountBadge>{sleepingTabsCount}</SleepinCountBadge>
             Sleeping Tabs
           </SleepingTabsBtn>
           {proBadge && (
-            <UpgradeButton onClick={() => {}}>
+            <BadgeButton onClick={() => {}}>
               <UpgradeBadge>Upgrade</UpgradeBadge>
-            </UpgradeButton>
+            </BadgeButton>
+          )}
+          {betaBadge && (
+            <BadgeButton
+              onClick={() => {
+                BetaDialog.open();
+                window.close();
+              }}
+            >
+              <BetaBadge>BETA</BetaBadge>
+            </BadgeButton>
           )}
           <NewTodoBtn as={Link} to={TODO_ROUTE} target="_blank" />
           <SettingsBtn
@@ -125,7 +137,7 @@ const FooterBtn = styled(TooltipButton)`
   }
 `;
 
-const Badge = styled.div`
+const SleepinCountBadge = styled.div`
   background-color: #929292;
   padding: 2px 8px;
   border-radius: 5px;
@@ -146,7 +158,7 @@ const SleepingTabsBtn = styled(FooterBtn)`
   flex: 1;
 `;
 
-const UpgradeButton = styled(FooterBtn)`
+const BadgeButton = styled(FooterBtn)`
   padding: 0 14px;
 `;
 const UpgradeBadge = styled.div`
@@ -156,6 +168,11 @@ const UpgradeBadge = styled.div`
   color: #fff;
   font-weight: 700;
   font-size: 16px;
+`;
+const BetaBadge = styled(UpgradeBadge)`
+  background-color: ${props => props.theme.beta};
+  padding-right: 15px;
+  padding-left: 15px;
 `;
 
 const IconBtn = styled(FooterBtn)`

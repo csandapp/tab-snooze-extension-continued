@@ -9,6 +9,7 @@ import {
   FirstSnoozeDialog,
   RateTSDialog,
   UpgradeDialog,
+  BetaDialog,
 } from './components/dialogs';
 
 // Base app file path
@@ -23,6 +24,7 @@ export const TODO_ROUTE = '/todo';
 export const FIRST_SNOOZE_ROUTE = '/first-snooze';
 export const RATE_TS_ROUTE = '/rate-tab-snooze';
 export const UPGRADE_ROUTE = '/upgrade';
+export const BETA_ROUTE = '/beta';
 
 // A special route that is meant to execute the background.js
 // script, and not any GUI rendering.
@@ -38,6 +40,11 @@ export const CHROME_SETTINGS_SHORTCUTS =
   'chrome://extensions/shortcuts';
 export const UNINSTALL_SURVERY_URL =
   'https://goo.gl/forms/2BOeqD3s4iZ4s3JH2';
+export const MESSENGER_PROFILE_URL = 'https://m.me/tabsnooze';
+export const CHANGELOG_URL =
+  'https://headwayapp.co/tab-snooze-changelog';
+export const BETA_INSTRUCTIONS_URL =
+  'https://medium.com/@eyalw/tab-snooze-beta-b033d1e3e021';
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
@@ -52,6 +59,7 @@ const Router = () => (
       />
       <Route path={RATE_TS_ROUTE} component={RateTSDialog} />
       <Route path={UPGRADE_ROUTE} component={UpgradeDialog} />
+      <Route path={BETA_ROUTE} component={BetaDialog} />
     </Fragment>
   </HashRouter>
 );

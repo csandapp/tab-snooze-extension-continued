@@ -7,6 +7,8 @@ export const styledComponentsTheme = {
   black: '#4A4A4A',
   gray: '#7F7F7F',
 
+  beta: '#FF5939',
+
   // ui
   border: '#DADADA',
   lightBorder: '#ECECEC',
