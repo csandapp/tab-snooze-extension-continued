@@ -8,7 +8,7 @@ import {
   BETA_INSTRUCTIONS_URL,
   CHANGELOG_URL,
 } from '../../Router';
-import { createTab } from '../../core/utils';
+import { createTab, APP_VERSION } from '../../core/utils';
 import TSDialog from './TSDialog';
 import BugIcon from '@material-ui/icons/BugReport';
 import SchoolIcon from '@material-ui/icons/School';
@@ -65,8 +65,8 @@ export default class BetaDialog extends Component<{}> {
       <TSDialog
         title="Tab Snooze Beta"
         image={require('./images/beta.png')}
-        headline="Tab Snooze Beta"
-        subheader="Thank you for helping test us Tab Snooze 2.0, you're awesome!"
+        headline={`Tab Snooze Beta (v${APP_VERSION})`}
+        subheader="Thank you for helping us test Tab Snooze, you're awesome!"
         closeBtnText={null}
       >
         <Root>

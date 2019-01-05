@@ -10,7 +10,6 @@ import {
   TODO_ROUTE,
   SLEEPING_TABS_ROUTE,
   UNINSTALL_SURVERY_URL,
-  BETA_ROUTE,
   CHANGELOG_URL,
 } from '../Router';
 import {
@@ -18,7 +17,7 @@ import {
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
-import { createTab, IS_BETA } from './utils';
+import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
 import chromep from 'chrome-promise';
 
@@ -54,37 +53,31 @@ export function runBackgroundScript() {
     reason,
     previousVersion,
   }) {
-    const appVersion = chrome.runtime.getManifest().version;
-
     chrome.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
 
     if (reason === 'install') {
-      track(EVENTS.EXT_INSTALLED, {
-        'App Version': appVersion,
-      });
+      track(EVENTS.EXT_INSTALLED);
 
-      if (IS_BETA) {
-        createTab(BETA_ROUTE);
-      }
+      // if (IS_BETA) {
+      //   createTab(BETA_ROUTE);
+      // }
     }
 
     if (reason === 'update') {
-      track(EVENTS.EXT_UPDATED, {
-        'App Version': appVersion,
-      });
+      track(EVENTS.EXT_UPDATED);
 
       // Open the changelog every version update for beta testers
       if (IS_BETA) {
-        notifyAboutNewBetaVersion(appVersion);
+        notifyAboutNewBetaVersion();
       }
     }
   });
 }
 
-async function notifyAboutNewBetaVersion(appVersion: string) {
+async function notifyAboutNewBetaVersion() {
   const notificationId = await chromep.notifications.create('', {
     type: 'basic',
-    title: `Tab Snooze ${appVersion} installed`,
+    title: `Tab Snooze ${APP_VERSION} installed`,
     message: 'Click to open the changelog',
     iconUrl: '/images/beta_extension_icon_128.png',
     requireInteraction: true,

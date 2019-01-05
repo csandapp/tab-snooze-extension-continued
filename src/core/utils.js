@@ -307,6 +307,7 @@ export async function imageUrlToBase64(url: string): Promise<string> {
 }
 
 export const IS_BETA = process.env.REACT_APP_IS_BETA === 'true';
+export const APP_VERSION = chrome.runtime.getManifest().version;
 
 // function findMinimum<T>(items: Array<T>, getValue: T => number) {
 //   let minimumItem = items[0];

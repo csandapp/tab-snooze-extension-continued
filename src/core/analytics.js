@@ -2,9 +2,10 @@
 import mixpanel from 'mixpanel-browser';
 // import chromep from 'chrome-promise';
 import { getSnoozedTabs } from './storage';
+import { APP_VERSION } from './utils';
 
 export const EVENTS = {
-  EXT_INSTALLED: 'Extension Installed',
+  EXT_INSTALLED: 'Extension Install',
   EXT_UPDATED: 'Extension Updated',
   EXT_UNINSTALLED: 'Extension Uninstalled',
   TAB_SNOOZE: 'Tab Snooze',
@@ -69,7 +70,7 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
   const snoozedTabs = await getSnoozedTabs();
 
-  mixpanel.track(EVENTS.TAB_SNOOZE, {
+  track(EVENTS.TAB_SNOOZE, {
     'Snooze Type': snoozedTab.type,
     'Sleeping Tabs': snoozedTabs.length,
   });
@@ -79,6 +80,9 @@ export async function trackTabSnooze(snoozedTab: SnoozedTab) {
   });
 }
 
-export function track(eventName: string, properties?: Object) {
-  mixpanel.track(eventName, properties);
+export function track(eventName: string, properties?: Object = {}) {
+  mixpanel.track(eventName, {
+    'App Version': APP_VERSION,
+    ...properties,
+  });
 }
