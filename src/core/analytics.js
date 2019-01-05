@@ -6,8 +6,8 @@ import { APP_VERSION } from './utils';
 
 export const EVENTS = {
   EXT_INSTALLED: 'Extension Install',
-  EXT_UPDATED: 'Extension Updated',
-  EXT_UNINSTALLED: 'Extension Uninstalled',
+  EXT_UPDATED: 'Extension Update',
+  EXT_UNINSTALLED: 'Extension Uninstall',
   TAB_SNOOZE: 'Tab Snooze',
   REPEAT_SNOOZE: 'Repeat Snooze',
   NEW_TODO: 'New Todo',

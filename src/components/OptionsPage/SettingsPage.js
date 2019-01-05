@@ -363,7 +363,7 @@ const SettingsSelect = styled(Select).attrs({
   font-size: inherit;
   line-height: inherit;
   outline: none;
-  padding: 16px;
+  padding-left: 5px;
   width: 200px;
   height: 40px;
   margin-right: 12px;

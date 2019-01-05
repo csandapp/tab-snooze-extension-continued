@@ -6,9 +6,12 @@ import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_ROUTE } from '../../Router';
 import Fade from '@material-ui/core/Fade';
+import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
-import ColorIcon from '@material-ui/icons/ColorLens';
 import { track, EVENTS } from '../../core/analytics';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import SnoozePanel from '../SnoozePanel';
 
 type Props = {
   location: any, // from react-router-dom
@@ -17,17 +20,24 @@ type Props = {
 type State = {
   text: string,
   colorIndex: number,
+  snoozePanelOpen: boolean,
 };
 
 export default class TodoPage extends Component<Props, State> {
   todoTextRef: any = React.createRef();
+  arrowRef: any = React.createRef();
+  bodyRef: any = React.createRef();
+  snoozeBtnEl: any = null;
   updateUrlTimer: ?TimeoutID;
 
   constructor(props: Props) {
     super(props);
 
     // init state with color & text from url
-    this.state = this.getTextAndColorFromUrl();
+    this.state = {
+      ...this.getTextAndColorFromUrl(),
+      snoozePanelOpen: false,
+    };
   }
 
   componentDidMount() {
@@ -97,6 +107,11 @@ export default class TodoPage extends Component<Props, State> {
     this.setTextAndColor(text, (colorIndex + 1) % COLORS.length);
   }
 
+  toggleSnoozePanel(event: any) {
+    this.snoozeBtnEl = event.currentTarget;
+    this.setState({ snoozePanelOpen: !this.state.snoozePanelOpen });
+  }
+
   setTextAndColor(text: string, colorIndex: number) {
     this.setState({ text, colorIndex });
 
@@ -141,6 +156,17 @@ export default class TodoPage extends Component<Props, State> {
     }
   }
 
+  onPageClick(event: any) {
+    // close panel only if click was directly on Root element or text element.
+    // ignore clicks on buttons, and the panel itself
+    if (
+      event.target === this.bodyRef.current ||
+      event.target === this.todoTextRef.current
+    ) {
+      this.setState({ snoozePanelOpen: false });
+    }
+  }
+
   renderDocumentHead(text: string, favicon: string) {
     document.title = text.replace(/&nbsp;/g, ' ') || 'New Todo';
     const faviconEl = document.getElementById('faviconEl');
@@ -151,7 +177,7 @@ export default class TodoPage extends Component<Props, State> {
   }
 
   render() {
-    const { text, colorIndex } = this.state;
+    const { text, colorIndex, snoozePanelOpen } = this.state;
     const { hex: colorHex, favicon } = COLORS[colorIndex];
 
     this.renderDocumentHead(text, favicon);
@@ -162,6 +188,8 @@ export default class TodoPage extends Component<Props, State> {
           <Root
             color={colorHex}
             onKeyDown={this.onKeyDown.bind(this)}
+            onClick={this.onPageClick.bind(this)}
+            ref={this.bodyRef}
           >
             <TodoText
               innerRef={this.todoTextRef}
@@ -173,9 +201,42 @@ export default class TodoPage extends Component<Props, State> {
               // goes to dom, so is written as string
               isplaceholder={text === '' ? 'true' : 'false'}
             />
-            <ChangeColorButton
-              onClick={this.changeColor.bind(this)}
-            />
+
+            <Buttons>
+              <BigIconButton
+                icon={require('./images/change_color.svg')}
+                onClick={this.changeColor.bind(this)}
+              />
+              <BigIconButton
+                icon={require('./images/snooze.svg')}
+                onClick={this.toggleSnoozePanel.bind(this)}
+              />
+              <Popper
+                id={snoozePanelOpen ? 'simple-popper' : null}
+                open={snoozePanelOpen}
+                placement="top-start"
+                anchorEl={this.snoozeBtnEl}
+                transition
+                // modifiers={{
+                //   arrow: {
+                //     enabled: true,
+                //     element: this.arrowRef.current,
+                //   },
+                // }}
+              >
+                {({ TransitionProps }) => (
+                  <Grow
+                    {...TransitionProps}
+                    timeout={250}
+                    style={{ transformOrigin: '0 100% 0' }}
+                  >
+                    <Paper>
+                      <SnoozePanel />
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </Buttons>
           </Root>
         </Fade>
       </Fragment>
@@ -183,17 +244,17 @@ export default class TodoPage extends Component<Props, State> {
   }
 }
 
-const ChangeColorButton = props => (
+const BigIconButton = (props: {
+  onClick: () => void,
+  icon: string,
+  forwardRef?: any,
+}) => (
   <IconButton
-    {...props}
-    style={{
-      padding: 30,
-      position: 'fixed',
-      bottom: 20,
-      left: 20,
-    }}
+    ref={props.forwardRef}
+    onClick={props.onClick}
+    style={{ padding: 30, marginRight: 10 }}
   >
-    <ColorIcon style={{ fill: '#fff', fontSize: 60 }} />
+    <img src={props.icon} alt="_" />
   </IconButton>
 );
 
@@ -261,4 +322,12 @@ const TodoText = styled(ContentEditable)`
         content: 'Type a todo...';
       }
     `}
+`;
+
+const Buttons = styled.div`
+  display: flex;
+
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
 `;

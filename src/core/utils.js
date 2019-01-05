@@ -39,19 +39,17 @@ export function createTabs(
 
 export async function createCenteredWindow(
   path: string,
-  width?: number,
-  height?: number
+  width: number,
+  height: number
 ) {
-  var WIN_WIDTH = width || 548;
-  var WIN_HEIGHT = height || 597;
-
   const newWindow = await chromep.windows.create({
     type: 'popup',
+    state: 'normal',
     url: APP_BASE_PATH + path,
-    left: Math.round((window.screen.width - WIN_WIDTH) / 2),
-    top: Math.round((window.screen.height - WIN_HEIGHT) / 3),
-    width: WIN_WIDTH,
-    height: WIN_HEIGHT,
+    left: Math.round((window.screen.width - width) / 2),
+    top: Math.round((window.screen.height - height) / 3),
+    width,
+    height,
     focused: true,
   });
 

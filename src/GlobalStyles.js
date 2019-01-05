@@ -31,6 +31,7 @@ export default createGlobalStyle`
 
   button {
     padding: 0;
+    background-color: #fff;
   }
 
   *::selection {

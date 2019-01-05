@@ -165,8 +165,6 @@ class SleepingTabsPage extends Component<Props, State> {
       // avoid showing placeholder while loading, because
       // it causes placeholder to flicker before the list renders on screen
       return null;
-    } else if (visibleTabGroups.length === 0) {
-      return <NoTabsPlaceholder />;
     }
 
     return (
@@ -174,9 +172,14 @@ class SleepingTabsPage extends Component<Props, State> {
         <Helmet>
           <title>Sleeping Tabs - Tab Snooze</title>
         </Helmet>
-        <List className={classes.list}>
-          {visibleTabGroups.map(this.renderTabGroup.bind(this))}
-        </List>
+        {visibleTabGroups.length > 0 ? (
+          <List className={classes.list}>
+            {visibleTabGroups.map(this.renderTabGroup.bind(this))}
+          </List>
+        ) : (
+          <NoTabsPlaceholder />
+        )}
+
         <NewTodoBtn />
       </Root>
     );

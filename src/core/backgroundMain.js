@@ -29,7 +29,7 @@ export function runBackgroundScript() {
   // import('./badge');
 
   // Uncomment for Debug:
-  // require('../components/dialogs/RateTSDialog').default.open();
+  // require('../components/dialogs/FirstSnoozeDialog').default.open();
 
   initWakeupModule();
 

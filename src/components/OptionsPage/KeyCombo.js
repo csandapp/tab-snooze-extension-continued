@@ -5,7 +5,7 @@ import styled from 'styled-components';
 export default (props: { combo: string }) => (
   <Root>
     {props.combo
-      ? props.combo.split('').map((key, index) => (
+      ? splitKeys(props.combo).map((key, index) => (
           <Fragment key={key}>
             {index > 0 ? <Plus /> : ''}
             <Key>{key}</Key>
@@ -14,6 +14,15 @@ export default (props: { combo: string }) => (
       : 'Not Defined'}
   </Root>
 );
+
+function splitKeys(keyCombo: string) {
+  // Windows and Mac Chrome act differently
+  // Windows retuns - 'Alt+S'
+  // Mac return - '⌥S'
+  const splitDelimiter = keyCombo.includes('+') ? '+' : '';
+
+  return keyCombo.split(splitDelimiter);
+}
 
 const Root = styled.div`
   display: flex;

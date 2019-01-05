@@ -129,6 +129,7 @@ const FooterBtn = styled(TooltipButton)`
   cursor: pointer;
   background-position: center;
   background-repeat: no-repeat;
+
   :hover {
     background-color: ${props => props.theme.snoozePanel.hoverColor};
   }
