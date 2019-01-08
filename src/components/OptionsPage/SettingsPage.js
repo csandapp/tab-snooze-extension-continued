@@ -247,6 +247,8 @@ class SettingsPage extends Component<Props, State> {
           {this.renderDropdownSetting({
             icon: <BadgeIcon />,
             title: 'Toolbar badge',
+            description:
+              'Display a tab count on the toolbar moon icon',
             stateKey: 'badge',
             options: [
               {
