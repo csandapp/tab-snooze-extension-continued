@@ -145,13 +145,7 @@ export function cancelWakeupAlarm(): Promise<void> {
 /**
  * Init the automatic wake up methods
  */
-export function init() {
-  chrome.runtime.onStartup.addListener(() => {
-    // Give 1 mintue for Chrome to load after startup before
-    // waking up tabs so chrome is not stuck
-    scheduleWakeupAlarm('1min');
-  });
-
+export function registerEventListeners() {
   // Wake up tabs on scheduled dates
   chrome.alarms.onAlarm.addListener(async function(alarm) {
     console.log('Alarm fired - waking up ready tabs');

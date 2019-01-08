@@ -5,7 +5,10 @@
  * without a view.
  */
 import { repeatLastSnooze } from './snooze';
-import { init as initWakeupModule } from './wakeup';
+import {
+  registerEventListeners as registerWakeupEventListeners,
+  scheduleWakeupAlarm,
+} from './wakeup';
 import {
   TODO_ROUTE,
   SLEEPING_TABS_ROUTE,
@@ -20,18 +23,54 @@ import {
 import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
 import chromep from 'chrome-promise';
+import { performMigrations } from './migrationManager';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
 
+/**
+ * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension
+ * Background script. In a Chrome Extension 'backgroud.js' script, all we are allowed to do is
+ * register chrome API Event Listeners **synchroneously**, and *NO other logic*.
+ * So no "await (X) and then chrome.register()". This function should be entirely sync,
+ * and do no work besides registering event listeners (no storage reading etc.).
+ *
+ * If you wanna write a "main()" function for the extension, that runs real business logic, it
+ * oddly enough should either be called in chrome.runtime.onInstall handler (which includes both extension
+ * install and update), OR chrome.runtime.onStartup handler (which is ran on Chrome startup/update only.)
+ * So the main logic should be ran on both of these triggers, and always only one of them is ran
+ * and not the other, depends on the case... THANK YOU CHROME for making it hard on us.
+ */
 export function runBackgroundScript() {
-  // import badge so it can update the extension badge automatically
-  // import('./badge');
+  // Make the main function run on Chrome startup
+  chrome.runtime.onStartup.addListener(extensionMain);
 
-  // Uncomment for Debug:
-  // require('../components/dialogs/FirstSnoozeDialog').default.open();
+  // [1] Register more background events by the wakeup module (synchroneously)
+  registerWakeupEventListeners();
 
-  initWakeupModule();
+  // Show CHANGELOG doc when extension updates
+  chrome.runtime.onInstalled.addListener(async function({
+    reason,
+    previousVersion,
+  }) {
+    // [2] Make the main function run on Extension install/update
+    await extensionMain();
+
+    chrome.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
+
+    if (reason === 'install') {
+      track(EVENTS.EXT_INSTALLED);
+    }
+
+    if (reason === 'update') {
+      track(EVENTS.EXT_UPDATED);
+
+      // Open the changelog every version update for beta testers
+      if (IS_BETA) {
+        notifyAboutNewBetaVersion();
+      }
+    }
+  });
 
   chrome.commands.onCommand.addListener(command => {
     // create a new todo window!, and focus on it
@@ -47,31 +86,26 @@ export function runBackgroundScript() {
       createTab(SLEEPING_TABS_ROUTE);
     }
   });
+}
 
-  // Show CHANGELOG doc when extension updates
-  chrome.runtime.onInstalled.addListener(function({
-    reason,
-    previousVersion,
-  }) {
-    chrome.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
+async function extensionMain() {
+  /**
+   * Run pending migrations!
+   * Note: onStartup is garanteed to be called, while onInstalled (update/install)
+   * isn't. So we perform critical stuff here, like storage migration, as we
+   * are certain it will be called **first thing** after an update.
+   */
+  await performMigrations();
 
-    if (reason === 'install') {
-      track(EVENTS.EXT_INSTALLED);
+  // Set 1 mintue delay for Chrome to load after startup before
+  // waking up tabs so chrome is not stuck
+  await scheduleWakeupAlarm('1min');
 
-      // if (IS_BETA) {
-      //   createTab(BETA_ROUTE);
-      // }
-    }
+  // import badge so it can update the extension badge automatically
+  // import('./badge');
 
-    if (reason === 'update') {
-      track(EVENTS.EXT_UPDATED);
-
-      // Open the changelog every version update for beta testers
-      if (IS_BETA) {
-        notifyAboutNewBetaVersion();
-      }
-    }
-  });
+  // Uncomment for Debug:
+  // require('../components/dialogs/FirstSnoozeDialog').default.open();
 }
 
 async function notifyAboutNewBetaVersion() {
