@@ -43,22 +43,26 @@ const styles = theme => ({
   },
   subHeader: {
     backgroundColor: theme.palette.background.paper,
+    paddingLeft: theme.spacing.unit * 3,
   },
-  fabButton: {
-    zIndex: 100,
-    position: 'fixed',
-    bottom: theme.spacing.unit * 3,
-    right: theme.spacing.unit * 3,
+  listItemRoot: {
+    paddingLeft: theme.spacing.unit * 3,
+  },
+  listItemContainer: {
+    '&:hover $deleteBtn': {
+      opacity: 1,
+    },
   },
   deleteBtn: {
     transition: 'opacity 0.2s',
     opacity: 0,
     marginRight: theme.spacing.unit * 2,
   },
-  listItem: {
-    '&:hover $deleteBtn': {
-      opacity: 1,
-    },
+  fabButton: {
+    zIndex: 100,
+    position: 'fixed',
+    bottom: theme.spacing.unit * 3,
+    right: theme.spacing.unit * 3,
   },
 });
 
@@ -129,7 +133,8 @@ class SleepingTabsPage extends Component<Props, State> {
             key={index2}
             button
             classes={{
-              container: classes.listItem,
+              root: classes.listItemRoot,
+              container: classes.listItemContainer,
             }}
             onClick={event => {
               this.wakeupTab(tab, event);
@@ -142,6 +147,9 @@ class SleepingTabsPage extends Component<Props, State> {
                 tabGroup.timeRange,
                 tab
               )}
+              primaryTypographyProps={{
+                style: { lineHeight: 1.5, marginBottom: 3 },
+              }}
             />
             <ListItemSecondaryAction className={classes.deleteBtn}>
               <IconButton
@@ -239,6 +247,10 @@ const Placeholder = styled.div`
 const Icon = styled.img`
   width: 32px;
   height: 32px;
+  min-width: 32px;
+  align-self: flex-start;
+  margin-top: 8px;
+  border-radius: 3px;
 `;
 
 export default withStyles(styles)(SleepingTabsPage);
