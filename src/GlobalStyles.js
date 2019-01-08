@@ -56,5 +56,6 @@ export default createGlobalStyle`
   body {
     font: 400 1.6rem/1.3 ${props => props.theme.fontFamily};
     color: ${props => props.theme.black};
+    background-color: #fff;
   }
 `;
