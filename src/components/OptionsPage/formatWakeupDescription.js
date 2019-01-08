@@ -14,7 +14,9 @@ export function formatWakeupDescription(
   return tab.period ? (
     <Fragment>
       <RefreshIcon style={{ marginRight: 4 }} />
-      {`${formatWakeupPeriod(tab)} (Next time: ${wakeupDateText})`}
+      {/* {wakeupDateText} (<RefreshIcon style={{ marginRight: 4 }} />
+      {`${formatWakeupPeriod(tab)})`} */}
+      {`${formatWakeupPeriod(tab)} (Next: ${wakeupDateText})`}
     </Fragment>
   ) : (
     wakeupDateText
@@ -60,12 +62,7 @@ function formatWakeupPeriod(tab: SnoozedTab) {
   }
 
   if (period.type === 'monthly') {
-    return (
-      'Every month on the ' +
-      ordinalNum(period.day + 1) +
-      ' at ' +
-      hourText
-    );
+    return 'Every month on the ' + ordinalNum(period.day + 1);
   }
 
   if (period.type === 'yearly') {

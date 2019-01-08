@@ -5,7 +5,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import { TODO_COLORS } from '../../components/TodoPage/TodoPage';
-import { TODO_ROUTE } from '../../Router';
+import { APP_BASE_PATH, TODO_ROUTE } from '../../Router';
 import qs from 'query-string';
 
 // Adding chrome manually to global scope, for ESLint
@@ -43,6 +43,7 @@ async function migrateSettings() {
   }
 
   // Remove some unused settings
+  delete settings.showBadge;
   delete settings.closeTabAfterSnooze;
   delete settings.mailMyselfAddress;
   delete settings.manyTabsThreshold;
@@ -59,6 +60,9 @@ async function migrateSettings() {
   await chromep.storage.local.set({
     [STORAGE_KEY_SETTINGS]: settings,
   });
+
+  // remove history so it won't take up huge amount of space
+  // await chromep.storage.local.remove(STORAGE_KEY_HISTORY);
 }
 
 /**
@@ -153,7 +157,7 @@ function migrateTodoPage(tab) {
       url.substring(url.indexOf('?') + 1)
     );
     const newTodoUrl =
-      chrome.runtime.getURL(TODO_ROUTE) +
+      chrome.runtime.getURL(APP_BASE_PATH + TODO_ROUTE) +
       '?' +
       qs.stringify({
         text: oldTodoParams.title,
