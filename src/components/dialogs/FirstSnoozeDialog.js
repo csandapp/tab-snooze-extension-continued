@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import {
   FIRST_SNOOZE_ROUTE,
@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(FIRST_SNOOZE_ROUTE, 640, 490);
+    createCenteredWindow(FIRST_SNOOZE_ROUTE, 830, 485);
   }
 
   render() {
@@ -25,8 +25,17 @@ export default class FirstSnoozeDialog extends Component<{}> {
       <TSDialog
         // title="Congrats!"
         image={require('./images/congrats.png')}
-        headline="You snoozed your first Tab!"
-        subheader="Your tab will sleep and magically reopen when you asked for it. Awesome!"
+        headline="Awesome! You snoozed your first Tab!"
+        subheader={
+          <Fragment>
+            Your tab will sleep and magically reopen when you asked
+            for it.
+            <br />
+            You can always wake it up earlier if you need to from the
+            Sleeping Tabs list.
+          </Fragment>
+        }
+        closeBtnText="Got it, thanks!"
       >
         <Root>
           <Button
@@ -37,7 +46,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
             target="_blank"
             onClick={() => window.close()}
           >
-            <HotelIcon /> View Sleeping Tabs
+            <HotelIcon /> Sleeping Tabs
           </Button>
           {/* <Button
             raised
