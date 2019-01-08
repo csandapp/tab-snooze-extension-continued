@@ -14,94 +14,77 @@ window.tabSnoozeDebug_printTabs = async function() {
 };
 
 // For debugging, backing up whole storage
-window.tabSnoozeDebug_backupLocalStorage = function(
+window.tabSnoozeDebug_createStorageBackup = async function(
   backupName: string
 ) {
-  return backupStorage(chromep.storage.local, backupName);
-};
+  const localStorageCopy = await chromep.storage.local.get();
+  const syncStorageCopy = await chromep.storage.sync.get();
 
-window.tabSnoozeDebug_backupSyncStorage = function(
-  backupName: string
-) {
-  return backupStorage(chromep.storage.sync, backupName);
-};
-
-window.tabSnoozeDebug_restoreLocalStorageBackup = function(
-  backupName: string
-) {
-  return restoreStorageBackup(chromep.storage.local, backupName);
-};
-
-window.tabSnoozeDebug_restoreSyncStorageBackup = function(
-  backupName: string
-) {
-  return restoreStorageBackup(chromep.storage.sync, backupName);
-};
-
-async function backupStorage(
-  storageArea: Object,
-  backupName: string
-) {
-  const storageToBackup = await storageArea.get();
+  // get current backups
+  const backups = localStorageCopy[STORAGE_KEY_BACKUPS] || {};
 
   // don't backup the backups
-  delete storageToBackup[STORAGE_KEY_BACKUPS];
+  delete localStorageCopy[STORAGE_KEY_BACKUPS];
 
   // Add storageToBackup to backups
-  const { backups } = await chromep.storage.local.get(
-    STORAGE_KEY_BACKUPS
-  );
-  backups[backupName] = storageToBackup;
+  backups[backupName] = {
+    local: localStorageCopy,
+    sync: syncStorageCopy,
+  };
   await chromep.storage.local.set({ [STORAGE_KEY_BACKUPS]: backups });
   console.log(`Backup complete to "${backupName}"`);
-}
+};
 
-async function restoreStorageBackup(
-  storageArea: Object,
+window.tabSnoozeDebug_restoreStorageBackup = async function(
   backupName: string
 ) {
   // restore an exact snapshot of the backup as it was,
   // so reset whatever is there right now, before restoring
-  await resetStorage(storageArea);
+  await resetStorage();
 
   const { backups } = await chromep.storage.local.get(
     STORAGE_KEY_BACKUPS
   );
 
-  const storageToRestore = backups[backupName];
+  const requestedBackup = backups[backupName];
 
-  if (!storageToRestore) {
+  if (!requestedBackup) {
     throw new Error('Couldnt find a backup with that name');
   }
 
-  await storageArea.set(storageToRestore);
+  await chromep.storage.local.set(requestedBackup.local);
+  await chromep.storage.sync.set(requestedBackup.sync);
 
   console.log(`Backup "${backupName}" restored`);
-}
-
-window.tabSnoozeDebug_resetLocalStorage = function() {
-  return resetStorage(chromep.storage.local);
 };
 
-window.tabSnoozeDebug_resetSyncStorage = function() {
-  return resetStorage(chromep.storage.sync);
-};
-
-async function resetStorage(storageArea: Object) {
-  // pull backups
+async function resetStorage() {
+  // pull backups to the side
   const { backups } = await chromep.storage.local.get(
     STORAGE_KEY_BACKUPS
   );
 
-  // reset storage
-  await storageArea.clear();
+  // wipe out storage
+  await chromep.storage.local.clear();
+  await chromep.storage.sync.clear();
 
-  // restore backups
-  await storageArea.set({ [STORAGE_KEY_BACKUPS]: backups });
+  // push backups back
+  await chromep.storage.local.set({ [STORAGE_KEY_BACKUPS]: backups });
 
   console.log('Storage was reset');
 }
 
-window.tabSnoozeDebug_printLocalStorage = async function() {
-  console.log(await chromep.storage.local.get());
+window.tabSnoozeDebug_resetStorage = resetStorage;
+
+window.tabSnoozeDebug_deleteAllBackups = async function() {
+  await chromep.storage.local.remove(STORAGE_KEY_BACKUPS);
+  console.log('Backups deleted');
+};
+
+window.tabSnoozeDebug_printStorage = async function() {
+  const localStorage = await chromep.storage.local.get();
+  const syncStorage = await chromep.storage.sync.get();
+
+  console.log('localStorage: ', localStorage);
+  console.log('syncStorage: ', syncStorage);
 };
