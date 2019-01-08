@@ -12,6 +12,7 @@ import { track, EVENTS } from '../../core/analytics';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import SnoozePanel from '../SnoozePanel';
+import sanitizeHtml from 'sanitize-html';
 
 type Props = {
   location: any, // from react-router-dom
@@ -53,12 +54,11 @@ export default class TodoPage extends Component<Props, State> {
   updateAddressBar(text: string, colorIndex: number) {
     // replace '_' with spaces because they are encoded nicely
     // in the address bar
-    text = text
-      .replace(/ /g, '_')
-      .replace(/&nbsp;/g, '_')
-      .replace(/<div>/g, '_')
-      .replace(/<\/div>/g, '')
-      .replace(/<br>/g, '');
+    text = text.replace(/ /g, '_');
+    // .replace(/&nbsp;/g, '_')
+    // .replace(/<div>/g, '_')
+    // .replace(/<\/div>/g, '')
+    // .replace(/<br>/g, '');
 
     this.props.history.replace({
       pathname: TODO_ROUTE,
@@ -104,7 +104,7 @@ export default class TodoPage extends Component<Props, State> {
 
   changeColor() {
     const { text, colorIndex } = this.state;
-    this.setTextAndColor(text, (colorIndex + 1) % COLORS.length);
+    this.setTextAndColor(text, (colorIndex + 1) % TODO_COLORS.length);
   }
 
   toggleSnoozePanel(event: any) {
@@ -113,6 +113,9 @@ export default class TodoPage extends Component<Props, State> {
   }
 
   setTextAndColor(text: string, colorIndex: number) {
+    // remove styling and <br>/<div> from contenteditable
+    text = sanitizeHtml(text, { allowedTags: [] });
+
     this.setState({ text, colorIndex });
 
     if (this.updateUrlTimer) {
@@ -178,7 +181,7 @@ export default class TodoPage extends Component<Props, State> {
 
   render() {
     const { text, colorIndex, snoozePanelOpen } = this.state;
-    const { hex: colorHex, favicon } = COLORS[colorIndex];
+    const { hex: colorHex, favicon } = TODO_COLORS[colorIndex];
 
     this.renderDocumentHead(text, favicon);
 
@@ -258,7 +261,7 @@ const BigIconButton = (props: {
   </IconButton>
 );
 
-const COLORS = [
+export const TODO_COLORS = [
   { favicon: require('./images/todo_favicon_0.png'), hex: '#F2B32A' },
   { favicon: require('./images/todo_favicon_1.png'), hex: '#4688F1' },
   { favicon: require('./images/todo_favicon_2.png'), hex: '#1D9C5A' },
@@ -266,7 +269,7 @@ const COLORS = [
 ];
 
 function randomColorIndex() {
-  return Math.floor(Math.random() * COLORS.length);
+  return Math.floor(Math.random() * TODO_COLORS.length);
 }
 
 const Root = styled.div`
