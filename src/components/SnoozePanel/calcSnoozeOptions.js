@@ -1,4 +1,5 @@
 // @flow
+// import type { Moment } from 'moment';
 import moment from 'moment';
 
 export const SNOOZE_TYPE_REPEATED = 'periodically';

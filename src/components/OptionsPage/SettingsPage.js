@@ -125,7 +125,7 @@ class SettingsPage extends Component<Props, State> {
         button={options.href != null}
         component={options.href && 'a'}
         href={options.href}
-        // target={options.href && '_blank'}
+        target={options.href && '_blank'}
       >
         {options.icon && <ListItemIcon>{options.icon}</ListItemIcon>}
         <ListItemText
