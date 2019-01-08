@@ -44,7 +44,7 @@ declare type SnoozeConfig = {|
 
 declare type Settings = {|
   // General
-  // showBadge: boolean,
+  badge: 'hidden' | 'due_today' | 'total_snoozed',
   // closeTabAfterSnooze: boolean,
   playSoundEffects: boolean,
   playNotificationSound: boolean,

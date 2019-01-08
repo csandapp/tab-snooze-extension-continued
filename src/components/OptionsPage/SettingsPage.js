@@ -18,6 +18,7 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
+import BadgeIcon from '@material-ui/icons/Looks5';
 import CafeIcon from '@material-ui/icons/LocalCafe';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -32,6 +33,11 @@ import {
   CHROME_SETTINGS_SHORTCUTS,
 } from '../../Router';
 import { EVENTS, track } from '../../core/analytics';
+import {
+  BADGE_HIDDEN,
+  BADGE_TOTAL_SNOOZED,
+  BADGE_DUE_TODAY,
+} from '../../core/badge';
 
 type ChromeCommand = {
   description: string,
@@ -237,6 +243,25 @@ class SettingsPage extends Component<Props, State> {
             description:
               'Show a desktop notification (top-right corner) when tabs wake up',
             stateKey: 'showNotifications',
+          })}
+          {this.renderDropdownSetting({
+            icon: <BadgeIcon />,
+            title: 'Toolbar badge',
+            stateKey: 'badge',
+            options: [
+              {
+                label: 'Hidden',
+                value: BADGE_HIDDEN,
+              },
+              {
+                label: 'Tabs due today',
+                value: BADGE_DUE_TODAY,
+              },
+              {
+                label: 'Total sleeping tabs',
+                value: BADGE_TOTAL_SNOOZED,
+              },
+            ],
           })}
 
           <Header>Snooze Times</Header>

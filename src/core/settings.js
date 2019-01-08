@@ -1,11 +1,12 @@
 // @flow
 import chromep from 'chrome-promise';
+import { BADGE_HIDDEN } from './badge';
 
 export const STORAGE_KEY_SETTINGS = 'settings';
 
 export const DEFAULT_SETTINGS: Settings = {
   // General
-  // showBadge: false,
+  badge: BADGE_HIDDEN,
   playSoundEffects: true,
   playNotificationSound: true,
   showNotifications: true,

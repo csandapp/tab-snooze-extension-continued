@@ -24,6 +24,10 @@ import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
 import chromep from 'chrome-promise';
 import { performMigrations } from './migrationManager';
+import {
+  updateBadge,
+  registerEventListeners as registerBadgeEventListeners,
+} from './badge';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -47,6 +51,9 @@ export function runBackgroundScript() {
 
   // [1] Register more background events by the wakeup module (synchroneously)
   registerWakeupEventListeners();
+
+  // Make badge module listen to storage changes and update badge
+  registerBadgeEventListeners();
 
   // Show CHANGELOG doc when extension updates
   chrome.runtime.onInstalled.addListener(async function({
@@ -101,8 +108,8 @@ async function extensionMain() {
   // waking up tabs so chrome is not stuck
   await scheduleWakeupAlarm('1min');
 
-  // import badge so it can update the extension badge automatically
-  // import('./badge');
+  // update badge after chrome startup
+  await updateBadge();
 
   // Uncomment for Debug:
   // require('../components/dialogs/FirstSnoozeDialog').default.open();
