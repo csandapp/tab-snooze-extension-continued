@@ -11,7 +11,7 @@ export default styled.button.attrs(props => ({
   outline: inherit;
 
   background-color: ${props => props.color};
-  padding: 12px 10px;
+  padding: 12px 14px;
   border-radius: 5px;
   color: #fff;
   font-weight: 500;

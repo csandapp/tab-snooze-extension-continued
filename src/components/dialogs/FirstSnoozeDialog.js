@@ -4,11 +4,14 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import {
   FIRST_SNOOZE_ROUTE,
-  CHROME_WEB_STORE_INSTALL_SHARE_LINK,
+  // CHROME_WEB_STORE_INSTALL_SHARE_LINK,
+  SLEEPING_TABS_ROUTE,
 } from '../../Router';
 import { createCenteredWindow } from '../../core/utils';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
+import HotelIcon from '@material-ui/icons/Hotel';
+import { Link } from 'react-router-dom';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   static open() {
@@ -16,7 +19,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
   }
 
   render() {
-    const shareText = `Snooze browser tabs for later with Tab Snooze Chrome Extension: \n${CHROME_WEB_STORE_INSTALL_SHARE_LINK}`;
+    // const shareText = `Snooze browser tabs for later with Tab Snooze Chrome Extension: \n${CHROME_WEB_STORE_INSTALL_SHARE_LINK}`;
 
     return (
       <TSDialog
@@ -27,6 +30,16 @@ export default class FirstSnoozeDialog extends Component<{}> {
       >
         <Root>
           <Button
+            raised="true"
+            as={Link}
+            color="#4A90E2"
+            to={SLEEPING_TABS_ROUTE}
+            target="_blank"
+            onClick={() => window.close()}
+          >
+            <HotelIcon /> View Sleeping Tabs
+          </Button>
+          {/* <Button
             raised
             as="a"
             icon={require('./images/facebook.svg')}
@@ -42,10 +55,9 @@ export default class FirstSnoozeDialog extends Component<{}> {
             icon={require('./images/twitter.svg')}
             color="#00ACEE"
             href={`https://twitter.com/home?status=${shareText}`}
-            onClick={() => window.close()}
           >
             Share on Twitter
-          </Button>
+          </Button> */}
         </Root>
       </TSDialog>
     );
