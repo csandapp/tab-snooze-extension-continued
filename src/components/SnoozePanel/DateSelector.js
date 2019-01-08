@@ -8,6 +8,7 @@ import DayPicker from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import './MyDayPickerStyle.css';
 import { HourOptions } from './periodOptions';
+import { getSettings } from '../../core/settings';
 
 type Props = { visible: boolean, onDateSelected: Date => void };
 type State = {
@@ -26,6 +27,10 @@ export default class DateSelector extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.datePicker = React.createRef();
+
+    getSettings().then(settings =>
+      this.setState({ selectedHour: settings.workdayStart })
+    );
   }
 
   onSnoozeClicked() {
