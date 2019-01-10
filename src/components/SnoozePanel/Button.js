@@ -28,7 +28,7 @@ export default styled.button.attrs(props => ({
       box-shadow: 0 3px 0 0
         ${props =>
           Color(props.color)
-            .darken(0.4)
+            .darken(0.3)
             .hex()};
     `}
 

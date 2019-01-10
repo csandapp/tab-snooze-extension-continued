@@ -1,9 +1,10 @@
 // @flow
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
+import Button from '../SnoozePanel/Button';
 
-export default (props: { combo: string }) => (
-  <Root>
+export default (props: { combo: string, onClick: () => void }) => (
+  <Root onClick={props.onClick}>
     {props.combo
       ? splitKeys(props.combo).map((key, index) => (
           <Fragment key={key}>
@@ -24,7 +25,7 @@ function splitKeys(keyCombo: string) {
   return keyCombo.split(splitDelimiter);
 }
 
-const Root = styled.div`
+const Root = styled(Button).attrs({ color: '#F1F3F4' })`
   display: flex;
   align-items: center;
   color: #999;

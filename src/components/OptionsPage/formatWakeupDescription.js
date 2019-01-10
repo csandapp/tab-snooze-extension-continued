@@ -13,9 +13,9 @@ export function formatWakeupDescription(
 
   return tab.period ? (
     <Fragment>
-      <RefreshIcon style={{ marginRight: 4 }} />
       {/* {wakeupDateText} (<RefreshIcon style={{ marginRight: 4 }} />
       {`${formatWakeupPeriod(tab)})`} */}
+      <RefreshIcon style={{ marginRight: 4 }} />
       {`${formatWakeupPeriod(tab)} (Next: ${wakeupDateText})`}
     </Fragment>
   ) : (

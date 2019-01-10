@@ -64,7 +64,7 @@ export default class BetaDialog extends Component<{}> {
     return (
       <TSDialog
         title="Tab Snooze Beta"
-        image={require('./images/beta.png')}
+        image={'/images/beta_extension_icon_128.png'} // require('./images/beta.png')}
         headline={`Tab Snooze Beta (v${APP_VERSION})`}
         subheader="Thank you for helping us test Tab Snooze, you're awesome!"
         closeBtnText={null}
