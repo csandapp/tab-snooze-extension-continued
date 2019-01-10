@@ -17,7 +17,7 @@ type Props = {
     text: ?string,
   },
   // show/hide pro badge
-  proBadge: boolean,
+  upgradeBadge: boolean,
   betaBadge: boolean,
 };
 type State = {
@@ -41,7 +41,7 @@ export default class SnoozeFooter extends Component<Props, State> {
   }
 
   render() {
-    const { tooltip, proBadge, betaBadge } = this.props;
+    const { tooltip, upgradeBadge, betaBadge } = this.props;
     const { sleepingTabsCount } = this.state;
 
     return (
@@ -51,7 +51,7 @@ export default class SnoozeFooter extends Component<Props, State> {
             <SleepinCountBadge>{sleepingTabsCount}</SleepinCountBadge>
             Sleeping Tabs
           </SleepingTabsBtn>
-          {proBadge && (
+          {upgradeBadge && (
             <BadgeButton onClick={() => {}}>
               <UpgradeBadge>Upgrade</UpgradeBadge>
             </BadgeButton>

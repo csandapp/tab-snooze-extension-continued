@@ -233,8 +233,10 @@ export default class TodoPage extends Component<Props, State> {
                     timeout={250}
                     style={{ transformOrigin: '0 100% 0' }}
                   >
-                    <Paper>
-                      <SnoozePanel />
+                    <Paper
+                      style={{ borderRadius: 5, overflow: 'hidden' }}
+                    >
+                      <SnoozePanel hideFooter />
                     </Paper>
                   </Grow>
                 )}

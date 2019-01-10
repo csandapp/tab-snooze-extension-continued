@@ -26,6 +26,7 @@ import { getSnoozedTabs } from '../../core/storage';
 import { countConsecutiveSnoozes, IS_BETA } from '../../core/utils';
 
 type Props = {
+  hideFooter: boolean,
   // Props passed by TooltipHelper
   tooltipVisible: boolean,
   tooltipText: ?string,
@@ -186,7 +187,7 @@ class SnoozePanel extends Component<Props, State> {
       isProUser,
       selectorDialogOpen,
     } = this.state;
-    const { tooltipText, tooltipVisible } = this.props;
+    const { tooltipText, tooltipVisible, hideFooter } = this.props;
 
     // if snooze options haven't loaded yet, show nothing
     if (!snoozeOptions) {
@@ -199,8 +200,11 @@ class SnoozePanel extends Component<Props, State> {
       <Root>
         <SnoozeButtonsGrid buttons={snoozeButtons} />
         <SnoozeFooter
-          tooltip={{ visible: tooltipVisible, text: tooltipText }}
-          proBadge={!isProUser}
+          tooltip={{
+            visible: tooltipVisible || hideFooter,
+            text: tooltipText,
+          }}
+          upgradeBadge={!isProUser}
           betaBadge={IS_BETA}
         />
 

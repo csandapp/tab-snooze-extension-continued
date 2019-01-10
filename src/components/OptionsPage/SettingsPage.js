@@ -3,12 +3,13 @@ import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Helmet } from 'react-helmet';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import { Link } from 'react-router-dom';
 import AudioIcon from '@material-ui/icons/Audiotrack';
 import SunIcon from '@material-ui/icons/WbSunny';
 import WeekendIcon from '@material-ui/icons/Weekend';
@@ -18,7 +19,10 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
+import UserIcon from '@material-ui/icons/AccountCircle';
 import BadgeIcon from '@material-ui/icons/Looks5';
+import AlarmIcon from '@material-ui/icons/Alarm';
+import DarkIcon from '@material-ui/icons/InvertColors';
 import CafeIcon from '@material-ui/icons/LocalCafe';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -31,6 +35,7 @@ import KeyCombo from './KeyCombo';
 import {
   CHROME_WEB_STORE_REVIEW,
   CHROME_SETTINGS_SHORTCUTS,
+  UPGRADE_ROUTE,
 } from '../../Router';
 import { EVENTS, track } from '../../core/analytics';
 import {
@@ -38,6 +43,9 @@ import {
   BADGE_TOTAL_SNOOZED,
   BADGE_DUE_TODAY,
 } from '../../core/badge';
+import ProBadge from './ProBadge';
+import { isProUser } from '../../core/license';
+import Button from '../SnoozePanel/Button';
 
 type ChromeCommand = {
   description: string,
@@ -49,6 +57,7 @@ type State = {
   // a local cache of what is stored in chrome.storage.local
   settings: Settings,
   commands: Array<ChromeCommand>,
+  isPro: boolean,
 };
 
 const styles = theme => ({
@@ -85,7 +94,9 @@ class SettingsPage extends Component<Props, State> {
     // shortcut settings are loaded from chrome api
     const commands = await chromep.commands.getAll();
 
-    this.setState({ settings, commands });
+    const isPro = await isProUser();
+
+    this.setState({ settings, commands, isPro });
   }
 
   bindSettings(stateKey, valueProp = 'value') {
@@ -119,9 +130,10 @@ class SettingsPage extends Component<Props, State> {
 
   renderGeneralSetting(options: {
     icon?: Node,
-    title: string,
+    title: Node,
     description?: string,
     component: Node,
+    locked?: boolean,
     href?: string,
     key?: string,
   }) {
@@ -140,7 +152,9 @@ class SettingsPage extends Component<Props, State> {
           inset={options.icon === undefined}
         />
         <ListItemSecondaryAction>
-          {options.component}
+          <LockedContent locked={options.locked}>
+            {options.component}
+          </LockedContent>
         </ListItemSecondaryAction>
       </ListItem>
     );
@@ -148,7 +162,7 @@ class SettingsPage extends Component<Props, State> {
 
   renderCheckboxSetting(options: {
     icon: Node,
-    title: string,
+    title: Node,
     description?: string,
     stateKey: string,
   }) {
@@ -162,7 +176,7 @@ class SettingsPage extends Component<Props, State> {
 
   renderDropdownSetting(options: {
     icon?: Node,
-    title: string,
+    title: Node,
     description?: string,
     stateKey: string,
     options: Array<{ label: string, value: any }>,
@@ -187,7 +201,14 @@ class SettingsPage extends Component<Props, State> {
     return this.renderGeneralSetting({
       ...options,
       key: options.key,
-      component: <KeyCombo combo={options.shortcut} />,
+      component: (
+        <KeyCombo
+          combo={options.shortcut}
+          onClick={() =>
+            chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
+          }
+        />
+      ),
     });
   }
 
@@ -204,7 +225,7 @@ class SettingsPage extends Component<Props, State> {
   }
 
   render() {
-    const { settings, commands } = this.state;
+    const { settings, commands, isPro } = this.state;
     const { classes } = this.props;
 
     if (!settings) {
@@ -224,6 +245,34 @@ class SettingsPage extends Component<Props, State> {
           <title>Settings - Tab Snooze</title>
         </Helmet>
         <List className={classes.list}>
+          {!isPro && (
+            <Fragment>
+              <Header>Account</Header>
+              <ListItem>
+                <ListItemIcon>
+                  <UserIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Fragment>
+                      Not Logged In <ProBadge />
+                    </Fragment>
+                  }
+                  secondary="Log in to backup & sync your tabs across devices"
+                />
+                <ListItemSecondaryAction>
+                  <LogInButton
+                    as={Link}
+                    to={UPGRADE_ROUTE}
+                    target="_blank"
+                  >
+                    Signup / Login
+                  </LogInButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </Fragment>
+          )}
+
           <Header>General</Header>
           {this.renderCheckboxSetting({
             icon: <AudioIcon />,
@@ -265,6 +314,35 @@ class SettingsPage extends Component<Props, State> {
               },
             ],
           })}
+          {!isPro &&
+            this.renderDropdownSetting({
+              icon: <AlarmIcon />,
+              title: (
+                <Fragment>
+                  Smart wakeup <ProBadge />
+                </Fragment>
+              ),
+              description: 'Ask before waking up too many tabs',
+              stateKey: 'badge', // TODO: MUST CHANGE THIS
+              locked: !isPro,
+              options: [4, 5, 6, 7].map(num => ({
+                label: 'Disabled', // `${num} tabs`,
+                value: num,
+              })),
+            })}
+          {!isPro &&
+            this.renderCheckboxSetting({
+              icon: <DarkIcon />,
+              title: (
+                <Fragment>
+                  Dark Mode <ProBadge />
+                </Fragment>
+              ),
+              locked: !isPro,
+              description:
+                "Show you're a pro with the elegant Tab Snooze dark theme",
+              stateKey: 'showNotifications',
+            })}
 
           <Header>Snooze Times</Header>
 
@@ -317,7 +395,8 @@ class SettingsPage extends Component<Props, State> {
             })),
           })}
 
-          <Header>Keyboard Shortcuts</Header>
+          <Header>Keyboard Shortcuts {!isPro && <ProBadge />}</Header>
+          {/* <EditShortcutsInstructions /> */}
           {commands.map((command, index) =>
             this.renderShortcutSetting({
               key: '' + index,
@@ -325,10 +404,10 @@ class SettingsPage extends Component<Props, State> {
               // Hack! for some reason the main command (open popup)
               // gets an empty description... so we add it here
               title: command.description || 'Snooze active tab',
-              shortcut: command.shortcut,
+              shortcut: isPro ? command.shortcut : '',
+              locked: !isPro,
             })
           )}
-          <EditShortcutsInstructions />
 
           <Header>Miscellaneous</Header>
           {this.renderButtonSetting({
@@ -350,32 +429,53 @@ class SettingsPage extends Component<Props, State> {
   }
 }
 
-const EditShortcutsInstructions = () => (
-  <ListItem>
-    <ListItemText
-      secondary={
-        <Fragment>
-          To edit the shortcuts{' '}
-          <MyLink
-            onClick={() =>
-              chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
-            }
-          >
-            please click here
-          </MyLink>
-        </Fragment>
-      }
-    />
-  </ListItem>
-);
+// const EditShortcutsInstructions = () => (
+//   <ListItem>
+//     <ListItemText
+//       secondary={
+//         <Fragment>
+//           To edit the shortcuts{' '}
+//           <MyLink
+//             onClick={() =>
+//               chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
+//             }
+//           >
+//             please click here
+//           </MyLink>
+//         </Fragment>
+//       }
+//     />
+//   </ListItem>
+// );
 
 const Root = styled.div``;
-const MyLink = styled.a`
-  text-decoration: underline;
-`;
+// const MyLink = styled.a`
+//   text-decoration: underline;
+// `;
 
 const Header = styled(ListSubheader).attrs({ disableSticky: true })`
+  /* display: flex; */
+  /* align-items: center; */
   margin-top: 10px;
+`;
+
+const LogInButton = styled(Button).attrs({
+  color: '#eee',
+  // raised: true,
+})`
+  padding: 8px 18px;
+  color: #555;
+  margin-right: 13px;
+`;
+
+const LockedContent = styled.div`
+  ${props =>
+    props.locked &&
+    css`
+      pointer-events: none;
+      opacity: 0.5;
+      user-select: none;
+    `}
 `;
 
 const SettingsSelect = styled(Select).attrs({
