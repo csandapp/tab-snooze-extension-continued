@@ -1,9 +1,12 @@
 // @flow
 import { getSettings } from './settings';
 
-export const SOUND_TAB_SNOOZE1 = 'sounds/snooze1.mp3';
-export const SOUND_TAB_SNOOZE2 = 'sounds/snooze2.mp3';
-export const SOUND_TAB_SNOOZE3 = 'sounds/snooze3.mp3';
+// export const SOUND_TAB_SNOOZE1 = 'sounds/snooze1.mp3';
+// export const SOUND_TAB_SNOOZE2 = 'sounds/snooze2.mp3';
+// export const SOUND_TAB_SNOOZE3 = 'sounds/snooze3.mp3';
+export const SOUND_TAB_SNOOZE1 = 'sounds/snooze.m4a';
+export const SOUND_TAB_SNOOZE2 = 'sounds/snooze.m4a';
+export const SOUND_TAB_SNOOZE3 = 'sounds/snooze.m4a';
 export const SOUND_NOTIFICATION = 'sounds/wakeup_notification.mp3';
 
 let playSoundEffects = true;

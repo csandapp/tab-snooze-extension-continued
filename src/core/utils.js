@@ -15,7 +15,7 @@ export function isMacOS() {
   delay is for User Experience purposes (to see what they selected)
 */
 export function delayedCloseTab(tabId: string) {
-  setTimeout(() => chromep.tabs.remove(tabId), 800);
+  setTimeout(() => chromep.tabs.remove(tabId), 1000);
 }
 
 /*
