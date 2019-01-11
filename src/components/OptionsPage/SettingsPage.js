@@ -17,6 +17,7 @@ import WorkIcon from '@material-ui/icons/Work';
 import SomedayIcon from '@material-ui/icons/BeachAccess';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
+import StarIcon from '@material-ui/icons/Star';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
 import UserIcon from '@material-ui/icons/AccountCircle';
@@ -36,6 +37,7 @@ import {
   CHROME_WEB_STORE_REVIEW,
   CHROME_SETTINGS_SHORTCUTS,
   UPGRADE_ROUTE,
+  TAB_SNOOZE_FEATURE_VOTE_URL,
 } from '../../Router';
 import { EVENTS, track } from '../../core/analytics';
 import {
@@ -415,6 +417,12 @@ class SettingsPage extends Component<Props, State> {
             title: 'Loving Tab Snooze?',
             description: 'Rate Tab Snooze the Chrome Web Store!',
             href: CHROME_WEB_STORE_REVIEW,
+          })}
+          {this.renderButtonSetting({
+            icon: <StarIcon />,
+            title: 'Suggest & vote on new features',
+            description: 'Tell us about your ideas for Tab Snooze',
+            href: TAB_SNOOZE_FEATURE_VOTE_URL,
           })}
           {this.renderButtonSetting({
             icon: <ContactSupportIcon />,

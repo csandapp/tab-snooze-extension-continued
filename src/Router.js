@@ -43,6 +43,8 @@ export const UNINSTALL_SURVERY_URL =
 export const MESSENGER_PROFILE_URL = 'https://m.me/tabsnooze';
 export const CHANGELOG_URL =
   'https://headwayapp.co/tab-snooze-changelog';
+export const TAB_SNOOZE_FEATURE_VOTE_URL =
+  'https://tab-snooze.nolt.io/';
 export const BETA_INSTRUCTIONS_URL =
   'https://medium.com/@eyalw/tab-snooze-beta-b033d1e3e021';
 

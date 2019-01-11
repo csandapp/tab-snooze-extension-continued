@@ -7,6 +7,7 @@ import {
   MESSENGER_PROFILE_URL,
   BETA_INSTRUCTIONS_URL,
   CHANGELOG_URL,
+  TAB_SNOOZE_FEATURE_VOTE_URL,
 } from '../../Router';
 import { createTab, APP_VERSION } from '../../core/utils';
 import TSDialog from './TSDialog';
@@ -51,7 +52,7 @@ export default class BetaDialog extends Component<{}> {
         primary: 'Suggest & vote on new features',
         secondary: 'Tell us about your ideas for Tab Snooze',
         icon: <StarIcon />,
-        href: 'https://tab-snooze.nolt.io/',
+        href: TAB_SNOOZE_FEATURE_VOTE_URL,
       },
       {
         primary: 'Talk to us',
