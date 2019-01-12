@@ -18,7 +18,7 @@ export async function performMigrations() {
     const migrate = migrations[i];
 
     try {
-      console.log(`Starting migration ${i}`);
+      console.log(`Performing migration ${i}`);
       await migrate();
       await chromep.storage.local.set({ [STORAGE_KEY_SETTINGS]: i });
     } catch (error) {
@@ -27,3 +27,5 @@ export async function performMigrations() {
     }
   }
 }
+
+window.tabSnoozeDebug_performMigrations = performMigrations;
