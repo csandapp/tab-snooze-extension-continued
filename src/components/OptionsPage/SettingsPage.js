@@ -368,13 +368,13 @@ class SettingsPage extends Component<Props, State> {
           })}
           {this.renderDropdownSetting({
             icon: <WorkIcon />,
-            title: 'Week starts at',
+            title: 'Week starts on',
             stateKey: 'weekStartDay',
             options: weekdayOptions,
           })}
           {this.renderDropdownSetting({
             icon: <WeekendIcon />,
-            title: 'Weekend starts at',
+            title: 'Weekend starts on',
             stateKey: 'weekEndDay',
             options: weekdayOptions,
           })}
