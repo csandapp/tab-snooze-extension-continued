@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>window</title>
+    <desc>Created with Sketch.</desc>
+    <g id="window" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-10" transform="translate(0.000000, 4.000000)">
+            <g id="Group-3" transform="translate(1.000000, 1.000000)">
+                <g id="Group-8-Copy">
+                    <g id="Group-7">
+                        <rect id="Rectangle" fill="#ECECEC" x="0" y="37" width="48" height="3"></rect>
+                        <rect id="Rectangle-Copy" fill="#ECECEC" x="0" y="7" width="48" height="3"></rect>
+                        <g id="Group-9" transform="translate(3.000000, 3.000000)" fill="#333333" fill-rule="nonzero">
+                            <circle id="Oval" cx="1.5" cy="1.5" r="1.5"></circle>
+                            <circle id="Oval-Copy" cx="5.5" cy="1.5" r="1.5"></circle>
+                            <circle id="Oval-Copy-2" cx="9.5" cy="1.5" r="1.5"></circle>
+                        </g>
+                        <rect id="Rectangle" fill="#ECECEC" x="45" y="0" width="2" height="38"></rect>
+                    </g>
+                    <rect id="Rectangle" stroke="#333333" stroke-width="2.01041667" fill-rule="nonzero" x="-0.00520833333" y="-0.00520833333" width="48.0104167" height="40.0104167" rx="1.00520833"></rect>
+                    <rect id="Rectangle" stroke="#333333" stroke-width="1.00520833" fill-rule="nonzero" x="0.502604167" y="9.50260417" width="46.9947917" height="1"></rect>
+                </g>
+                <path d="M30,21 L26.414,21 L30.707,16.707 C30.9929079,16.4210057 31.0784219,15.9909634 30.923678,15.6173454 C30.7689341,15.2437275 30.4043959,15.0000863 30,15 L24,15 C23.4477153,15 23,15.4477153 23,16 C23,16.5522847 23.4477153,17 24,17 L27.586,17 L23.293,21.293 C23.0070921,21.5789943 22.9215781,22.0090366 23.076322,22.3826546 C23.2310659,22.7562725 23.5956041,22.9999137 24,23 L30,23 C30.5522847,23 31,22.5522847 31,22 C31,21.4477153 30.5522847,21 30,21 Z" id="Path" fill="#333333"></path>
+                <path d="M24,31 L20.414,31 L24.707,26.707 C24.9929079,26.4210057 25.0784219,25.9909634 24.923678,25.6173454 C24.7689341,25.2437275 24.4043959,25.0000863 24,25 L18,25 C17.4477153,25 17,25.4477153 17,26 C17,26.5522847 17.4477153,27 18,27 L21.586,27 L17.293,31.293 C17.0070921,31.5789943 16.9215781,32.0090366 17.076322,32.3826546 C17.2310659,32.7562725 17.5956041,32.9999137 18,33 L24,33 C24.5522847,33 25,32.5522847 25,32 C25,31.4477153 24.5522847,31 24,31 Z" id="Path" fill="#333333"></path>
+            </g>
+            <g id="Group-4" fill-rule="nonzero">
+                <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="50" height="12"></rect>
+                <path d="M3.00520833,0.994791667 L46.9947917,0.994791667 C48.1051141,0.994791667 49.0052083,1.89488587 49.0052083,3.00520833 L49.0052083,11.0052083 L0.994791667,11.0052083 L0.994791667,3.00520833 C0.994791667,1.89488587 1.89488587,0.994791667 3.00520833,0.994791667 Z" id="Rectangle" stroke="#2595B9" stroke-width="2.01041667" fill="#45C9F4"></path>
+                <rect id="Rectangle" fill="#36BAE5" x="46" y="2" width="2" height="8"></rect>
+                <rect id="Rectangle-Copy-2" fill="#36BAE5" x="2" y="8" width="46" height="2"></rect>
+            </g>
+            <circle id="Oval" fill="#227894" cx="5.5" cy="5.5" r="1.5"></circle>
+            <circle id="Oval-Copy" fill="#227894" cx="9.5" cy="5.5" r="1.5"></circle>
+            <circle id="Oval-Copy-2" fill="#227894" cx="13.5" cy="5.5" r="1.5"></circle>
+        </g>
+    </g>
+</svg>

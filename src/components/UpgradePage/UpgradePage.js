@@ -7,8 +7,10 @@ import {
   UPGRADE_ROUTE,
 } from '../../Router';
 import { createCenteredWindow } from '../../core/utils';
-import TSDialog from './TSDialog';
+import TSDialog from '../dialogs/TSDialog';
 import Button from '../SnoozePanel/Button';
+import { PRO_FEATURES } from './proFeatures';
+import FeatureItem from './FeatureItem';
 
 export default class UpgradeDialog extends Component<{}> {
   static open() {
@@ -26,13 +28,15 @@ export default class UpgradeDialog extends Component<{}> {
           </Fragment>
         }
         subheader="Upgrade to Tab Snooze PRO and gain:"
+        closeBtnText={null}
+        noPadding
       >
         <Fragment>
-          <FeatureList>
-            {FEATURES.map((feature, index) => (
-              <div key={index}>✓ {feature}</div>
+          <FeaturesGrid>
+            {PRO_FEATURES.map((feature, index) => (
+              <FeatureItem {...feature} key={index} />
             ))}
-          </FeatureList>
+          </FeaturesGrid>
           <Price>$3.95/month</Price>
           <UpgradeButton
             raised
@@ -41,27 +45,24 @@ export default class UpgradeDialog extends Component<{}> {
           >
             Upgrade to PRO
           </UpgradeButton>
+
+          <Footer />
         </Fragment>
       </TSDialog>
     );
   }
 }
 
-const FEATURES = [
-  'Unlimited sleeping tabs',
-  'Specific Date Snooze',
-  'Periodic Snooze',
-  'Keyboard Shortcuts',
-  'Server Sync & Backup',
-];
-
-const FeatureList = styled.div`
-  font-weight: 400;
-  font-size: 20px;
-  color: #2c2c2c;
-  line-height: 35px;
-  margin-top: -20px;
-  margin-bottom: 20px;
+const FeaturesGrid = styled.div`
+  display: grid;
+  grid-template-columns: auto auto;
+  max-width: 800px;
+  margin-bottom: 40px;
+  /* grid-template-rows: 130px 130px 130px; */
+  /* justify-items: stretch; */
+  /* align-items: stretch; */
+  /* justify-content: stretch; */
+  /* grid-gap: 1px; */
 `;
 
 const UpgradeButton = styled(Button)`
@@ -83,4 +84,10 @@ const ProBadge = styled.div`
   color: #fff;
   font-size: 26px;
   font-weight: 700;
+`;
+
+const Footer = styled.img.attrs({
+  src: require('./images/bgFooter.svg'),
+})`
+  width: 100%;
 `;

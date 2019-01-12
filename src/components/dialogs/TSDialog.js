@@ -14,6 +14,7 @@ export default class TSDialog extends Component<{
   subheader: string | Node,
   closeBtnText?: ?string,
   children: Node,
+  noPadding?: boolean,
 }> {
   render() {
     const {
@@ -23,6 +24,7 @@ export default class TSDialog extends Component<{
       subheader,
       children,
       closeBtnText,
+      noPadding,
     } = this.props;
 
     return (
@@ -33,7 +35,7 @@ export default class TSDialog extends Component<{
         <Fade in timeout={700}>
           <Root>
             <Logo />
-            <Content>
+            <Content noPadding={noPadding}>
               <picture>
                 <source srcSet={`${image} 2x`} />
                 <img src={image} alt="" />
@@ -69,7 +71,7 @@ const Root = styled.div`
 `;
 
 const Content = styled.div`
-  padding: ${PADDING}px;
+  padding: ${props => (props.noPadding ? 0 : PADDING)}px;
   padding-top: 60px;
 
   display: flex;

@@ -8,9 +8,9 @@ import TodoPage from './components/TodoPage';
 import {
   FirstSnoozeDialog,
   RateTSDialog,
-  UpgradeDialog,
   BetaDialog,
 } from './components/dialogs';
+import { UpgradePage } from './components/UpgradePage';
 
 // Base app file path
 export const APP_BASE_PATH = '/index.html#';
@@ -60,7 +60,7 @@ const Router = () => (
         component={FirstSnoozeDialog}
       />
       <Route path={RATE_TS_ROUTE} component={RateTSDialog} />
-      <Route path={UPGRADE_ROUTE} component={UpgradeDialog} />
+      <Route path={UPGRADE_ROUTE} component={UpgradePage} />
       <Route path={BETA_ROUTE} component={BetaDialog} />
     </Fragment>
   </HashRouter>

@@ -6,6 +6,7 @@ import {
   SLEEPING_TABS_ROUTE,
   TODO_ROUTE,
   SETTINGS_ROUTE,
+  UPGRADE_ROUTE,
 } from '../../Router';
 import { getSnoozedTabs } from '../../core/storage';
 import BetaDialog from '../dialogs/BetaDialog';
@@ -52,7 +53,7 @@ export default class SnoozeFooter extends Component<Props, State> {
             Sleeping Tabs
           </SleepingTabsBtn>
           {upgradeBadge && (
-            <BadgeButton onClick={() => {}}>
+            <BadgeButton as={Link} to={UPGRADE_ROUTE}>
               <UpgradeBadge>Upgrade</UpgradeBadge>
             </BadgeButton>
           )}
@@ -129,6 +130,8 @@ const FooterBtn = styled(TooltipButton)`
   cursor: pointer;
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
 
   :hover {
     background-color: ${props => props.theme.snoozePanel.hoverColor};
@@ -162,6 +165,7 @@ const SleepingTabsBtn = styled(FooterBtn)`
 const BadgeButton = styled(FooterBtn)`
   padding: 0 14px;
 `;
+
 const UpgradeBadge = styled.div`
   background-color: ${props => props.theme.primary};
   padding: 8px 10px;
