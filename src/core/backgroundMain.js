@@ -46,8 +46,6 @@ const chrome = window.chrome;
  * and not the other, depends on the case... THANK YOU CHROME for making it hard on us.
  */
 export function runBackgroundScript() {
-  performMigrations();
-
   // Make the main function run on Chrome startup
   chrome.runtime.onStartup.addListener(extensionMain);
 

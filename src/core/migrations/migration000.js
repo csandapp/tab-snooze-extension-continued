@@ -62,7 +62,9 @@ async function migrateSettings() {
   });
 
   // remove history so it won't take up huge amount of space
-  // await chromep.storage.local.remove(STORAGE_KEY_HISTORY);
+  // (some users have maxed out the local storage, and the rest
+  // of the migration will fail if we dont free up space)
+  await chromep.storage.local.remove(STORAGE_KEY_HISTORY);
 }
 
 /**

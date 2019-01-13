@@ -14,6 +14,8 @@ export async function performMigrations() {
   lastMigrationIndex =
     lastMigrationIndex != null ? lastMigrationIndex : -1;
 
+  console.log(`Current migration status is: ${lastMigrationIndex}`);
+
   for (let i = lastMigrationIndex + 1; i < migrations.length; i++) {
     const migrate = migrations[i];
 
