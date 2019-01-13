@@ -100,8 +100,14 @@ function getHoursInDay() {
   const hours = [];
 
   for (let i = 0; i < 24; i++) {
-    hours.push(i + ':00');
-    hours.push(i + ':30');
+    const AMPM = i >= 12 ? 'pm' : 'am';
+    let hour = i % 12;
+    if (hour === 0) {
+      hour = 12;
+    }
+
+    hours.push(`${hour}:00 ${AMPM}`);
+    hours.push(`${hour}:30 ${AMPM}`);
   }
   return hours;
 }
