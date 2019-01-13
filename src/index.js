@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -9,5 +11,11 @@ const hashPath = window.location.hash.substring(1);
 if (hashPath === BACKGROUND_ROUTE) {
   runBackgroundScript();
 } else {
-  ReactDOM.render(<App />, document.getElementById('root'));
+  const rootEl = document.getElementById('root');
+
+  if (!rootEl) {
+    throw new Error('React root element is missing');
+  }
+
+  ReactDOM.render(<App />, rootEl);
 }

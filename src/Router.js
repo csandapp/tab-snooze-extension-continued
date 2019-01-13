@@ -10,7 +10,6 @@ import {
   RateTSDialog,
   BetaDialog,
 } from './components/dialogs';
-import { UpgradePage } from './components/UpgradePage';
 
 // Base app file path
 export const APP_BASE_PATH = '/index.html#';
@@ -23,7 +22,6 @@ export const SETTINGS_ROUTE = '/options/settings';
 export const TODO_ROUTE = '/todo';
 export const FIRST_SNOOZE_ROUTE = '/first-snooze';
 export const RATE_TS_ROUTE = '/rate-tab-snooze';
-export const UPGRADE_ROUTE = '/upgrade';
 export const BETA_ROUTE = '/beta';
 
 // A special route that is meant to execute the background.js
@@ -32,6 +30,7 @@ export const BETA_ROUTE = '/beta';
 export const BACKGROUND_ROUTE = 'background';
 
 // External links
+export const UPGRADE_ROUTE = 'https://www.tabsnooze.com/pro';
 export const CHROME_WEB_STORE_INSTALL_SHARE_LINK =
   'http://bit.ly/get-tab-snooze';
 export const CHROME_WEB_STORE_REVIEW =
@@ -60,7 +59,6 @@ const Router = () => (
         component={FirstSnoozeDialog}
       />
       <Route path={RATE_TS_ROUTE} component={RateTSDialog} />
-      <Route path={UPGRADE_ROUTE} component={UpgradePage} />
       <Route path={BETA_ROUTE} component={BetaDialog} />
     </Fragment>
   </HashRouter>

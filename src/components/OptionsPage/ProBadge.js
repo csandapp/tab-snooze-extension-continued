@@ -1,16 +1,15 @@
 // @flow
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { UPGRADE_ROUTE } from '../../Router';
 
 export default () => (
-  <Root to={UPGRADE_ROUTE} target="_blank">
+  <Root href={UPGRADE_ROUTE} target="_blank">
     PRO
   </Root>
 );
 
-const Root = styled(Link)`
+const Root = styled.a`
   display: inline-block;
   line-height: normal;
   background-color: ${props => props.theme.primary};

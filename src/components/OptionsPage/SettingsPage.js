@@ -9,7 +9,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import { Link } from 'react-router-dom';
 import AudioIcon from '@material-ui/icons/Audiotrack';
 import SunIcon from '@material-ui/icons/WbSunny';
 import WeekendIcon from '@material-ui/icons/Weekend';
@@ -263,11 +262,7 @@ class SettingsPage extends Component<Props, State> {
                   secondary="Log in to backup & sync your tabs across devices"
                 />
                 <ListItemSecondaryAction>
-                  <LogInButton
-                    as={Link}
-                    to={UPGRADE_ROUTE}
-                    target="_blank"
-                  >
+                  <LogInButton href={UPGRADE_ROUTE} target="_blank">
                     Signup / Login
                   </LogInButton>
                 </ListItemSecondaryAction>

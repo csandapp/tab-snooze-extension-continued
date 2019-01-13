@@ -53,7 +53,7 @@ export default class SnoozeFooter extends Component<Props, State> {
             Sleeping Tabs
           </SleepingTabsBtn>
           {upgradeBadge && (
-            <BadgeButton as={Link} to={UPGRADE_ROUTE}>
+            <BadgeButton href={UPGRADE_ROUTE}>
               <UpgradeBadge>Upgrade</UpgradeBadge>
             </BadgeButton>
           )}
