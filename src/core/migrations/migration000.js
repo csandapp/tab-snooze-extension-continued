@@ -57,14 +57,15 @@ async function migrateSettings() {
   settings.totalSnoozeCount =
     settings.totalSnoozeCount || snoozeHistory.length;
 
-  await chromep.storage.local.set({
-    [STORAGE_KEY_SETTINGS]: settings,
-  });
-
   // remove history so it won't take up huge amount of space
   // (some users have maxed out the local storage, and the rest
   // of the migration will fail if we dont free up space)
   await chromep.storage.local.remove(STORAGE_KEY_HISTORY);
+
+  // save new settings format
+  await chromep.storage.local.set({
+    [STORAGE_KEY_SETTINGS]: settings,
+  });
 }
 
 /**
