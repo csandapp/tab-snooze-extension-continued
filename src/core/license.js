@@ -9,9 +9,9 @@ export async function isProUser() {
   const settings = await getSettings();
 
   // All beta users are PRO users
-  if (IS_BETA) {
-    return true;
-  }
+  // if (IS_BETA) {
+  //   return true;
+  // }
 
   // If user is new (After 15 Jan 2019)
   if (settings.installDate > 0) {

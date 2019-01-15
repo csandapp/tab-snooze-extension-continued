@@ -21,7 +21,7 @@ import StarIcon from '@material-ui/icons/Star';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
 // import UserIcon from '@material-ui/icons/AccountCircle';
-import CloudIcon from '@material-ui/icons/CloudOff';
+import CloudIcon from '@material-ui/icons/Cloud';
 import BadgeIcon from '@material-ui/icons/Looks5';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import DarkIcon from '@material-ui/icons/InvertColors';
