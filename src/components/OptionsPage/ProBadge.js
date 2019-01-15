@@ -1,10 +1,10 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
-import { UPGRADE_ROUTE } from '../../Router';
+import { getUpgradeUrl } from '../../Router';
 
 export default () => (
-  <Root href={UPGRADE_ROUTE} target="_blank">
+  <Root href={getUpgradeUrl()} target="_blank">
     PRO
   </Root>
 );

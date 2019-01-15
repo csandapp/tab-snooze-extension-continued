@@ -35,7 +35,7 @@ import KeyCombo from './KeyCombo';
 import {
   CHROME_WEB_STORE_REVIEW,
   CHROME_SETTINGS_SHORTCUTS,
-  UPGRADE_ROUTE,
+  getUpgradeUrl,
   TAB_SNOOZE_FEATURE_VOTE_URL,
 } from '../../Router';
 import { EVENTS, track } from '../../core/analytics';
@@ -262,7 +262,7 @@ class SettingsPage extends Component<Props, State> {
                   secondary="Log in to backup & sync your tabs across devices"
                 />
                 <ListItemSecondaryAction>
-                  <LogInButton href={UPGRADE_ROUTE} target="_blank">
+                  <LogInButton href={getUpgradeUrl()} target="_blank">
                     Signup / Login
                   </LogInButton>
                 </ListItemSecondaryAction>

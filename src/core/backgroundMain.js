@@ -12,8 +12,8 @@ import {
 import {
   TODO_ROUTE,
   SLEEPING_TABS_ROUTE,
-  UNINSTALL_SURVERY_URL,
   CHANGELOG_URL,
+  getTrackUninstallUrl,
 } from '../Router';
 import {
   COMMAND_NEW_TODO,
@@ -63,7 +63,7 @@ export function runBackgroundScript() {
     // [2] Make the main function run on Extension install/update
     await extensionMain();
 
-    chrome.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
+    chrome.runtime.setUninstallURL(getTrackUninstallUrl());
 
     if (reason === 'install') {
       track(EVENTS.EXT_INSTALLED);

@@ -6,7 +6,7 @@ import {
   SLEEPING_TABS_ROUTE,
   TODO_ROUTE,
   SETTINGS_ROUTE,
-  UPGRADE_ROUTE,
+  getUpgradeUrl,
 } from '../../Router';
 import { getSnoozedTabs } from '../../core/storage';
 import BetaDialog from '../dialogs/BetaDialog';
@@ -53,7 +53,11 @@ export default class SnoozeFooter extends Component<Props, State> {
             Sleeping Tabs
           </SleepingTabsBtn>
           {upgradeBadge && (
-            <BadgeButton href={UPGRADE_ROUTE}>
+            <BadgeButton
+              as="a"
+              href={getUpgradeUrl()}
+              target="_blank"
+            >
               <UpgradeBadge>Upgrade</UpgradeBadge>
             </BadgeButton>
           )}

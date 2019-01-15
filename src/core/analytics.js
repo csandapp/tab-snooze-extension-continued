@@ -1,8 +1,8 @@
 // @flow
 import mixpanel from 'mixpanel-browser';
-// import chromep from 'chrome-promise';
 import { getSnoozedTabs } from './storage';
 import { APP_VERSION } from './utils';
+import qs from 'query-string';
 
 export const EVENTS = {
   EXT_INSTALLED: 'Extension Install',
@@ -85,4 +85,14 @@ export function track(eventName: string, properties?: Object = {}) {
     'App Version': APP_VERSION,
     ...properties,
   });
+}
+
+/**
+ * We pass 'uid' param to tabsnooze.com so we can keep tracking
+ * the user there under the same session
+ */
+export function addTrackingIdToUrl(url: string) {
+  const tid = mixpanel.get_distinct_id();
+
+  return `${url}?${qs.stringify({ tid })}`;
 }

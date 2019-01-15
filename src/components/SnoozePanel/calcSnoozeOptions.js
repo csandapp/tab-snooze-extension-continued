@@ -137,7 +137,6 @@ export default function calcSnoozeOptions(
       icon: require('./icons/calendar.svg'),
       activeIcon: require('./icons/calendar_white.svg'),
       tooltip: 'Select a specific date & time',
-      isProFeature: true,
     },
   ];
 }

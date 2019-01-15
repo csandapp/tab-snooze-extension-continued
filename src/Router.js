@@ -10,6 +10,7 @@ import {
   RateTSDialog,
   BetaDialog,
 } from './components/dialogs';
+import { addTrackingIdToUrl } from './core/analytics';
 
 // Base app file path
 export const APP_BASE_PATH = '/index.html#';
@@ -30,15 +31,12 @@ export const BETA_ROUTE = '/beta';
 export const BACKGROUND_ROUTE = 'background';
 
 // External links
-export const UPGRADE_ROUTE = 'https://www.tabsnooze.com/pro';
 export const CHROME_WEB_STORE_INSTALL_SHARE_LINK =
   'http://bit.ly/get-tab-snooze';
 export const CHROME_WEB_STORE_REVIEW =
   'https://chrome.google.com/webstore/detail/tab-snooze/pdiebiamhaleloakpcgmpnenggpjbcbm/reviews';
 export const CHROME_SETTINGS_SHORTCUTS =
   'chrome://extensions/shortcuts';
-export const UNINSTALL_SURVERY_URL =
-  'https://goo.gl/forms/2BOeqD3s4iZ4s3JH2';
 export const MESSENGER_PROFILE_URL = 'https://m.me/tabsnooze';
 export const CHANGELOG_URL =
   'https://headwayapp.co/tab-snooze-changelog';
@@ -46,6 +44,18 @@ export const TAB_SNOOZE_FEATURE_VOTE_URL =
   'https://tab-snooze.nolt.io/';
 export const BETA_INSTRUCTIONS_URL =
   'https://medium.com/@eyalw/tab-snooze-beta-b033d1e3e021';
+export const TS_HOMEPAGE =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://tabsnooze.com';
+
+// URLS requires tracking id param:
+const UPGRADE_URL = `${TS_HOMEPAGE}/pro`;
+const TRACK_UNINSTALL_URL = `${TS_HOMEPAGE}/uninstalled`;
+
+export const getTrackUninstallUrl = () =>
+  addTrackingIdToUrl(TRACK_UNINSTALL_URL);
+export const getUpgradeUrl = () => addTrackingIdToUrl(UPGRADE_URL);
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
