@@ -61,4 +61,5 @@ declare type Settings = {|
   // General data
   version: number,
   totalSnoozeCount: number,
+  installDate: number,
 |};

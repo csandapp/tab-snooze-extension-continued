@@ -251,7 +251,7 @@ class SettingsPage extends Component<Props, State> {
         <List className={classes.list}>
           {!isPro && (
             <Fragment>
-              <Header>Account</Header>
+              <Header>Cloud Sync</Header>
               {/* <ListItem>
                 <ListItemIcon>
                   <UserIcon />
@@ -272,7 +272,7 @@ class SettingsPage extends Component<Props, State> {
                 <ListItemText
                   primary={
                     <Fragment>
-                      Cloud Sync & Backup <ProBadge />
+                      Tabs Sync & Backup <ProBadge />
                     </Fragment>
                   }
                   secondary="Disabled"
@@ -287,6 +287,8 @@ class SettingsPage extends Component<Props, State> {
                   </LogInButton>
                 </ListItemSecondaryAction>
               </ListItem>
+              {/* wake up tabs on "active device" / "original device" */}
+              {/* this computer is HOME */}
             </Fragment>
           )}
 
@@ -441,12 +443,12 @@ class SettingsPage extends Component<Props, State> {
                     <Fragment>
                       <span style={{ marginRight: 10 }}>in</span>
                       <SettingsSelect
-                        small
+                        small="true"
                         options={[{ value: 2, label: '2' }]}
                         // {...this.bindSettings(options.stateKey)}
                       />
                       <SettingsSelect
-                        small
+                        small="true"
                         options={[{ value: 'days', label: period }]}
                         // {...this.bindSettings(options.stateKey)}
                       />

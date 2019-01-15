@@ -48,6 +48,7 @@ export const TS_HOMEPAGE =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://tabsnooze.com';
+export const SERVER_CONFIG_URL = `${TS_HOMEPAGE}/serverConfig.json`;
 
 // URLS requires tracking id param:
 const UPGRADE_URL = `${TS_HOMEPAGE}/pro`;

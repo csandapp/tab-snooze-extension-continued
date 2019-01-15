@@ -28,6 +28,8 @@ import {
   updateBadge,
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
+import { saveSettings } from './settings';
+import { loadServerConfig } from './serverConfig';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -67,6 +69,15 @@ export function runBackgroundScript() {
 
     if (reason === 'install') {
       track(EVENTS.EXT_INSTALLED);
+
+      // Save install date for new users.
+      // Old users will have a 0 install date
+      await saveSettings({
+        installDate: Date.now(),
+      });
+
+      // Cache the server config for the first time
+      await loadServerConfig();
     }
 
     if (reason === 'update') {

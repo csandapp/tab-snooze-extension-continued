@@ -5,6 +5,7 @@ import './debugStorage';
 export const STORAGE_KEY_TS_VERSION = 'tsVersion';
 export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
 export const STORAGE_KEY_SNOOZED_TABS = 'snoozedTabs';
+export const STORAGE_KEY_SERVER_CONFIG = 'serverConfig';
 export const STORAGE_KEY_BACKUPS = 'backups';
 
 // version 2.0

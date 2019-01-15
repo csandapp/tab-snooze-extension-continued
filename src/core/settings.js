@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   // general data
   version: 3,
   totalSnoozeCount: 0,
+  installDate: 0,
 };
 
 export async function getSettings(): Promise<Settings> {
