@@ -14,15 +14,18 @@ import SunIcon from '@material-ui/icons/WbSunny';
 import WeekendIcon from '@material-ui/icons/Weekend';
 import WorkIcon from '@material-ui/icons/Work';
 import SomedayIcon from '@material-ui/icons/BeachAccess';
+import EditIcon from '@material-ui/icons/Edit';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
 import StarIcon from '@material-ui/icons/Star';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
-import UserIcon from '@material-ui/icons/AccountCircle';
+// import UserIcon from '@material-ui/icons/AccountCircle';
+import CloudIcon from '@material-ui/icons/CloudOff';
 import BadgeIcon from '@material-ui/icons/Looks5';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import DarkIcon from '@material-ui/icons/InvertColors';
+import LocationIcon from '@material-ui/icons/LocationOn';
 import CafeIcon from '@material-ui/icons/LocalCafe';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -249,7 +252,7 @@ class SettingsPage extends Component<Props, State> {
           {!isPro && (
             <Fragment>
               <Header>Account</Header>
-              <ListItem>
+              {/* <ListItem>
                 <ListItemIcon>
                   <UserIcon />
                 </ListItemIcon>
@@ -261,8 +264,25 @@ class SettingsPage extends Component<Props, State> {
                   }
                   secondary="Log in to backup & sync your tabs across devices"
                 />
+              </ListItem> */}
+              <ListItem>
+                <ListItemIcon>
+                  <CloudIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Fragment>
+                      Cloud Sync & Backup <ProBadge />
+                    </Fragment>
+                  }
+                  secondary="Disabled"
+                />
                 <ListItemSecondaryAction>
-                  <LogInButton href={getUpgradeUrl()} target="_blank">
+                  <LogInButton
+                    as="a"
+                    href={getUpgradeUrl()}
+                    target="_blank"
+                  >
                     Signup / Login
                   </LogInButton>
                 </ListItemSecondaryAction>
@@ -328,7 +348,7 @@ class SettingsPage extends Component<Props, State> {
               })),
             })}
           {!isPro &&
-            this.renderCheckboxSetting({
+            this.renderGeneralSetting({
               icon: <DarkIcon />,
               title: (
                 <Fragment>
@@ -337,15 +357,28 @@ class SettingsPage extends Component<Props, State> {
               ),
               locked: !isPro,
               description:
-                "Show you're a pro with the elegant Tab Snooze dark theme",
-              stateKey: 'showNotifications',
+                'Switch on the elegant Tab Snooze dark theme',
+              component: <Switch checked={false} />,
             })}
 
-          <Header>Snooze Times</Header>
+          <Header>Preset Snooze Options</Header>
 
+          {!isPro &&
+            this.renderGeneralSetting({
+              icon: <LocationIcon />,
+              title: (
+                <Fragment>
+                  Location Snooze <ProBadge />
+                </Fragment>
+              ),
+              locked: !isPro,
+              description:
+                'Snooze tabs to open when you get on your Home/Work device',
+              component: <Switch checked={false} />,
+            })}
           {this.renderDropdownSetting({
             icon: <SunIcon />,
-            title: 'Workday starts at',
+            title: 'Tomorrow starts at',
             stateKey: 'workdayStart',
             options: [6, 7, 8, 9, 10, 11].map(hour => ({
               label: `${hour}:00 AM`,
@@ -354,7 +387,7 @@ class SettingsPage extends Component<Props, State> {
           })}
           {this.renderDropdownSetting({
             icon: <MoonIcon />,
-            title: 'Workday ends at',
+            title: 'Evening starts at',
             stateKey: 'workdayEnd',
             options: [15, 16, 17, 18, 19, 20, 21, 22].map(hour => ({
               label: `${hour - 12}:00 PM`,
@@ -375,7 +408,7 @@ class SettingsPage extends Component<Props, State> {
           })}
           {this.renderDropdownSetting({
             icon: <CafeIcon />,
-            title: 'Later Today',
+            title: 'Later Today is',
             stateKey: 'laterTodayHoursDelta',
             options: [1, 2, 3, 4, 5].map(hours => ({
               label: `in ${hours} hours`,
@@ -392,6 +425,37 @@ class SettingsPage extends Component<Props, State> {
             })),
           })}
 
+          {!isPro && (
+            <Fragment>
+              <Header>
+                Custom Snooze Options <ProBadge />
+              </Header>
+              {['Hours', 'Days', 'Weeks'].map((period, index) =>
+                this.renderGeneralSetting({
+                  key: String(index),
+                  icon: <EditIcon />,
+                  title: `Custom Snooze Option ${index + 1}`,
+                  stateKey: 'somedayMonthsDelta',
+                  locked: true,
+                  component: (
+                    <Fragment>
+                      <span style={{ marginRight: 10 }}>in</span>
+                      <SettingsSelect
+                        small
+                        options={[{ value: 2, label: '2' }]}
+                        // {...this.bindSettings(options.stateKey)}
+                      />
+                      <SettingsSelect
+                        small
+                        options={[{ value: 'days', label: period }]}
+                        // {...this.bindSettings(options.stateKey)}
+                      />
+                    </Fragment>
+                  ),
+                })
+              )}
+            </Fragment>
+          )}
           <Header>Keyboard Shortcuts {!isPro && <ProBadge />}</Header>
           {/* <EditShortcutsInstructions /> */}
           {commands.map((command, index) =>
@@ -494,7 +558,7 @@ const SettingsSelect = styled(Select).attrs({
   line-height: inherit;
   outline: none;
   padding-left: 5px;
-  width: 200px;
+  width: ${props => (props.small ? 94 : 200)}px;
   height: 40px;
   margin-right: 12px;
   :hover {

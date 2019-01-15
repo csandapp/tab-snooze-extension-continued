@@ -23,7 +23,12 @@ import {
   SOUND_TAB_SNOOZE3,
 } from '../../core/audio';
 import { getSnoozedTabs } from '../../core/storage';
-import { countConsecutiveSnoozes, IS_BETA } from '../../core/utils';
+import {
+  countConsecutiveSnoozes,
+  IS_BETA,
+  createTab,
+} from '../../core/utils';
+import { getUpgradeUrl } from '../../Router';
 
 type Props = {
   hideFooter: boolean,
@@ -128,7 +133,12 @@ class SnoozePanel extends Component<Props, State> {
   }
 
   onSnoozePeriodSelected(period: SnoozePeriod) {
-    const { selectedSnoozeOptionId } = this.state;
+    const { selectedSnoozeOptionId, isProUser } = this.state;
+
+    if (!isProUser) {
+      createTab(getUpgradeUrl());
+      return;
+    }
 
     snoozeCurrentTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup

@@ -110,7 +110,7 @@ const Navbar = ({
     <HourOptions
       value={hour}
       onChange={onHourChange}
-      style={{ marginLeft: 14 }}
+      style={{ marginLeft: 6 }}
     />
   </NavbarDiv>
 );
@@ -156,6 +156,6 @@ const NavButton = styled.button`
 const MonthName = styled(NavButton)`
   width: auto;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 20px;
   flex: 1;
 `;
