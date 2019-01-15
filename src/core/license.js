@@ -1,6 +1,5 @@
 // @flow
 import { getSettings } from './settings';
-import { IS_BETA } from './utils';
 import { getServerConfig } from './serverConfig';
 
 // export const IS_PRO_PRODUCT_VISIBLE = true;
