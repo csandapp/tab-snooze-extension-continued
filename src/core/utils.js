@@ -19,9 +19,9 @@ export function isMacOS() {
   Close tab and popup after a short delay
   delay is for User Experience purposes (to see what they selected)
 */
-export function delayedCloseTab(tabId: string) {
-  setTimeout(() => chromep.tabs.remove(tabId), 1100);
-}
+// export function delayedCloseTab(tabId: string) {
+//   setTimeout(() => chromep.tabs.remove(tabId), 1100);
+// }
 
 /*
     Create tabs and call callback() when they are all created.

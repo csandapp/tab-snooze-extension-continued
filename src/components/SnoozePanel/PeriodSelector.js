@@ -166,7 +166,7 @@ export default class PeriodSelector extends Component<Props, State> {
           <HourOptions {...bindField('selectedHour')} />
 
           <Spacer />
-          <SaveButton onClick={this.onSnoozeClicked.bind(this)}>
+          <SaveButton onMouseDown={this.onSnoozeClicked.bind(this)}>
             SNOOZE
           </SaveButton>
         </Root>

@@ -3,7 +3,6 @@ import { getSnoozedTabs, saveSnoozedTabs } from './storage';
 import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
-  delayedCloseTab,
   getRecentlySnoozedTab,
 } from './utils';
 import { trackTabSnooze, track, EVENTS } from './analytics';
@@ -13,12 +12,13 @@ import {
   RateTSDialog,
 } from '../components/dialogs';
 import { scheduleWakeupAlarm } from './wakeup';
+import chromep from 'chrome-promise';
 
 export async function snoozeTab(
   tab: ChromeTab,
   config: SnoozeConfig
 ) {
-  let { wakeupTime, period, type } = config;
+  let { wakeupTime, period, type, closeTab = true } = config;
 
   if (period) {
     const nextOccurrenceDate = calcNextOccurrenceForPeriod(period);
@@ -58,7 +58,9 @@ export async function snoozeTab(
   // usage tracking
   trackTabSnooze(snoozedTab);
 
-  delayedCloseTab(tab.id);
+  if (closeTab) {
+    chromep.tabs.remove(tab.id);
+  }
 
   let { totalSnoozeCount } = await getSettings();
   totalSnoozeCount++;
@@ -81,7 +83,7 @@ export async function snoozeTab(
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
 }
 
-export async function snoozeCurrentTab(config: SnoozeConfig) {
+export async function snoozeActiveTab(config: SnoozeConfig) {
   const activeTab = await getActiveTab();
   return snoozeTab(activeTab, config);
 }
@@ -101,7 +103,7 @@ export async function repeatLastSnooze() {
 
   track(EVENTS.REPEAT_SNOOZE);
 
-  return snoozeCurrentTab({
+  return snoozeActiveTab({
     wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,
     period: lastSnooze.period,
     type: lastSnooze.type,

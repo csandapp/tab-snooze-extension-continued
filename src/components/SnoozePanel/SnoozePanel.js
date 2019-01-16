@@ -12,7 +12,7 @@ import SnoozeButtonsGrid from './SnoozeButtonsGrid';
 import SnoozeFooter from './SnoozeFooter';
 import PeriodSelector from './PeriodSelector';
 import DateSelector from './DateSelector';
-import { snoozeCurrentTab } from '../../core/snooze';
+import { snoozeActiveTab } from '../../core/snooze';
 import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import { isProUser } from '../../core/license';
@@ -48,13 +48,6 @@ type State = {
   selectorDialogOpen: boolean,
 };
 
-const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
-const SNOOZE_SOUNDS = [
-  SOUND_TAB_SNOOZE1,
-  SOUND_TAB_SNOOZE2,
-  SOUND_TAB_SNOOZE3,
-];
-
 class SnoozePanel extends Component<Props, State> {
   snoozeSound: HTMLAudioElement;
 
@@ -80,7 +73,7 @@ class SnoozePanel extends Component<Props, State> {
     isProUser().then(isProUser => this.setState({ isProUser }));
 
     // load the next snooze sound to play
-    this.loadSnoozeSound();
+    loadSnoozeSound();
   }
 
   onSnoozeButtonClicked(snoozeOption: SnoozeOption) {
@@ -103,9 +96,7 @@ class SnoozePanel extends Component<Props, State> {
       // Perform snooze
       const wakeupTime = snoozeOption.when.getTime();
 
-      this.playSnoozeSound();
-
-      snoozeCurrentTab({
+      delayedSnoozeActiveTab({
         type: snoozeOption.id,
         wakeupTime,
       });
@@ -124,9 +115,7 @@ class SnoozePanel extends Component<Props, State> {
   onSnoozeSpecificDateSelected(date: Date) {
     const { selectedSnoozeOptionId } = this.state;
 
-    this.playSnoozeSound();
-
-    snoozeCurrentTab({
+    delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       wakeupTime: date.getTime(),
     });
@@ -140,12 +129,10 @@ class SnoozePanel extends Component<Props, State> {
       return;
     }
 
-    snoozeCurrentTab({
+    delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       period,
     });
-
-    this.playSnoozeSound();
   }
 
   getSnoozeButtons(snoozeOptions: Array<SnoozeOption>) {
@@ -167,27 +154,6 @@ class SnoozePanel extends Component<Props, State> {
         onMouseLeave: () => onTooltipAreaMouseLeave(),
       })
     );
-  }
-
-  /**
-   * We play 3 sounds, one after the other, on each snooze.
-   * when too much time passes by, it resets to first sound.
-   * e.g.
-   * example 1: soundA -> soundB -> soundC -> soundA
-   * example 2: soundA -> soundB -> (much time has passed, reset) soundA
-   */
-  async loadSnoozeSound() {
-    const snoozedTabs = await getSnoozedTabs();
-    const consecutiveCount = countConsecutiveSnoozes(
-      snoozedTabs,
-      CONSECUTIVE_SNOOZE_TIMEOUT
-    );
-    const nextSoundIndex = consecutiveCount % SNOOZE_SOUNDS.length;
-    this.snoozeSound = loadSoundEffect(SNOOZE_SOUNDS[nextSoundIndex]);
-  }
-
-  playSnoozeSound() {
-    this.snoozeSound.play();
   }
 
   render() {
@@ -237,6 +203,44 @@ class SnoozePanel extends Component<Props, State> {
       </Root>
     );
   }
+}
+
+let snoozeSound;
+
+const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
+const SNOOZE_SOUNDS = [
+  SOUND_TAB_SNOOZE1,
+  SOUND_TAB_SNOOZE2,
+  SOUND_TAB_SNOOZE3,
+];
+
+// give time for animation & sound to finish before snoozing (closing) tab
+function delayedSnoozeActiveTab(config: SnoozeConfig) {
+  playSnoozeSound();
+  setTimeout(() => {
+    snoozeActiveTab(config);
+  }, 1100);
+}
+
+/**
+ * We play 3 sounds, one after the other, on each snooze.
+ * when too much time passes by, it resets to first sound.
+ * e.g.
+ * example 1: soundA -> soundB -> soundC -> soundA
+ * example 2: soundA -> soundB -> (much time has passed, reset) soundA
+ */
+async function loadSnoozeSound() {
+  const snoozedTabs = await getSnoozedTabs();
+  const consecutiveCount = countConsecutiveSnoozes(
+    snoozedTabs,
+    CONSECUTIVE_SNOOZE_TIMEOUT
+  );
+  const nextSoundIndex = consecutiveCount % SNOOZE_SOUNDS.length;
+  snoozeSound = loadSoundEffect(SNOOZE_SOUNDS[nextSoundIndex]);
+}
+
+function playSnoozeSound() {
+  snoozeSound.play();
 }
 
 export default TooltipHelper(SnoozePanel);

@@ -79,7 +79,7 @@ export default class DateSelector extends Component<Props, State> {
             )}
             ref={this.datePicker}
           />
-          <SaveButton onClick={this.onSnoozeClicked.bind(this)}>
+          <SaveButton onMouseDown={this.onSnoozeClicked.bind(this)}>
             SNOOZE
           </SaveButton>
         </Root>

@@ -40,6 +40,7 @@ declare type SnoozeConfig = {|
   wakeupTime?: number,
   period?: SnoozePeriod,
   type: string, // 'later_today' , ...
+  closeTab?: boolean,
 |};
 
 declare type Settings = {|
