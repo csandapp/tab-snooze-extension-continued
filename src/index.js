@@ -1,14 +1,12 @@
 // @flow
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { runBackgroundScript } from './core/backgroundMain';
-import { BACKGROUND_ROUTE } from './Router';
+import { isBackgroundScript } from './core/utils';
+import { ErrorBoundary } from './bugsnag';
 
-const hashPath = window.location.hash.substring(1);
-
-if (hashPath === BACKGROUND_ROUTE) {
+if (isBackgroundScript()) {
   runBackgroundScript();
 } else {
   const rootEl = document.getElementById('root');
@@ -17,5 +15,10 @@ if (hashPath === BACKGROUND_ROUTE) {
     throw new Error('React root element is missing');
   }
 
-  ReactDOM.render(<App />, rootEl);
+  ReactDOM.render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>,
+    rootEl
+  );
 }

@@ -1,10 +1,15 @@
 // @flow
 import chromep from 'chrome-promise';
 import moment from 'moment';
-import { APP_BASE_PATH } from '../paths';
+import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
+
+export function isBackgroundScript() {
+  const hashPath = window.location.hash.substring(1);
+  return hashPath === BACKGROUND_PATH;
+}
 
 export function isMacOS() {
   return navigator.platform.toUpperCase().indexOf('MAC') >= 0;

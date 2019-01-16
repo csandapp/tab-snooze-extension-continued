@@ -2,6 +2,9 @@ const reactAppRewireBuildDev = require('react-app-rewire-build-dev');
 const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
+// const {
+//   BugsnagBuildReporterPlugin,
+// } = require('webpack-bugsnag-plugins');
 
 const OUTPUT_PATH = './build';
 const PUBLIC_PATH = './public/';
@@ -37,6 +40,9 @@ module.exports = function override(config, env) {
 
   // Disable service worker, we don't use it
   config = disableServiceWorker(config);
+
+  // Upload source maps to bugsnag
+  // config = enableBugsnagSourceMapUpload(config, env);
 
   // For Debug:
   if (false) {
@@ -88,11 +94,11 @@ function disableLiveReload(config) {
   return config;
 }
 
-function disableCodeObfuscation(config) {
-  const terserPlugin = config.optimization.minimizer[0];
-  terserPlugin.options.terserOptions.mangle = false;
-  return config;
-}
+// function disableCodeObfuscation(config) {
+//   const terserPlugin = config.optimization.minimizer[0];
+//   terserPlugin.options.terserOptions.mangle = false;
+//   return config;
+// }
 
 function disableServiceWorker(config) {
   /*
@@ -107,6 +113,29 @@ function disableServiceWorker(config) {
 
   return config;
 }
+
+// function enableBugsnagSourceMapUpload(config, env) {
+//   // It's a good idea to only run this plugin when you're building a bundle
+//   // that will be released, rather than for every development build
+//   console.log(process.env.REACT_APP_BUGSNAG_API_KEY);
+//   process.exit(1);
+
+//   if (env === 'production') {
+//     config.plugins.push(
+//       new BugsnagBuildReporterPlugin(
+//         {
+//           apiKey: 'YOUR_API_KEY',
+//           appVersion: '1.2.3',
+//         },
+//         {
+//           /* opts */
+//         }
+//       )
+//     );
+//   }
+
+//   return config;
+// }
 
 // For documentation, here are stuff i tried, fixing the hot reload
 
