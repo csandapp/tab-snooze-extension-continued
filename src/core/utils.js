@@ -112,6 +112,7 @@ export async function notifyUserAboutNewTabs(
         focused: true,
       });
 
+      chromep.notifications.clear(createdNotifId);
       chrome.notifications.onClicked.removeListener(makeTabActive);
     }
   });

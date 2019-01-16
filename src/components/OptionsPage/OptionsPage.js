@@ -13,7 +13,11 @@ import SleepingIcon from '@material-ui/icons/Hotel';
 import SleepingTabsPage from './SleepingTabsPage';
 import SettingsPage from './SettingsPage';
 import { NavLink } from 'react-router-dom';
-import { SLEEPING_TABS_ROUTE, SETTINGS_ROUTE } from '../../Router';
+import {
+  SLEEPING_TABS_ROUTE,
+  SETTINGS_ROUTE,
+  TS_HOMEPAGE,
+} from '../../Router';
 import { Route } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -36,7 +40,13 @@ function OptionsPage(props) {
     <Fragment>
       <AppBar position="fixed">
         <Toolbar>
-          <Logo src={require('./images/navbar_logo.svg')} />
+          <a
+            href={TS_HOMEPAGE}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Logo src={require('./images/navbar_logo.svg')} />
+          </a>
           <NavButton component={NavLink} to={SLEEPING_TABS_ROUTE}>
             <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
           </NavButton>
