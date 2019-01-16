@@ -2,14 +2,14 @@
 
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
-import { RATE_TS_ROUTE, CHROME_WEB_STORE_REVIEW } from '../../Router';
+import { RATE_TS_PATH, CHROME_WEB_STORE_REVIEW } from '../../paths';
 import { createCenteredWindow } from '../../core/utils';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
 
 export default class RateTSDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(RATE_TS_ROUTE, 500, 540);
+    createCenteredWindow(RATE_TS_PATH, 500, 540);
   }
 
   render() {

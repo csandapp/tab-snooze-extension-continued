@@ -3,10 +3,10 @@
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import {
-  FIRST_SNOOZE_ROUTE,
+  FIRST_SNOOZE_PATH,
   // CHROME_WEB_STORE_INSTALL_SHARE_LINK,
-  SLEEPING_TABS_ROUTE,
-} from '../../Router';
+  SLEEPING_TABS_PATH,
+} from '../../paths';
 import { createCenteredWindow } from '../../core/utils';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   static open() {
-    createCenteredWindow(FIRST_SNOOZE_ROUTE, 830, 485);
+    createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
   }
 
   render() {
@@ -42,7 +42,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
             raised="true"
             as={Link}
             color="#4A90E2"
-            to={SLEEPING_TABS_ROUTE}
+            to={SLEEPING_TABS_PATH}
             target="_blank"
             onClick={() => window.close()}
           >

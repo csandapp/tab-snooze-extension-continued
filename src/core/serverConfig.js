@@ -1,5 +1,5 @@
 // @flow
-import { SERVER_CONFIG_URL } from '../Router';
+import { SERVER_CONFIG_URL } from '../paths';
 import chromep from 'chrome-promise';
 import { STORAGE_KEY_SERVER_CONFIG } from './storage';
 

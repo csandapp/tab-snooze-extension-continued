@@ -19,7 +19,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Link } from 'react-router-dom';
-import { TODO_ROUTE } from '../../Router';
+import { TODO_PATH } from '../../paths';
 import { track, EVENTS } from '../../core/analytics';
 
 // Adding chrome manually to global scope, for ESLint
@@ -203,7 +203,7 @@ const NewTodoBtn = withStyles(styles)(({ classes }) => (
   >
     <Fab
       component={Link}
-      to={TODO_ROUTE}
+      to={TODO_PATH}
       target="_blank"
       color="secondary"
       aria-label="Add"

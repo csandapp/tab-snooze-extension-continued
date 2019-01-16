@@ -1,7 +1,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import moment from 'moment';
-import { APP_BASE_PATH } from '../Router';
+import { APP_BASE_PATH } from '../paths';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;

@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
-import { TODO_ROUTE } from '../../Router';
+import { TODO_PATH } from '../../paths';
 import Fade from '@material-ui/core/Fade';
 import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
@@ -61,7 +61,7 @@ export default class TodoPage extends Component<Props, State> {
     // .replace(/<br>/g, '');
 
     this.props.history.replace({
-      pathname: TODO_ROUTE,
+      pathname: TODO_PATH,
       search:
         '?' +
         queryString.stringify({

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
-import { getUpgradeUrl } from '../../Router';
+import { getUpgradeUrl } from '../../paths';
 
 export default () => (
   <Root href={getUpgradeUrl()} target="_blank">

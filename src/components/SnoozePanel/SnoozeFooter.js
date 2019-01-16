@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import {
-  SLEEPING_TABS_ROUTE,
-  TODO_ROUTE,
-  SETTINGS_ROUTE,
+  SLEEPING_TABS_PATH,
+  TODO_PATH,
+  SETTINGS_PATH,
   getUpgradeUrl,
-} from '../../Router';
+} from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
 import BetaDialog from '../dialogs/BetaDialog';
 // import Tooltip from '@material-ui/core/Tooltip';
@@ -48,7 +48,7 @@ export default class SnoozeFooter extends Component<Props, State> {
     return (
       <Footer>
         <Buttons>
-          <SleepingTabsBtn as={Link} to={SLEEPING_TABS_ROUTE}>
+          <SleepingTabsBtn as={Link} to={SLEEPING_TABS_PATH}>
             <SleepinCountBadge>{sleepingTabsCount}</SleepinCountBadge>
             Sleeping Tabs
           </SleepingTabsBtn>
@@ -71,12 +71,8 @@ export default class SnoozeFooter extends Component<Props, State> {
               <BetaBadge>BETA</BetaBadge>
             </BadgeButton>
           )}
-          <NewTodoBtn as={Link} to={TODO_ROUTE} target="_blank" />
-          <SettingsBtn
-            as={Link}
-            to={SETTINGS_ROUTE}
-            target="_blank"
-          />
+          <NewTodoBtn as={Link} to={TODO_PATH} target="_blank" />
+          <SettingsBtn as={Link} to={SETTINGS_PATH} target="_blank" />
         </Buttons>
         <SnoozeTooltip visible={tooltip.visible}>
           {tooltip.text}

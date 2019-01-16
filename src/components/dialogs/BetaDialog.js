@@ -3,12 +3,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import {
-  BETA_ROUTE,
+  BETA_PATH,
   MESSENGER_PROFILE_URL,
   BETA_INSTRUCTIONS_URL,
   CHANGELOG_URL,
   TAB_SNOOZE_FEATURE_VOTE_URL,
-} from '../../Router';
+} from '../../paths';
 import { createTab, APP_VERSION } from '../../core/utils';
 import TSDialog from './TSDialog';
 import BugIcon from '@material-ui/icons/BugReport';
@@ -24,7 +24,7 @@ import { Helmet } from 'react-helmet';
 
 export default class BetaDialog extends Component<{}> {
   static open() {
-    createTab(BETA_ROUTE);
+    createTab(BETA_PATH);
   }
 
   render() {

@@ -28,7 +28,7 @@ import {
   IS_BETA,
   createTab,
 } from '../../core/utils';
-import { getUpgradeUrl } from '../../Router';
+import { getUpgradeUrl } from '../../paths';
 
 type Props = {
   hideFooter: boolean,

@@ -14,10 +14,10 @@ import SleepingTabsPage from './SleepingTabsPage';
 import SettingsPage from './SettingsPage';
 import { NavLink } from 'react-router-dom';
 import {
-  SLEEPING_TABS_ROUTE,
-  SETTINGS_ROUTE,
-  TS_HOMEPAGE,
-} from '../../Router';
+  SLEEPING_TABS_PATH,
+  SETTINGS_PATH,
+  TS_HOMEPAGE_URL,
+} from '../../paths';
 import { Route } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -41,16 +41,16 @@ function OptionsPage(props) {
       <AppBar position="fixed">
         <Toolbar>
           <a
-            href={TS_HOMEPAGE}
+            href={TS_HOMEPAGE_URL}
             target="_blank"
             rel="noopener noreferrer"
           >
             <Logo src={require('./images/navbar_logo.svg')} />
           </a>
-          <NavButton component={NavLink} to={SLEEPING_TABS_ROUTE}>
+          <NavButton component={NavLink} to={SLEEPING_TABS_PATH}>
             <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
           </NavButton>
-          <NavButton component={NavLink} to={SETTINGS_ROUTE}>
+          <NavButton component={NavLink} to={SETTINGS_PATH}>
             <SettingsIcon className={classes.navIcon} /> Settings
           </NavButton>
           <Spacer />
@@ -71,10 +71,10 @@ function OptionsPage(props) {
         <Toolbar style={{ opacity: 0 }} />
         <Main>
           <Route
-            path={SLEEPING_TABS_ROUTE}
+            path={SLEEPING_TABS_PATH}
             component={SleepingTabsPage}
           />
-          <Route path={SETTINGS_ROUTE} component={SettingsPage} />
+          <Route path={SETTINGS_PATH} component={SettingsPage} />
         </Main>
       </Root>
     </Fragment>

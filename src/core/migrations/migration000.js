@@ -5,7 +5,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import { TODO_COLORS } from '../../components/TodoPage/TodoPage';
-import { APP_BASE_PATH, TODO_ROUTE } from '../../Router';
+import { APP_BASE_PATH, TODO_PATH } from '../../paths';
 import qs from 'query-string';
 
 // Adding chrome manually to global scope, for ESLint
@@ -160,7 +160,7 @@ function migrateTodoPage(tab) {
       url.substring(url.indexOf('?') + 1)
     );
     const newTodoUrl =
-      chrome.runtime.getURL(APP_BASE_PATH + TODO_ROUTE) +
+      chrome.runtime.getURL(APP_BASE_PATH + TODO_PATH) +
       '?' +
       qs.stringify({
         text: oldTodoParams.title,

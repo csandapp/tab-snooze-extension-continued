@@ -10,11 +10,11 @@ import {
   scheduleWakeupAlarm,
 } from './wakeup';
 import {
-  TODO_ROUTE,
-  SLEEPING_TABS_ROUTE,
+  TODO_PATH,
+  SLEEPING_TABS_PATH,
   CHANGELOG_URL,
   getTrackUninstallUrl,
-} from '../Router';
+} from '../paths';
 import {
   COMMAND_NEW_TODO,
   COMMAND_REPEAT_LAST_SNOOZE,
@@ -93,7 +93,7 @@ export function runBackgroundScript() {
   chrome.commands.onCommand.addListener(command => {
     // create a new todo window!, and focus on it
     if (command === COMMAND_NEW_TODO) {
-      createTab(TODO_ROUTE);
+      createTab(TODO_PATH);
     }
 
     if (command === COMMAND_REPEAT_LAST_SNOOZE) {
@@ -101,7 +101,7 @@ export function runBackgroundScript() {
     }
 
     if (command === COMMAND_OPEN_SLEEPING_TABS) {
-      createTab(SLEEPING_TABS_ROUTE);
+      createTab(SLEEPING_TABS_PATH);
     }
   });
 }

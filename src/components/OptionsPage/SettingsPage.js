@@ -40,7 +40,7 @@ import {
   CHROME_SETTINGS_SHORTCUTS,
   getUpgradeUrl,
   TAB_SNOOZE_FEATURE_VOTE_URL,
-} from '../../Router';
+} from '../../paths';
 import { EVENTS, track } from '../../core/analytics';
 import {
   BADGE_HIDDEN,
