@@ -88,8 +88,6 @@ const IconWrapper = styled.div`
 `;
 
 const Icon = styled.img`
-  /* width: 55px;
-  height: 55px; */
   transition: all ${SNOOZE_CLICK_EFFECT_TIME}ms;
   opacity: ${props => (props.hide ? 0 : 1)};
 `;

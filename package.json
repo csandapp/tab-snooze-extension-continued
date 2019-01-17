@@ -21,6 +21,7 @@
     "react-app-rewire-build-dev": "1.0.1",
     "react-app-rewire-import": "1.0.1",
     "react-app-rewire-styled-components": "3.0.2",
+    "react-app-rewire-webpack-bundle-analyzer": "1.0.1",
     "react-app-rewired": "1.6.2",
     "react-contenteditable": "3.2.4",
     "react-day-picker": "7.2.4",

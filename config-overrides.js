@@ -2,6 +2,7 @@ const reactAppRewireBuildDev = require('react-app-rewire-build-dev');
 const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
+
 // const {
 //   BugsnagBuildReporterPlugin,
 // } = require('webpack-bugsnag-plugins');
@@ -43,6 +44,11 @@ module.exports = function override(config, env) {
 
   // Upload source maps to bugsnag
   // config = enableBugsnagSourceMapUpload(config, env);
+
+  // config = require('react-app-rewire-webpack-bundle-analyzer')(config, env, {
+  //   analyzerMode: 'static',
+  //   reportFilename: 'report.html',
+  // });
 
   // For Debug:
   if (false) {
