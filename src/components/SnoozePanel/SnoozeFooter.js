@@ -1,6 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import SettingsIcon from '@material-ui/icons/Settings';
+import CheckboxIcon from '@material-ui/icons/CheckBoxRounded';
 import { Link } from 'react-router-dom';
 import {
   SLEEPING_TABS_PATH,
@@ -71,8 +73,12 @@ export default class SnoozeFooter extends Component<Props, State> {
               <BetaBadge>BETA</BetaBadge>
             </BadgeButton>
           )}
-          <NewTodoBtn as={Link} to={TODO_PATH} target="_blank" />
-          <SettingsBtn as={Link} to={SETTINGS_PATH} target="_blank" />
+          <IconBtn as={Link} to={TODO_PATH} target="_blank">
+            <CheckboxIcon />
+          </IconBtn>
+          <IconBtn as={Link} to={SETTINGS_PATH} target="_blank">
+            <SettingsIcon />
+          </IconBtn>
         </Buttons>
         <SnoozeTooltip visible={tooltip.visible}>
           {tooltip.text}
@@ -107,8 +113,8 @@ const SnoozeTooltip = styled.div`
   align-items: center;
   justify-content: center;
 
-  background-color: #fff;
-  color: #888888;
+  background-color: ${props => props.theme.snoozePanel.bgColor};
+  color: ${props => props.theme.snoozePanel.footerTextColor};
   /* font-weight: 500; */
   font-size: 17px;
 `;
@@ -128,6 +134,7 @@ const TooltipButton = props => (
 const FooterBtn = styled(TooltipButton)`
   border: none;
   cursor: pointer;
+  background-color: ${props => props.theme.snoozePanel.bgColor};
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
@@ -142,10 +149,11 @@ const FooterBtn = styled(TooltipButton)`
 `;
 
 const SleepinCountBadge = styled.div`
-  background-color: #929292;
+  background-color: ${props =>
+    props.theme.snoozePanel.countBadgeColor};
   padding: 2px 8px;
   border-radius: 5px;
-  color: #fff;
+  color: ${props => props.theme.snoozePanel.bgColor};
   font-weight: 700;
   font-size: 15px;
   margin-right: 11px;
@@ -156,7 +164,8 @@ const SleepingTabsBtn = styled(FooterBtn)`
   align-items: center;
   padding-left: 16px;
 
-  color: #929292;
+  color: ${props => props.theme.snoozePanel.footerTextColor};
+  /* color: #929292; */
   font-weight: 500;
   font-size: 17px;
   flex: 1;
@@ -182,12 +191,8 @@ const BetaBadge = styled(UpgradeBadge)`
 
 const IconBtn = styled(FooterBtn)`
   width: 50px;
-`;
-
-const NewTodoBtn = styled(IconBtn)`
-  background-image: url('${require('./icons/checkbox.svg')}');
-`;
-
-const SettingsBtn = styled(IconBtn)`
-  background-image: url('${require('./icons/cog.svg')}');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${props => props.theme.snoozePanel.countBadgeColor};
 `;

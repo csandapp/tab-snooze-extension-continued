@@ -37,7 +37,7 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  background-color: #fff;
+  background-color: ${props => props.theme.snoozePanel.bgColor};
   border-radius: 5px;
   padding: 10px;
   /* margin: 10px; */

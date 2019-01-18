@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
 import Collapse from '@material-ui/core/Collapse';
+import { withTheme } from 'styled-components';
 
 export type Props = {
   id: string,
@@ -14,11 +15,18 @@ export type Props = {
   onClick: () => void,
   onMouseEnter: () => void,
   onMouseLeave: () => void,
+
+  // passed by withTheme:
+  theme?: Object,
 };
 
 const SNOOZE_CLICK_EFFECT_TIME = 400;
 
-export default class SnoozeButton extends Component<Props> {
+class SnoozeButton extends Component<Props> {
+  defaultProps: {
+    theme: {},
+  };
+
   render() {
     const {
       title,
@@ -29,6 +37,7 @@ export default class SnoozeButton extends Component<Props> {
       onClick,
       onMouseLeave,
       onMouseEnter,
+      theme,
     } = this.props;
 
     return (
@@ -40,7 +49,9 @@ export default class SnoozeButton extends Component<Props> {
       >
         <IconWrapper>
           <Icon src={activeIcon} />
-          <OverlayIcon src={icon} hide={pressed} />
+          {theme && !theme.snoozePanel.whiteIcons && (
+            <OverlayIcon src={icon} hide={pressed} />
+          )}
         </IconWrapper>
         <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
           <Title pressed={pressed}>{title}</Title>
@@ -50,6 +61,8 @@ export default class SnoozeButton extends Component<Props> {
     );
   }
 }
+
+export default withTheme(SnoozeButton);
 
 const Button = styled.button`
   display: flex;
@@ -61,7 +74,7 @@ const Button = styled.button`
   border: none;
   cursor: pointer;
   outline: inherit;
-  background-color: #fff;
+  background-color: ${props => props.theme.snoozePanel.bgColor};
 
   /* Hide ribbon edges */
   overflow: hidden;
@@ -103,7 +116,7 @@ const OverlayIcon = styled(Icon)`
 const Title = styled.div`
   margin-top: 12px;
   font-size: 15px;
-  color: #788284;
+  color: ${props => props.theme.snoozePanel.buttonTextColor};
   font-weight: 500;
   transition: color ${SNOOZE_CLICK_EFFECT_TIME}ms;
   /* height: 16px; */

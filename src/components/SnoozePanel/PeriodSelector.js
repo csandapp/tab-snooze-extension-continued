@@ -197,7 +197,8 @@ const Title = styled.div`
   margin-top: 24px;
   margin-bottom: 6px;
   text-align: center;
-  color: #999;
+  /* color: #999; */
+  color: ${props => props.theme.snoozePanel.footerTextColor};
 `;
 
 const Spacer = styled.div`
