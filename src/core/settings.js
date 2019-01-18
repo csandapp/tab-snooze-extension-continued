@@ -1,6 +1,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import { BADGE_HIDDEN } from './badge';
+import { exposeFunctionForDebug } from './utils';
 
 export const STORAGE_KEY_SETTINGS = 'settings';
 
@@ -46,11 +47,18 @@ export async function saveSettings(
   });
 }
 
-window.tabSnoozeDebug_resetSettings = () => {
+async function resetSettings() {
   chromep.storage.local.remove(STORAGE_KEY_SETTINGS);
-};
+}
 
-window.tabSnoozeDebug_printSettings = async () => {
+async function printSettings() {
   const settings = await getSettings();
   console.table(settings);
-};
+}
+
+exposeFunctionForDebug([
+  getSettings,
+  saveSettings,
+  printSettings,
+  resetSettings,
+]);

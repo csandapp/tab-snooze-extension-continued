@@ -15,13 +15,13 @@ export function isMacOS() {
   return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 }
 
-/*
-  Close tab and popup after a short delay
-  delay is for User Experience purposes (to see what they selected)
-*/
-// export function delayedCloseTab(tabId: string) {
-//   setTimeout(() => chromep.tabs.remove(tabId), 1100);
-// }
+export function exposeFunctionForDebug(functions: Array<Function>) {
+  if (!Array.isArray(functions)) {
+    functions = [functions];
+  }
+  // expose on window
+  functions.forEach(fn => (window[`tabSnoozeDebug_${fn.name}`] = fn));
+}
 
 /*
     Create tabs and call callback() when they are all created.
