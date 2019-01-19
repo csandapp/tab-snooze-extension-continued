@@ -194,22 +194,26 @@ class SnoozePanel extends Component<Props, State> {
           betaBadge={IS_BETA}
         />
 
-        <AsyncPeriodSelector
-          onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
-          visible={
-            selectorDialogOpen &&
-            selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
-          }
-        />
-        <AsyncDateSelector
-          onDateSelected={this.onSnoozeSpecificDateSelected.bind(
-            this
-          )}
-          visible={
-            selectorDialogOpen &&
-            selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
-          }
-        />
+        {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
+          <AsyncPeriodSelector
+            onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
+            visible={
+              selectorDialogOpen &&
+              selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
+            }
+          />
+        )}
+        {selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE && (
+          <AsyncDateSelector
+            onDateSelected={this.onSnoozeSpecificDateSelected.bind(
+              this
+            )}
+            visible={
+              selectorDialogOpen &&
+              selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
+            }
+          />
+        )}
       </Root>
     );
   }
