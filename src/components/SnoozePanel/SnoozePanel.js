@@ -76,11 +76,13 @@ class SnoozePanel extends Component<Props, State> {
       selectorDialogOpen: false,
     };
 
-    getSettings().then(settings =>
-      this.setState({ snoozeOptions: calcSnoozeOptions(settings) })
+    Promise.all([getSettings(), isProUser()]).then(
+      ([settings, isProUser]) =>
+        this.setState({
+          snoozeOptions: calcSnoozeOptions(settings),
+          isProUser,
+        })
     );
-
-    isProUser().then(isProUser => this.setState({ isProUser }));
 
     // load the next snooze sound to play
     loadSnoozeSound();
