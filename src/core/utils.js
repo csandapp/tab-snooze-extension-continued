@@ -288,26 +288,28 @@ export async function imageUrlToBase64(url: string): Promise<string> {
     return url;
   }
 
-  return new Promise((resolve, reject) =>
-    require('request')(
-      {
-        url,
-        encoding: 'binary',
-      },
-      function(err, res, body) {
-        if (err) {
-          return null;
-        } else {
-          var type = res.headers['content-type'];
-          var prefix = 'data:' + type + ';base64,';
-          var base64 = new Buffer(body, 'binary').toString('base64');
-          var dataURI = prefix + base64;
+  return '';
 
-          resolve(dataURI);
-        }
-      }
-    )
-  );
+  // return new Promise((resolve, reject) =>
+  //   require('request')(
+  //     {
+  //       url,
+  //       encoding: 'binary',
+  //     },
+  //     function(err, res, body) {
+  //       if (err) {
+  //         return null;
+  //       } else {
+  //         var type = res.headers['content-type'];
+  //         var prefix = 'data:' + type + ';base64,';
+  //         var base64 = new Buffer(body, 'binary').toString('base64');
+  //         var dataURI = prefix + base64;
+
+  //         resolve(dataURI);
+  //       }
+  //     }
+  //   )
+  // );
 }
 
 export const IS_BETA = process.env.REACT_APP_IS_BETA === 'true';
