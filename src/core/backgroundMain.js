@@ -85,7 +85,7 @@ export function runBackgroundScript() {
 
       // Open the changelog every version update for beta testers
       if (IS_BETA) {
-        notifyAboutNewBetaVersion();
+        // notifyAboutNewBetaVersion();
       }
     }
   });

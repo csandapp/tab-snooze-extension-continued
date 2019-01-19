@@ -45,14 +45,26 @@ module.exports = function override(config, env) {
   // Upload source maps to bugsnag
   // config = enableBugsnagSourceMapUpload(config, env);
 
-  // config = require('react-app-rewire-webpack-bundle-analyzer')(config, env, {
-  //   analyzerMode: 'static',
-  //   reportFilename: 'report.html',
-  // });
+  // config.entry = {
+  //   foreground: require.resolve('./src/index.js'),
+  //   background: require.resolve('./src/background.index.js'),
+  // };
+  // config.output.filename = 'static/js/[name].bundle.js';
+  // config.plugins[0].options.excludeChunks = ['background'];
+
+  // config = require('react-app-rewire-webpack-bundle-analyzer')(
+  //   config,
+  //   env,
+  //   {
+  //     analyzerMode: 'static',
+  //     reportFilename: 'report.html',
+  //   }
+  // );
 
   // For Debug:
   if (false) {
     printConfig(config);
+    return;
   }
 
   return config;
