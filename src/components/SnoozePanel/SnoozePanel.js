@@ -20,6 +20,7 @@ import {
   SOUND_TAB_SNOOZE2,
   SOUND_TAB_SNOOZE3,
 } from '../../core/audio';
+import keycode from 'keycode';
 import { getSnoozedTabs } from '../../core/storage';
 import {
   countConsecutiveSnoozes,
@@ -51,6 +52,7 @@ type Props = {
 };
 type State = {
   selectedSnoozeOptionId: ?string,
+  focusedButtonIndex: number,
   snoozeOptions: Array<SnoozeOption>,
   isProUser: boolean,
   // We delay date/period selection dialogs openining
@@ -66,6 +68,7 @@ class SnoozePanel extends Component<Props, State> {
 
     this.state = {
       selectedSnoozeOptionId: null,
+      focusedButtonIndex: -1,
       // show snooze options based on default settings, until
       // user settings load, just show screen won't be blank and
       // cause a flicker in rendering
@@ -88,7 +91,51 @@ class SnoozePanel extends Component<Props, State> {
     loadSnoozeSound();
   }
 
-  onSnoozeButtonClicked(snoozeOption: SnoozeOption) {
+  onKeyPress(event: Event) {
+    const { focusedButtonIndex, snoozeOptions } = this.state;
+    let nextFocusedIndex = focusedButtonIndex;
+    const key = keycode(event);
+    const mappedOptionIndex = SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
+    const numpadKey = parseInt(key);
+
+    if (mappedOptionIndex != null) {
+      this.onSnoozeButtonClicked(
+        event,
+        snoozeOptions[mappedOptionIndex]
+      );
+      nextFocusedIndex = -1;
+    } else if (
+      Number.isInteger(numpadKey) &&
+      1 <= numpadKey &&
+      numpadKey <= 9
+    ) {
+      this.onSnoozeButtonClicked(event, snoozeOptions[numpadKey - 1]);
+      nextFocusedIndex = -1;
+    } else if (focusedButtonIndex === -1) {
+      nextFocusedIndex = 0;
+    } else if (key === 'left' && focusedButtonIndex % 3 !== 0) {
+      nextFocusedIndex -= 1;
+    } else if (key === 'right' && focusedButtonIndex % 3 !== 2) {
+      nextFocusedIndex += 1;
+    } else if (key === 'up' && focusedButtonIndex > 2) {
+      nextFocusedIndex -= 3;
+    } else if (key === 'down' && focusedButtonIndex < 6) {
+      nextFocusedIndex += 3;
+    } else if (key === 'tab') {
+      nextFocusedIndex =
+        (nextFocusedIndex + 1) % snoozeOptions.length;
+    } else if (key === 'enter') {
+      const focusedSnoozeOption = snoozeOptions[focusedButtonIndex];
+      this.onSnoozeButtonClicked(event, focusedSnoozeOption);
+      return;
+    }
+
+    this.setState({
+      focusedButtonIndex: nextFocusedIndex,
+    });
+  }
+
+  onSnoozeButtonClicked(event: Event, snoozeOption: SnoozeOption) {
     const { selectedSnoozeOptionId } = this.state;
     const { preventTooltip } = this.props;
 
@@ -111,6 +158,7 @@ class SnoozePanel extends Component<Props, State> {
       delayedSnoozeActiveTab({
         type: snoozeOption.id,
         wakeupTime,
+        closeTab: !(event: any).altKey,
       });
     } else {
       // either period or date selector opens as dialog
@@ -148,19 +196,25 @@ class SnoozePanel extends Component<Props, State> {
   }
 
   getSnoozeButtons(snoozeOptions: Array<SnoozeOption>) {
-    const { selectedSnoozeOptionId, isProUser } = this.state;
+    const {
+      selectedSnoozeOptionId,
+      isProUser,
+      focusedButtonIndex,
+    } = this.state;
     const {
       onTooltipAreaMouseEnter,
       onTooltipAreaMouseLeave,
     } = this.props;
 
     return snoozeOptions.map<SnoozeButtonProps>(
-      (snoozeOpt: SnoozeOption) => ({
+      (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
         // remove pro badge for PRO users
         proBadge: !isProUser && snoozeOpt.isProFeature,
+        focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: () => this.onSnoozeButtonClicked(snoozeOpt),
+        onClick: (ev: Event) =>
+          this.onSnoozeButtonClicked(ev, snoozeOpt),
         onMouseEnter: () =>
           onTooltipAreaMouseEnter(snoozeOpt.tooltip),
         onMouseLeave: () => onTooltipAreaMouseLeave(),
@@ -185,7 +239,14 @@ class SnoozePanel extends Component<Props, State> {
     const snoozeButtons = this.getSnoozeButtons(snoozeOptions);
 
     return (
-      <Root>
+      <Root
+        onKeyDown={this.onKeyPress.bind(this)}
+        tabIndex="0"
+        ref={ref => {
+          // autofocus Root so we get key press events
+          if (ref) ref.focus();
+        }}
+      >
         <SnoozeButtonsGrid buttons={snoozeButtons} />
         <SnoozeFooter
           tooltip={{
@@ -223,6 +284,17 @@ class SnoozePanel extends Component<Props, State> {
 
 let snoozeSound;
 
+const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
+  L: 0,
+  E: 1,
+  T: 2,
+  W: 3,
+  N: 4,
+  I: 5,
+  S: 6,
+  R: 7,
+  P: 8,
+};
 const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
 const SNOOZE_SOUNDS = [
   SOUND_TAB_SNOOZE1,
@@ -233,8 +305,9 @@ const SNOOZE_SOUNDS = [
 // give time for animation & sound to finish before snoozing (closing) tab
 function delayedSnoozeActiveTab(config: SnoozeConfig) {
   playSnoozeSound();
-  setTimeout(() => {
-    snoozeActiveTab(config);
+  setTimeout(async () => {
+    await snoozeActiveTab(config);
+    window.close();
   }, 1100);
 }
 

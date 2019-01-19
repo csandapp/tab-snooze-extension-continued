@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Tab Snooze",
   "short_name": "Tab Snooze",
-  "version": "2.0.8",
+  "version": "2.0.10",
 
   "description": "Save articles, videos and todos for later. They'll magically reopen when you need them.",
   "icons": { "128": "images/extension_icon_128.png" },
@@ -48,7 +48,7 @@
     },
     "open_snoozed_list": {
       "suggested_key": {
-        "default": "Alt+L"
+        "default": "Alt+J"
       },
       "description": "Open snoozed tabs list"
     },

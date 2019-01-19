@@ -9,9 +9,10 @@ export type Props = {
   title: string,
   icon: string,
   activeIcon: string,
+  focused: boolean,
   pressed: boolean,
   proBadge: boolean,
-  onClick: () => void,
+  onClick: Event => void,
   onMouseEnter: () => void,
   onMouseLeave: () => void,
 
@@ -31,6 +32,7 @@ class SnoozeButton extends Component<Props> {
       title,
       icon,
       activeIcon,
+      focused,
       pressed,
       proBadge,
       onClick,
@@ -42,6 +44,7 @@ class SnoozeButton extends Component<Props> {
     return (
       <Button
         pressed={pressed}
+        focused={focused}
         onMouseDown={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -82,6 +85,12 @@ const Button = styled.button`
   :hover {
     background-color: ${props => props.theme.snoozePanel.hoverColor};
   }
+  ${props =>
+    props.focused &&
+    css`
+      background-color: ${props =>
+        props.theme.snoozePanel.hoverColor};
+    `}
 
   ${props =>
     props.pressed &&
