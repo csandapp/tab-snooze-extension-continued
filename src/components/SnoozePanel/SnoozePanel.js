@@ -9,13 +9,11 @@ import calcSnoozeOptions, {
   SNOOZE_TYPE_SPECIFIC_DATE,
 } from './calcSnoozeOptions';
 import SnoozeButtonsGrid from './SnoozeButtonsGrid';
-import SnoozeFooter from './SnoozeFooter';
-import PeriodSelector from './PeriodSelector';
-import DateSelector from './DateSelector';
 import { snoozeActiveTab } from '../../core/snooze';
 import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import { isProUser } from '../../core/license';
+import SnoozeFooter from './SnoozeFooter';
 import {
   loadSoundEffect,
   SOUND_TAB_SNOOZE1,
@@ -29,6 +27,18 @@ import {
   createTab,
 } from '../../core/utils';
 import { getUpgradeUrl } from '../../paths';
+import Loadable from 'react-loadable';
+
+const AsyncComp = props =>
+  Loadable({ ...props, loading: () => null });
+
+// code splitting these big components
+const AsyncPeriodSelector = AsyncComp({
+  loader: () => import('./PeriodSelector'),
+});
+const AsyncDateSelector = AsyncComp({
+  loader: () => import('./DateSelector'),
+});
 
 type Props = {
   hideFooter: boolean,
@@ -184,14 +194,14 @@ class SnoozePanel extends Component<Props, State> {
           betaBadge={IS_BETA}
         />
 
-        <PeriodSelector
+        <AsyncPeriodSelector
           onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
           visible={
             selectorDialogOpen &&
             selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
           }
         />
-        <DateSelector
+        <AsyncDateSelector
           onDateSelected={this.onSnoozeSpecificDateSelected.bind(
             this
           )}

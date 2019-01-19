@@ -1,9 +1,8 @@
 // @flow
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, withTheme } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
 import Collapse from '@material-ui/core/Collapse';
-import { withTheme } from 'styled-components';
 
 export type Props = {
   id: string,
