@@ -459,7 +459,6 @@ class SettingsPage extends Component<Props, State> {
             </Fragment>
           )}
           <Header>Keyboard Shortcuts {!isPro && <ProBadge />}</Header>
-          {/* <EditShortcutsInstructions /> */}
           {commands.map((command, index) =>
             this.renderShortcutSetting({
               key: '' + index,
@@ -471,6 +470,7 @@ class SettingsPage extends Component<Props, State> {
               locked: !isPro,
             })
           )}
+          <EditShortcutsInstructions />
 
           <Header>Miscellaneous</Header>
           {this.renderButtonSetting({
@@ -516,6 +516,11 @@ class SettingsPage extends Component<Props, State> {
 //     />
 //   </ListItem>
 // );
+const EditShortcutsInstructions = () => (
+  <ListItem>
+    <ListItemText secondary="Additionally, you can use Arrow keys, Numpad, and Capital letters (L-Later Today, etc.) in the Snooze Popup" />
+  </ListItem>
+);
 
 const Root = styled.div``;
 // const MyLink = styled.a`

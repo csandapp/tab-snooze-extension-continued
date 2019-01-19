@@ -61,6 +61,8 @@ export default class DateSelector extends Component<Props, State> {
             disabledDays={date =>
               moment(date).diff(moment().startOf('day')) < 0
             }
+            showOutsideDays
+            fixedWeeks
             // Disable caption element
             captionElement={<Fragment />}
             navbarElement={props => (
