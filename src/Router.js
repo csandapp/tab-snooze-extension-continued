@@ -4,11 +4,6 @@ import React, { Fragment } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import {
-  FirstSnoozeDialog,
-  RateTSDialog,
-  BetaDialog,
-} from './components/dialogs';
-import {
   POPUP_PATH,
   OPTIONS_PATH,
   TODO_PATH,
@@ -18,15 +13,24 @@ import {
 } from './paths';
 import Loadable from 'react-loadable';
 
-const AsyncComp = props =>
-  Loadable({ ...props, loading: () => null });
+const AsyncComp = comp =>
+  Loadable({ loader: comp, loading: () => null });
 
-const AsyncOptionsPage = AsyncComp({
-  loader: () => import('./components/OptionsPage'),
-});
-const AsyncTodoPage = AsyncComp({
-  loader: () => import('./components/TodoPage'),
-});
+const AsyncOptionsPage = AsyncComp(() =>
+  import('./components/OptionsPage')
+);
+const AsyncTodoPage = AsyncComp(() =>
+  import('./components/TodoPage')
+);
+const AsyncFirstSnoozeDialog = AsyncComp(() =>
+  import('./components/dialogs/FirstSnoozeDialog')
+);
+const AsyncRateTSDialog = AsyncComp(() =>
+  import('./components/dialogs/RateTSDialog')
+);
+const AsyncBetaDialog = AsyncComp(() =>
+  import('./components/dialogs/BetaDialog')
+);
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
@@ -35,9 +39,12 @@ const Router = () => (
       <Route path={POPUP_PATH} component={SnoozePanel} />
       <Route path={OPTIONS_PATH} component={AsyncOptionsPage} />
       <Route path={TODO_PATH} component={AsyncTodoPage} />
-      <Route path={FIRST_SNOOZE_PATH} component={FirstSnoozeDialog} />
-      <Route path={RATE_TS_PATH} component={RateTSDialog} />
-      <Route path={BETA_PATH} component={BetaDialog} />
+      <Route
+        path={FIRST_SNOOZE_PATH}
+        component={AsyncFirstSnoozeDialog}
+      />
+      <Route path={RATE_TS_PATH} component={AsyncRateTSDialog} />
+      <Route path={BETA_PATH} component={AsyncBetaDialog} />
     </Fragment>
   </HashRouter>
 );

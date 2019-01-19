@@ -2,22 +2,13 @@
 
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
-import {
-  FIRST_SNOOZE_PATH,
-  // CHROME_WEB_STORE_INSTALL_SHARE_LINK,
-  SLEEPING_TABS_PATH,
-} from '../../paths';
-import { createCenteredWindow } from '../../core/utils';
+import { SLEEPING_TABS_PATH } from '../../paths';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
 import HotelIcon from '@material-ui/icons/Hotel';
 import { Link } from 'react-router-dom';
 
 export default class FirstSnoozeDialog extends Component<{}> {
-  static open() {
-    createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
-  }
-
   render() {
     // const shareText = `Snooze browser tabs for later with Tab Snooze Chrome Extension: \n${CHROME_WEB_STORE_INSTALL_SHARE_LINK}`;
 

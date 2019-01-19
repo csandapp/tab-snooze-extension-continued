@@ -9,9 +9,10 @@ import {
   TODO_PATH,
   SETTINGS_PATH,
   getUpgradeUrl,
+  BETA_PATH,
 } from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
-import BetaDialog from '../dialogs/BetaDialog';
+import { createTab } from '../../core/utils';
 // import Tooltip from '@material-ui/core/Tooltip';
 
 type Props = {
@@ -66,8 +67,7 @@ export default class SnoozeFooter extends Component<Props, State> {
           {betaBadge && (
             <BadgeButton
               onClick={() => {
-                BetaDialog.open();
-                window.close();
+                createTab(BETA_PATH);
               }}
             >
               <BetaBadge>BETA</BetaBadge>

@@ -4,15 +4,13 @@ import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
   getRecentlySnoozedTab,
+  createCenteredWindow,
 } from './utils';
 import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
-import {
-  FirstSnoozeDialog,
-  RateTSDialog,
-} from '../components/dialogs';
 import { scheduleWakeupAlarm } from './wakeup';
 import chromep from 'chrome-promise';
+import { FIRST_SNOOZE_PATH, RATE_TS_PATH } from '../paths';
 
 export async function snoozeTab(
   tab: ChromeTab,
@@ -72,10 +70,10 @@ export async function snoozeTab(
   // open share / rate dialog
   setTimeout(() => {
     if (totalSnoozeCount === 1) {
-      FirstSnoozeDialog.open();
+      createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
     }
     if (totalSnoozeCount === 10) {
-      RateTSDialog.open();
+      createCenteredWindow(RATE_TS_PATH, 500, 540);
     }
   }, 200);
 
