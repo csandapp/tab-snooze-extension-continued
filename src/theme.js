@@ -2,6 +2,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 
 // Styled Components theme (passed via context to prop.theme)
 // export const styledComponentsTheme = {
+// dark: true,
+
 //   // colors
 //   primary: '#4DCAF2',
 //   black: '#4A4A4A',
@@ -21,13 +23,16 @@ import { createMuiTheme } from '@material-ui/core/styles';
 //     bgColor: '#373533',
 //     border: '#4B4947',
 //     hoverColor: '#403E3C',
-//     footerTextColor: '#f4f4f4',
+//     footerTextColor: '#f0f0f0',
 //     buttonTextColor: '#f4f4f4',
-//     countBadgeColor: '#f4f4f4',
+//     countBadgeColor: '#f0f0f0',
 //     whiteIcons: true,
 //   },
 // };
 export const styledComponentsTheme = {
+
+  dark: false,
+
   // colors
   primary: '#4DCAF2',
   black: '#4A4A4A',
@@ -50,7 +55,7 @@ export const styledComponentsTheme = {
     footerTextColor: '#888888', //  / '#929292',
     buttonTextColor: '#788284',
     countBadgeColor: '#929292',
-    whiteIcons: false,
+    whiteIcons: false
   },
 };
 

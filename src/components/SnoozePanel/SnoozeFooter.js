@@ -144,7 +144,7 @@ const FooterBtn = styled(TooltipButton)`
     background-color: ${props => props.theme.snoozePanel.hoverColor};
   }
   :active {
-    background-color: #d7e3e3;
+    background-color: ${props => props.theme.dark ? props.theme.black :'#d7e3e3'};
   }
 `;
 
@@ -180,6 +180,8 @@ const UpgradeBadge = styled.div`
   padding: 8px 10px;
   border-radius: 5px;
   color: #fff;
+  /* color: ${props => props.theme.snoozePanel.bgColor}; */
+
   font-weight: 700;
   font-size: 16px;
 `;
