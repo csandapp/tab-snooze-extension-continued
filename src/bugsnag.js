@@ -3,7 +3,11 @@
 import bugsnag from '@bugsnag/js';
 import bugsnagReact from '@bugsnag/plugin-react';
 import React from 'react';
-import { APP_VERSION, isBackgroundScript } from './core/utils';
+import {
+  APP_VERSION,
+  isBackgroundScript,
+  IS_BETA,
+} from './core/utils';
 
 // init bug monitoring
 const bugsnagClient = bugsnag({
@@ -12,7 +16,7 @@ const bugsnagClient = bugsnag({
   appVersion: APP_VERSION,
   appType: 'extension',
   notifyReleaseStages: ['production', 'staging'],
-  releaseStage: process.env.NODE_ENV,
+  releaseStage: IS_BETA ? 'staging' : process.env.NODE_ENV,
 
   beforeSend: function(report) {
     report.stacktrace.forEach(

@@ -3,12 +3,15 @@ const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
 
-// const {
-//   BugsnagBuildReporterPlugin,
-// } = require('webpack-bugsnag-plugins');
+const {
+  BugsnagBuildReporterPlugin,
+  BugsnagSourceMapUploaderPlugin,
+} = require('webpack-bugsnag-plugins');
 
 const OUTPUT_PATH = './build';
 const PUBLIC_PATH = './public/';
+const APP_VERSION = require('./public/manifest.json').version;
+const { REACT_APP_BUGSNAG_API_KEY, DEPLOY_BUILD } = process.env;
 
 module.exports = function override(config, env) {
   if (env === 'development') {
@@ -42,27 +45,16 @@ module.exports = function override(config, env) {
   // Disable service worker, we don't use it
   config = disableServiceWorker(config);
 
+  // ORDER MATTERS
   // Upload source maps to bugsnag
-  // config = enableBugsnagSourceMapUpload(config, env);
+  if (DEPLOY_BUILD) {
+    config = enableBugsnagSourceMapUpload(config, env);
+  }
 
-  // config.entry = {
-  //   foreground: require.resolve('./src/index.js'),
-  //   background: require.resolve('./src/background.index.js'),
-  // };
-  // config.output.filename = 'static/js/[name].bundle.js';
-  // config.plugins[0].options.excludeChunks = ['background'];
-
-  // config = require('react-app-rewire-webpack-bundle-analyzer')(
-  //   config,
-  //   env,
-  //   {
-  //     analyzerMode: 'static',
-  //     reportFilename: 'report.html',
-  //   }
-  // );
-
-  // For Debug:
   if (false) {
+    configureEntryPoints(config);
+    addBundleAnalyzer(config, env);
+    // For Debug:
     printConfig(config);
     return;
   }
@@ -132,28 +124,46 @@ function disableServiceWorker(config) {
   return config;
 }
 
-// function enableBugsnagSourceMapUpload(config, env) {
-//   // It's a good idea to only run this plugin when you're building a bundle
-//   // that will be released, rather than for every development build
-//   console.log(process.env.REACT_APP_BUGSNAG_API_KEY);
-//   process.exit(1);
+function enableBugsnagSourceMapUpload(config, env) {
+  // It's a good idea to only run this plugin when you're building a bundle
+  // that will be released, rather than for every development build
 
-//   if (env === 'production') {
-//     config.plugins.push(
-//       new BugsnagBuildReporterPlugin(
-//         {
-//           apiKey: 'YOUR_API_KEY',
-//           appVersion: '1.2.3',
-//         },
-//         {
-//           /* opts */
-//         }
-//       )
-//     );
-//   }
+  config.plugins.push(
+    new BugsnagBuildReporterPlugin({
+      apiKey: REACT_APP_BUGSNAG_API_KEY,
+      appVersion: APP_VERSION,
+    })
+  );
+  config.plugins.push(
+    new BugsnagSourceMapUploaderPlugin({
+      apiKey: REACT_APP_BUGSNAG_API_KEY,
+      publicPath: 'chromeextension:/*',
+      appVersion: APP_VERSION,
+    })
+  );
 
-//   return config;
-// }
+  return config;
+}
+
+function configureEntryPoints(config) {
+  config.entry = {
+    foreground: require.resolve('./src/index.js'),
+    background: require.resolve('./src/background.index.js'),
+  };
+  config.output.filename = 'static/js/[name].bundle.js';
+  config.plugins[0].options.excludeChunks = ['background'];
+}
+
+function addBundleAnalyzer(config, env) {
+  config = require('react-app-rewire-webpack-bundle-analyzer')(
+    config,
+    env,
+    {
+      analyzerMode: 'static',
+      reportFilename: 'report.html',
+    }
+  );
+}
 
 // For documentation, here are stuff i tried, fixing the hot reload
 
