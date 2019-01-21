@@ -10,6 +10,7 @@ import {
   FIRST_SNOOZE_PATH,
   RATE_TS_PATH,
   BETA_PATH,
+  TUTORIAL_PATH,
 } from './paths';
 import Loadable from 'react-loadable';
 
@@ -31,6 +32,9 @@ const AsyncRateTSDialog = AsyncComp(() =>
 const AsyncBetaDialog = AsyncComp(() =>
   import('./components/dialogs/BetaDialog')
 );
+const AsyncTutorial = AsyncComp(() =>
+  import('./components/dialogs/Tutorial')
+);
 
 const Router = () => (
   // "noslash" - creates hashes like # and #sunshine/lollipops
@@ -45,6 +49,7 @@ const Router = () => (
       />
       <Route path={RATE_TS_PATH} component={AsyncRateTSDialog} />
       <Route path={BETA_PATH} component={AsyncBetaDialog} />
+      <Route path={TUTORIAL_PATH} component={AsyncTutorial} />
     </Fragment>
   </HashRouter>
 );

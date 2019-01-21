@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024px" height="60px" viewBox="0 0 1024 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>tutorial_article_nav</title>
+    <desc>Created with Sketch.</desc>
+    <g id="tutorial_article_nav" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#FDFDFD" x="0" y="0" width="1024" height="60"></rect>
+        <g id="Group-2" opacity="0.5" transform="translate(20.000000, 19.000000)" fill="#333333">
+            <path d="M15.7857143,7.33333333 L11.4312857,7.33333333 L16.6442143,2.08633333 C16.9913882,1.7367848 17.0952266,1.21117747 16.9073233,0.754533318 C16.7194199,0.297889167 16.2767664,0.000105536461 15.7857143,-8.8817842e-16 L8.5,-8.8817842e-16 C7.82936852,-9.29511149e-16 7.28571429,0.547207528 7.28571429,1.22222222 C7.28571429,1.89723692 7.82936852,2.44444444 8.5,2.44444444 L12.8544286,2.44444444 L7.6415,7.69144444 C7.2943261,8.04099298 7.19048769,8.56660031 7.37839103,9.02324446 C7.56629437,9.47988861 8.00894784,9.77767224 8.5,9.77777778 L15.7857143,9.77777778 C16.4563458,9.77777778 17,9.23057025 17,8.55555556 C17,7.88054086 16.4563458,7.33333333 15.7857143,7.33333333 Z" id="Path"></path>
+            <path d="M8.5,19.5555556 L4.14557143,19.5555556 L9.3585,14.3085556 C9.7056739,13.959007 9.80951231,13.4333997 9.62160897,12.9767555 C9.43370563,12.5201114 8.99105216,12.2223278 8.5,12.2222222 L1.21428571,12.2222222 C0.543654232,12.2222222 0,12.7694298 0,13.4444444 C0,14.1194591 0.543654232,14.6666667 1.21428571,14.6666667 L5.56871429,14.6666667 L0.355785714,19.9136667 C0.0086118168,20.2632152 -0.0952266002,20.7888225 0.0926767409,21.2454667 C0.280580082,21.7021108 0.723233553,21.9998945 1.21428571,22 L8.5,22 C9.17063148,22 9.71428571,21.4527925 9.71428571,20.7777778 C9.71428571,20.1027631 9.17063148,19.5555556 8.5,19.5555556 Z" id="Path"></path>
+        </g>
+        <text id="THE-SLEEPY-TIMES" opacity="0.5" font-family="Arial-BoldMT, Arial" font-size="22" font-weight="bold" letter-spacing="-0.5" fill="#484848">
+            <tspan x="46" y="38">THE SLEEPY TIME</tspan>
+            <tspan x="233.685547" y="38">S</tspan>
+        </text>
+        <text id="CRISIS-IN-DREAM-LAND" opacity="0.300000012" font-family="Arial-BoldMT, Arial" font-size="15" font-weight="bold" letter-spacing="-0.5" fill="#484848">
+            <tspan x="287" y="36">CRISIS IN DREAM LAN</tspan>
+            <tspan x="440.837402" y="36">D</tspan>
+        </text>
+        <text id="PILLOW-PRICES-RISE-3" opacity="0.300000012" font-family="Arial-BoldMT, Arial" font-size="15" font-weight="bold" letter-spacing="-0.5" fill="#484848">
+            <tspan x="489" y="36">PILLOW PRICES RISE 3.32</tspan>
+            <tspan x="668.376465" y="36">%</tspan>
+        </text>
+        <text id="HOW-TO-PROCRASTINATE" opacity="0.300000012" font-family="Arial-BoldMT, Arial" font-size="15" font-weight="bold" letter-spacing="-0.5" fill="#484848">
+            <tspan x="717" y="36">HOW TO PROCRASTINATE LIKE A PR</tspan>
+            <tspan x="972.834961" y="36">O</tspan>
+        </text>
+    </g>
+</svg>

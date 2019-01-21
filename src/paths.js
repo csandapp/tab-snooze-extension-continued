@@ -14,6 +14,7 @@ export const TODO_PATH = '/todo';
 export const FIRST_SNOOZE_PATH = '/first-snooze';
 export const RATE_TS_PATH = '/rate-tab-snooze';
 export const BETA_PATH = '/beta';
+export const TUTORIAL_PATH = '/tutorial';
 
 // A special route that is meant to execute the background.js
 // script, and not any GUI rendering.

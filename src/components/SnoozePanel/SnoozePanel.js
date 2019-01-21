@@ -104,6 +104,15 @@ class SnoozePanel extends Component<Props, State> {
         snoozeOptions[mappedOptionIndex]
       );
       nextFocusedIndex = -1;
+    } else if (key === 'enter') {
+      if (nextFocusedIndex === -1) {
+        // select later by default
+        nextFocusedIndex = 0;
+      }
+
+      const focusedSnoozeOption = snoozeOptions[nextFocusedIndex];
+      this.onSnoozeButtonClicked(event, focusedSnoozeOption);
+      nextFocusedIndex = -1;
     } else if (
       Number.isInteger(numpadKey) &&
       1 <= numpadKey &&
@@ -124,10 +133,6 @@ class SnoozePanel extends Component<Props, State> {
     } else if (key === 'tab') {
       nextFocusedIndex =
         (nextFocusedIndex + 1) % snoozeOptions.length;
-    } else if (key === 'enter') {
-      const focusedSnoozeOption = snoozeOptions[focusedButtonIndex];
-      this.onSnoozeButtonClicked(event, focusedSnoozeOption);
-      return;
     }
 
     this.setState({
@@ -291,6 +296,7 @@ const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   W: 3,
   N: 4,
   I: 5,
+  M: 5,
   S: 6,
   R: 7,
   P: 8,
