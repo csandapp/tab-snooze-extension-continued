@@ -1,5 +1,6 @@
 // @flow
 import { getSettings } from './settings';
+import bugsnag from '../bugsnag';
 
 // export const SOUND_TAB_SNOOZE1 = 'sounds/snooze1.mp3';
 // export const SOUND_TAB_SNOOZE2 = 'sounds/snooze2.mp3';
@@ -36,6 +37,10 @@ export function loadSoundEffect(sound: string): HTMLAudioElement {
 
 export function playAudio(sound: string) {
   if (playSoundEffects) {
-    loadAudio(sound).play();
+    try {
+      loadAudio(sound).play();
+    } catch (err) {
+      bugsnag.notify(err);
+    }
   }
 }

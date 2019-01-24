@@ -4,6 +4,7 @@ import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import bugsnag from '../../bugsnag';
 import calcSnoozeOptions, {
   SNOOZE_TYPE_REPEATED,
   SNOOZE_TYPE_SPECIFIC_DATE,
@@ -17,8 +18,8 @@ import SnoozeFooter from './SnoozeFooter';
 import {
   loadSoundEffect,
   SOUND_TAB_SNOOZE1,
-  SOUND_TAB_SNOOZE2,
-  SOUND_TAB_SNOOZE3,
+  // SOUND_TAB_SNOOZE2,
+  // SOUND_TAB_SNOOZE3,
 } from '../../core/audio';
 import keycode from 'keycode';
 import { getSnoozedTabs } from '../../core/storage';
@@ -61,8 +62,6 @@ type State = {
 };
 
 class SnoozePanel extends Component<Props, State> {
-  snoozeSound: HTMLAudioElement;
-
   constructor(props: Props) {
     super(props);
 
@@ -300,21 +299,28 @@ const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   S: 6,
   R: 7,
   P: 8,
+  D: 8,
 };
 const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
 const SNOOZE_SOUNDS = [
   SOUND_TAB_SNOOZE1,
-  SOUND_TAB_SNOOZE2,
-  SOUND_TAB_SNOOZE3,
+  // SOUND_TAB_SNOOZE2,
+  // SOUND_TAB_SNOOZE3,
 ];
 
 // give time for animation & sound to finish before snoozing (closing) tab
 function delayedSnoozeActiveTab(config: SnoozeConfig) {
-  playSnoozeSound();
   setTimeout(async () => {
     await snoozeActiveTab(config);
-    window.close();
+
+    // closing the tab closes the popup window. but if user requested that the tab
+    // remain open, we close the popup manually after a snooze
+    if (!config.closeTab) {
+      window.close();
+    }
   }, 1100);
+
+  playSnoozeSound();
 }
 
 /**
@@ -335,7 +341,15 @@ async function loadSnoozeSound() {
 }
 
 function playSnoozeSound() {
-  snoozeSound.play();
+  if (snoozeSound) {
+    try {
+      snoozeSound.play();
+    } catch (err) {
+      bugsnag.notify(new Error("Couldn't play sound"));
+    }
+  } else {
+    bugsnag.notify(new Error('Snooze sound file not loaded'));
+  }
 }
 
 export default TooltipHelper(SnoozePanel);
