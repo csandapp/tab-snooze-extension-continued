@@ -11,6 +11,7 @@ import {
 import { getSettings } from './settings';
 import { playAudio, SOUND_NOTIFICATION } from './audio';
 import { resnoozePeriodicTab } from './snooze';
+import bugsnag from '../bugsnag';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -79,12 +80,29 @@ export async function wakeupTabs(
 
 export async function wakeupReadyTabs() {
   const settings = await getSettings();
-  const snoozedTabs = await getSnoozedTabs();
+  let snoozedTabs = await getSnoozedTabs();
   let now = new Date();
 
   // check if tabs for right now already awoken by other alarm.
   if (now <= wakeupThreshold) {
     return;
+  }
+
+  // ****** Fixing a bug in production ***** //
+  // ****** THIS SHOULD NOT HAPPEN ***** //
+  // ****** THIS SHOULD NOT HAPPEN ***** //
+  // ****** THIS SHOULD NOT HAPPEN ***** //
+  if (snoozedTabs.findIndex(tab => !tab) !== -1) {
+    bugsnag.notify(new Error('Found null in snoozedTabs'), {
+      metaData: {
+        storage: {
+          snoozedTabs,
+        },
+      },
+    });
+
+    // TEMP FIX, remove null tabs
+    snoozedTabs = snoozedTabs.filter(tab => tab);
   }
 
   // set wakeupThreshold to a minute in the future to include
