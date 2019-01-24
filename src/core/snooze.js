@@ -5,6 +5,7 @@ import {
   calcNextOccurrenceForPeriod,
   getRecentlySnoozedTab,
   createCenteredWindow,
+  setAlarmTimeout,
 } from './utils';
 import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
@@ -68,14 +69,19 @@ export async function snoozeTab(
   });
 
   // open share / rate dialog
-  setTimeout(() => {
-    if (totalSnoozeCount === 1) {
-      createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
-    }
-    if (totalSnoozeCount === 10) {
-      createCenteredWindow(RATE_TS_PATH, 500, 540);
-    }
-  }, 200);
+  setAlarmTimeout(
+    'open_dialog_alarm',
+    () => {
+      if (totalSnoozeCount === 1) {
+        createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
+      }
+      if (totalSnoozeCount === 10) {
+        createCenteredWindow(RATE_TS_PATH, 500, 540);
+      }
+    },
+    2000
+  );
+
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);

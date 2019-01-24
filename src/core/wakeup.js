@@ -15,6 +15,8 @@ import { resnoozePeriodicTab } from './snooze';
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
 
+const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
+
 /*
     This timestamp prevents several alarms from going off at the same
     time and cause tabs to be woken up more than once because of a 
@@ -133,13 +135,13 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
     alarmTime = Date.now() + 1000 * 60;
   }
 
-  chrome.alarms.create('WAKEUP_TABS_ALARM', {
+  chrome.alarms.create(WAKEUP_TABS_ALARM_NAME, {
     when: alarmTime,
   });
 }
 
 export function cancelWakeupAlarm(): Promise<void> {
-  return chromep.alarms.clearAll();
+  return chromep.alarms.clear(WAKEUP_TABS_ALARM_NAME);
 }
 
 /**
@@ -148,13 +150,15 @@ export function cancelWakeupAlarm(): Promise<void> {
 export function registerEventListeners() {
   // Wake up tabs on scheduled dates
   chrome.alarms.onAlarm.addListener(async function(alarm) {
-    console.log('Alarm fired - waking up ready tabs');
+    if (alarm.name === WAKEUP_TABS_ALARM_NAME) {
+      console.log('Alarm fired - waking up ready tabs');
 
-    // wake up ready tabs, if any
-    await wakeupReadyTabs();
+      // wake up ready tabs, if any
+      await wakeupReadyTabs();
 
-    // Schedule wakeup for next tabs
-    await scheduleWakeupAlarm('auto');
+      // Schedule wakeup for next tabs
+      await scheduleWakeupAlarm('auto');
+    }
   });
 
   /*
