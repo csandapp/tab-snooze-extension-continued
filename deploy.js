@@ -4,6 +4,7 @@ const path = require('path');
 const zipFolder = require('zip-folder');
 const chromeWebstore = require('chrome-webstore-upload');
 const moment = require('moment');
+const rimraf = require('rimraf');
 
 // CONSTANTS
 const MANIFEST_PATH = './build/manifest.json';
@@ -28,6 +29,8 @@ if (IS_BETA_DEPLOY) {
   markBuildAsBeta();
 }
 
+deleteSourceMaps();
+
 zipBuild();
 
 // ---------------------------------------------------------------
@@ -51,6 +54,12 @@ function markBuildAsBeta() {
       }
     }
   );
+}
+
+function deleteSourceMaps() {
+  // after source maps were uploaded to bugsnag, delete them
+  // from build folder before zip & deploy
+  rimraf.sync(BUILD_FOLDER + '/**/*.map');
 }
 
 function zipBuild() {
