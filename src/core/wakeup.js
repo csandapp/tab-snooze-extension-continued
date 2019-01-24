@@ -60,9 +60,6 @@ export async function wakeupTabs(
   // delete waking tabs from storage
   await deleteSnoozedTabs(tabsToWakeUp);
 
-  // re-create tabs
-  const createdTabs = await createTabs(tabsToWakeUp, makeActive);
-
   // Reschedule repeated tabs, if any
   const periodicTabs = tabsToWakeUp.filter(tab => tab.period);
   for (let tab of periodicTabs) {
@@ -71,6 +68,9 @@ export async function wakeupTabs(
 
   // schedule wakeup for next tabs in list
   await scheduleWakeupAlarm('auto');
+
+  // re-create tabs
+  const createdTabs = await createTabs(tabsToWakeUp, makeActive);
 
   return createdTabs;
 }
