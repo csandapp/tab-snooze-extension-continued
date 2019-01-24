@@ -1,6 +1,5 @@
 // @flow
 import { getSnoozedTabs } from './storage';
-import chromep from 'chrome-promise';
 import { styledComponentsTheme } from '../theme';
 import { getSettings } from './settings';
 import moment from 'moment';
@@ -46,8 +45,9 @@ export async function updateBadge() {
     snoozedCount = '';
   }
 
-  chromep.browserAction.setBadgeBackgroundColor({
+  chrome.browserAction.setBadgeBackgroundColor({
     color: styledComponentsTheme.primary,
   });
-  chromep.browserAction.setBadgeText({ text: '' + snoozedCount });
+
+  chrome.browserAction.setBadgeText({ text: '' + snoozedCount });
 }
