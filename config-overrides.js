@@ -139,6 +139,7 @@ function enableBugsnagSourceMapUpload(config, env) {
       apiKey: REACT_APP_BUGSNAG_API_KEY,
       publicPath: 'chromeextension:/*',
       appVersion: APP_VERSION,
+      overwrite: true,
     })
   );
 
