@@ -57,10 +57,6 @@ export async function snoozeTab(
   // usage tracking
   trackTabSnooze(snoozedTab);
 
-  if (closeTab) {
-    chromep.tabs.remove(tab.id);
-  }
-
   let { totalSnoozeCount } = await getSettings();
   totalSnoozeCount++;
 
@@ -82,6 +78,11 @@ export async function snoozeTab(
     2000
   );
 
+  // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
+  // the flow of this code before finish. so close tab at the end.
+  if (closeTab) {
+    chromep.tabs.remove(tab.id);
+  }
 
   // Add tab to history
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
