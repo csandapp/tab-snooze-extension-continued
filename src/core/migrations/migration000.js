@@ -130,6 +130,9 @@ async function migrateOldSnoozedTabsObjects() {
   //   return;
   // }
 
+  // Some tabs have null urls...  no reason why, ignore them
+  snoozedTabs = snoozedTabs.filter(tab => tab.url != null);
+
   snoozedTabs.forEach(tab => {
     // migrate old todo page to new one
     migrateTodoPage(tab);
