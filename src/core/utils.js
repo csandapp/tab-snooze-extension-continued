@@ -94,7 +94,11 @@ export async function notifyUserAboutNewTabs(
   let faviconURI;
 
   if (faviconUrl) {
-    faviconURI = await imageUrlToBase64(faviconUrl);
+    try {
+      faviconURI = await imageUrlToBase64(faviconUrl);
+    } catch (error) {
+      // ignore failed attempts to download image
+    }
   }
 
   // if failed to fetch favicon (CORS is annoying!)
@@ -313,28 +317,28 @@ export async function imageUrlToBase64(url: string): Promise<string> {
     return url;
   }
 
-  return '';
+  const response = await fetch(url);
 
-  // return new Promise((resolve, reject) =>
-  //   require('request')(
-  //     {
-  //       url,
-  //       encoding: 'binary',
-  //     },
-  //     function(err, res, body) {
-  //       if (err) {
-  //         return null;
-  //       } else {
-  //         var type = res.headers['content-type'];
-  //         var prefix = 'data:' + type + ';base64,';
-  //         var base64 = new Buffer(body, 'binary').toString('base64');
-  //         var dataURI = prefix + base64;
+  if (!response.body) {
+    throw new Error('No body in response');
+  }
 
-  //         resolve(dataURI);
-  //       }
-  //     }
-  //   )
-  // );
+  const base64 = await response.body
+    .getReader()
+    .read()
+    .then(result =>
+      btoa(String.fromCharCode.apply(null, result.value))
+    );
+
+  const type = response.headers.get('Content-Type');
+
+  if (!type) {
+    throw new Error('Failed to get content type');
+  }
+
+  const dataURI = 'data:' + type + ';base64,' + base64;
+
+  return dataURI;
 }
 
 export const IS_BETA = process.env.REACT_APP_IS_BETA === 'true';
