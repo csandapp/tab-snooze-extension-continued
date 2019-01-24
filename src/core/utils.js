@@ -294,22 +294,22 @@ export function getFirstTabToWakeup(
  * We're not allowed to use setTimeout in bg scripts because they might not run.
  * So we use Alarms instead
  */
-export function setAlarmTimeout(
-  alarmName: string,
-  callback: () => void,
-  timeout: number
-) {
-  chrome.alarms.create(alarmName, {
-    when: Date.now() + timeout,
-  });
+// export function setAlarmTimeout(
+//   alarmName: string,
+//   callback: Function,
+//   timeout: number
+// ) {
+//   chrome.alarms.onAlarm.addListener(function listener(alarm) {
+//     if (alarm.name === alarmName) {
+//       // chrome.alarms.onAlarm.removeListener(listener);
+//       callback();
+//     }
+//   });
 
-  chrome.alarms.onAlarm.addListener(function listener(alarm) {
-    if (alarm.name === alarmName) {
-      chrome.alarms.onAlarm.removeListener(listener);
-      callback();
-    }
-  });
-}
+//   chrome.alarms.create(alarmName, {
+//     when: Date.now() + timeout,
+//   });
+// }
 
 export async function imageUrlToBase64(url: string): Promise<string> {
   // if already base64 encoded, just return url.
