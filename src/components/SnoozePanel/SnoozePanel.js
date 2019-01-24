@@ -94,7 +94,8 @@ class SnoozePanel extends Component<Props, State> {
     const { focusedButtonIndex, snoozeOptions } = this.state;
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event);
-    const mappedOptionIndex = SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
+    const mappedOptionIndex =
+      key && SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
     const numpadKey = parseInt(key);
 
     if (mappedOptionIndex != null) {
