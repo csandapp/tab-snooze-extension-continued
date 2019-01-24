@@ -91,11 +91,15 @@ export async function notifyUserAboutNewTabs(
   console.log(title);
 
   const faviconUrl = tabs[0].favicon;
-  let base64Favicon = await imageUrlToBase64(faviconUrl);
+  let faviconURI;
+
+  if (faviconUrl) {
+    faviconURI = await imageUrlToBase64(faviconUrl);
+  }
 
   // if failed to fetch favicon (CORS is annoying!)
-  if (!base64Favicon) {
-    base64Favicon = 'images/extension_icon_128.png';
+  if (!faviconURI) {
+    faviconURI = 'images/extension_icon_128.png';
   }
 
   // Desktop notification
@@ -103,7 +107,7 @@ export async function notifyUserAboutNewTabs(
     type: 'basic',
     title,
     message,
-    iconUrl: base64Favicon,
+    iconUrl: faviconURI,
   });
 
   // chrome.windows.update(jumpToTab.windowId, {drawAttention: true});
