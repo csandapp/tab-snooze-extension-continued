@@ -33,6 +33,13 @@ export default styled.button.attrs(props => ({
     `}
 
   ${props =>
+    props.disabled &&
+    css`
+      pointer-events: none;
+      opacity: 0.6;
+    `}
+
+  ${props =>
     props.icon &&
     css`
       background-image: url('${props.icon}');

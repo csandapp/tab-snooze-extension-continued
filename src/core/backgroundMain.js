@@ -14,20 +14,14 @@ import {
   SLEEPING_TABS_PATH,
   CHANGELOG_URL,
   getTrackUninstallUrl,
-  FIRST_SNOOZE_PATH,
-  RATE_TS_PATH,
+  TUTORIAL_PATH,
 } from '../paths';
 import {
   COMMAND_NEW_TODO,
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
-import {
-  createTab,
-  IS_BETA,
-  APP_VERSION,
-  createCenteredWindow,
-} from './utils';
+import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
 import chromep from 'chrome-promise';
 import { performMigrations } from './migrationManager';
@@ -36,7 +30,6 @@ import {
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { saveSettings } from './settings';
-import { loadServerConfig } from './serverConfig';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -83,8 +76,7 @@ export function runBackgroundScript() {
         installDate: Date.now(),
       });
 
-      // Cache the server config for the first time
-      await loadServerConfig();
+      createTab(TUTORIAL_PATH);
     }
 
     if (reason === 'update') {
@@ -109,15 +101,6 @@ export function runBackgroundScript() {
 
     if (command === COMMAND_OPEN_SLEEPING_TABS) {
       createTab(SLEEPING_TABS_PATH);
-    }
-  });
-
-  chrome.alarms.onAlarm.addListener(function listener(alarm) {
-    if (alarm.name === FIRST_SNOOZE_PATH) {
-      createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
-    }
-    if (alarm.name === RATE_TS_PATH) {
-      createCenteredWindow(RATE_TS_PATH, 500, 540);
     }
   });
 }

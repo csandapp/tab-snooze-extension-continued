@@ -6,15 +6,21 @@ import Zoom from '@material-ui/core/Zoom';
 type Props = {
   children: any,
   visible: boolean,
+  noAnimation?: boolean,
 };
 
 export default class SnoozeModal extends Component<Props> {
   render() {
-    const { visible, children } = this.props;
+    const { visible, noAnimation, children } = this.props;
     return (
       <Overlay active={visible}>
         {/* mountOnEnter so to render fast and open the popup fast */}
-        <Zoom in={visible} timeout={300} direction="up" mountOnEnter>
+        <Zoom
+          in={visible}
+          timeout={{ enter: noAnimation ? 0 : 300, exit: 300 }}
+          direction="up"
+          mountOnEnter
+        >
           <Modal visible={visible}>{children}</Modal>
         </Zoom>
       </Overlay>

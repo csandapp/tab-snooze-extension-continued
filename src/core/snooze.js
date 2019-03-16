@@ -4,15 +4,14 @@ import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
   getRecentlySnoozedTab,
+  createCenteredWindow,
 } from './utils';
 import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
 import chromep from 'chrome-promise';
 import { FIRST_SNOOZE_PATH, RATE_TS_PATH } from '../paths';
-
-// Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+import { incrementWeeklyUsage } from './license';
 
 export async function snoozeTab(
   tab: ChromeTab,
@@ -65,17 +64,15 @@ export async function snoozeTab(
     totalSnoozeCount,
   });
 
+  await incrementWeeklyUsage();
+
   // open share / rate dialog
   if (totalSnoozeCount === 1) {
-    chrome.alarms.create(FIRST_SNOOZE_PATH, {
-      when: Date.now() + 1000,
-    });
+    createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
   }
 
   if (totalSnoozeCount === 10) {
-    chrome.alarms.create(RATE_TS_PATH, {
-      when: Date.now() + 1000,
-    });
+    createCenteredWindow(RATE_TS_PATH, 500, 540);
   }
 
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate

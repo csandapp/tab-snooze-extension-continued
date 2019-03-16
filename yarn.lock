@@ -2134,9 +2134,9 @@ chownr@^1.0.1, chownr@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
 
-chrome-promise@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/chrome-promise/-/chrome-promise-3.0.2.tgz#31e273e32ef10eb86a8cb4d61c7a843362d29463"
+chrome-promise@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/chrome-promise/-/chrome-promise-3.0.4.tgz#6509116b246fa1b87069df2fe0bdf333153adbb5"
 
 chrome-trace-event@^1.0.0:
   version "1.0.0"

@@ -15,9 +15,8 @@ export default class RateTSDialog extends Component<{}> {
         headline="Lovin' Tab Snooze?"
         subheader={
           <Fragment>
-            Would you mind taking a moment to give us a review?
-            <br />
-            Thank you for your support!
+            Would you mind taking a moment to give us a review? Thank
+            you for your support!
           </Fragment>
         }
       >

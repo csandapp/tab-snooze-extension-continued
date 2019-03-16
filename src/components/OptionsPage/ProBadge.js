@@ -3,8 +3,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { getUpgradeUrl } from '../../paths';
 
-export default () => (
-  <Root href={getUpgradeUrl()} target="_blank">
+export default ({ big }: { big?: boolean }) => (
+  <Root big={big} href={getUpgradeUrl()} target="_blank">
     PRO
   </Root>
 );
@@ -17,6 +17,6 @@ const Root = styled.a`
   border-radius: 5px;
   color: #fff;
   font-weight: 700;
-  font-size: 14px;
+  font-size: ${props => (props.big ? 20 : 14)}px;
   margin-left: 3px;
 `;

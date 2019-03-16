@@ -63,4 +63,8 @@ declare type Settings = {|
   version: number,
   totalSnoozeCount: number,
   installDate: number,
+  weeklyUsage: {
+    weekNumber: number,
+    usageCount: number,
+  },
 |};

@@ -2,9 +2,23 @@
 
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import Zoom from '@material-ui/core/Zoom';
 
-export default class Tutorial extends Component<{}> {
+export default class Tutorial extends Component<
+  {},
+  { isChatBubbleOpen: boolean }
+> {
+  constructor(props: {}) {
+    super(props);
+
+    this.state = {
+      isChatBubbleOpen: false,
+    };
+
+    setTimeout(() => this.setState({ isChatBubbleOpen: true }), 1200);
+  }
   render() {
+    const { isChatBubbleOpen } = this.state;
     return (
       <Root>
         <FakeNav>
@@ -13,7 +27,12 @@ export default class Tutorial extends Component<{}> {
             alt=""
           />
         </FakeNav>
-        <Article src={require('./images/tutorial_article.svg')} />
+        <div style={{ position: 'relative' }}>
+          <Article src={require('./images/tutorial_article.svg')} />
+          <Zoom in={isChatBubbleOpen}>
+            <Bubble src={require('./images/tutorial_bubble.png')} />
+          </Zoom>
+        </div>
         <Spacer />
       </Root>
     );
@@ -40,6 +59,11 @@ const FakeNav = styled.div`
 `;
 const Article = styled.img`
   margin-top: 10px;
+`;
+const Bubble = styled.img`
+  position: absolute;
+  top: 300px;
+  right: -200px;
 `;
 const Spacer = styled.img`
   flex: 1;

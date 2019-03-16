@@ -12,8 +12,12 @@ import calcSnoozeOptions, {
 import SnoozeButtonsGrid from './SnoozeButtonsGrid';
 import { snoozeActiveTab } from '../../core/snooze';
 import TooltipHelper from './TooltipHelper';
+import UpgradeDialog from './UpgradeDialog';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
-import { isProUser } from '../../core/license';
+import {
+  isOverFreeWeeklyQuota,
+  isInPaywallTest,
+} from '../../core/license';
 import SnoozeFooter from './SnoozeFooter';
 import {
   loadSoundEffect,
@@ -59,6 +63,7 @@ type State = {
   // We delay date/period selection dialogs openining
   // to give time for click animation to finish gracefuly
   selectorDialogOpen: boolean,
+  isOverFreePlanLimit: boolean,
 };
 
 class SnoozePanel extends Component<Props, State> {
@@ -76,27 +81,45 @@ class SnoozePanel extends Component<Props, State> {
       isProUser: false,
 
       selectorDialogOpen: false,
+      isOverFreePlanLimit: false,
     };
 
-    Promise.all([getSettings(), isProUser()]).then(
-      ([settings, isProUser]) =>
+    Promise.all([getSettings(), isInPaywallTest()]).then(
+      ([settings, isInPaywallTest]) =>
         this.setState({
           snoozeOptions: calcSnoozeOptions(settings),
-          isProUser,
+          isProUser: !isInPaywallTest,
         })
     );
+
+    setTimeout(() => {
+      isOverFreeWeeklyQuota().then(isOverFreePlanLimit =>
+        this.setState({
+          isOverFreePlanLimit,
+        })
+      );
+    }, 300);
 
     // load the next snooze sound to play
     loadSnoozeSound();
   }
 
   onKeyPress(event: Event) {
-    const { focusedButtonIndex, snoozeOptions } = this.state;
+    const {
+      focusedButtonIndex,
+      snoozeOptions,
+      isOverFreePlanLimit,
+    } = this.state;
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event);
     const mappedOptionIndex =
       key && SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
     const numpadKey = parseInt(key);
+
+    if (isOverFreePlanLimit) {
+      // ignore shortcuts when Upgrade dialog is visible
+      return;
+    }
 
     if (mappedOptionIndex != null) {
       this.onSnoozeButtonClicked(
@@ -233,6 +256,7 @@ class SnoozePanel extends Component<Props, State> {
       snoozeOptions,
       isProUser,
       selectorDialogOpen,
+      isOverFreePlanLimit,
     } = this.state;
     const { tooltipText, tooltipVisible, hideFooter } = this.props;
 
@@ -261,7 +285,6 @@ class SnoozePanel extends Component<Props, State> {
           upgradeBadge={!isProUser}
           betaBadge={IS_BETA}
         />
-
         {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
           <AsyncPeriodSelector
             onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
@@ -282,6 +305,12 @@ class SnoozePanel extends Component<Props, State> {
             }
           />
         )}
+        <UpgradeDialog
+          onDismiss={() =>
+            this.setState({ isOverFreePlanLimit: false })
+          }
+          visible={isOverFreePlanLimit}
+        />
       </Root>
     );
   }

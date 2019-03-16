@@ -24,6 +24,10 @@ export const DEFAULT_SETTINGS: Settings = {
   version: 3,
   totalSnoozeCount: 0,
   installDate: 0,
+  weeklyUsage: {
+    weekNumber: 0,
+    usageCount: 0,
+  },
 };
 
 export async function getSettings(): Promise<Settings> {
