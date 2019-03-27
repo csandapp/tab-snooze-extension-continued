@@ -70,9 +70,12 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
   const snoozedTabs = await getSnoozedTabs();
 
+  var hostname = new URL(snoozedTab.url).hostname;
+
   track(EVENTS.TAB_SNOOZE, {
     'Snooze Type': snoozedTab.type,
     'Sleeping Tabs': snoozedTabs.length,
+    'Snoozed Domain': hostname,
   });
   mixpanel.people.increment('tabs snoozed');
   mixpanel.people.set({
