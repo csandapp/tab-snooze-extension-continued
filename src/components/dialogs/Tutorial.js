@@ -6,7 +6,7 @@ import Zoom from '@material-ui/core/Zoom';
 
 export default class Tutorial extends Component<
   {},
-  { isChatBubbleOpen: boolean }
+  { isChatBubbleOpen: boolean } 
 > {
   constructor(props: {}) {
     super(props);
