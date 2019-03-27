@@ -63,8 +63,9 @@ export async function incrementWeeklyUsage(): Promise<void> {
 export async function isOverFreeWeeklyQuota(): Promise<boolean> {
   const { weeklyUsage } = await getSettings();
   let weeklyUsageCount = weeklyUsage.usageCount;
+  const isInPaywallTestResult = await isInPaywallTest();
 
-  if (!isInPaywallTest()) {
+  if (!isInPaywallTestResult) {
     return false; // never over quota
   }
 
