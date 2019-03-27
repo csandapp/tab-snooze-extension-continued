@@ -31,9 +31,11 @@ import {
   countConsecutiveSnoozes,
   IS_BETA,
   createTab,
+  getActiveTab,
 } from '../../core/utils';
 import { getUpgradeUrl } from '../../paths';
 import Loadable from 'react-loadable';
+import chromep from 'chrome-promise';
 
 const AsyncComp = props =>
   Loadable({ ...props, loading: () => null });
@@ -340,12 +342,22 @@ const SNOOZE_SOUNDS = [
 
 // give time for animation & sound to finish before snoozing (closing) tab
 function delayedSnoozeActiveTab(config: SnoozeConfig) {
-  setTimeout(async () => {
-    await snoozeActiveTab(config);
+  snoozeActiveTab({
+    ...config,
+    // Don't close tab automatically, we close it ourselves in the lines below.
+    closeTab: false,
+  });
 
+  setTimeout(async () => {
     // closing the tab closes the popup window. but if user requested that the tab
     // remain open, we close the popup manually after a snooze
-    if (!config.closeTab) {
+    if (config.closeTab) {
+      // close tab manually
+      const activeTab = await getActiveTab();
+
+      chromep.tabs.remove(activeTab.id);
+    } else {
+      // just close extension popup window
       window.close();
     }
   }, 1100);
