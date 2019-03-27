@@ -2,6 +2,7 @@
 import chromep from 'chrome-promise';
 import moment from 'moment';
 import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
+import queryString from 'query-string';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -33,13 +34,26 @@ export function createTabs(
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map(tabInfo =>
       chromep.tabs.create({
-        url: tabInfo.url,
+        url: attachAffiliationTag(tabInfo.url),
         active: makeActive,
       })
     )
   );
 
   return allTabsCreatedPromise;
+}
+
+function attachAffiliationTag(url: string) {
+  const { url: startOfUrl, query } = queryString.parseUrl(url);
+
+  // Attach affiliate tracking ID for amazon product links
+  if (startOfUrl.includes('amazon.')) {
+    query.tag = 'tabsnooze-20';
+  }
+
+  const newUrl = startOfUrl + '?' + queryString.stringify(query);
+
+  return newUrl;
 }
 
 export async function createCenteredWindow(
