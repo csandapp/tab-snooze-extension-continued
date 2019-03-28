@@ -2,10 +2,12 @@
 import chromep from 'chrome-promise';
 import moment from 'moment';
 import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
-import queryString from 'query-string';
+import URL from 'url';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
+
+const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
 
 export function isBackgroundScript() {
   const hashPath = window.location.hash.substring(1);
@@ -43,17 +45,17 @@ export function createTabs(
   return allTabsCreatedPromise;
 }
 
+// Attach affiliate tracking ID for amazon product links
 function attachAffiliationTag(url: string) {
-  const { url: startOfUrl, query } = queryString.parseUrl(url);
-
-  // Attach affiliate tracking ID for amazon product links
-  if (startOfUrl.includes('amazon.')) {
-    query.tag = 'tabsnooze-20';
+  if (!url.includes('amazon.')) {
+    return url; // as is
   }
+  const parsedUrl = URL.parse(url, true /* parse query too */);
 
-  const newUrl = startOfUrl + '?' + queryString.stringify(query);
+  parsedUrl.query.tag = AMAZON_AFFILIATE_ID;
+  delete parsedUrl.search; // delete search so 'query' will be used for formatting
 
-  return newUrl;
+  return URL.format(parsedUrl);
 }
 
 export async function createCenteredWindow(
