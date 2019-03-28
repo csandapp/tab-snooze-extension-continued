@@ -208,6 +208,7 @@ class SnoozePanel extends Component<Props, State> {
     delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       wakeupTime: date.getTime(),
+      closeTab: true,
     });
   }
 
@@ -222,6 +223,7 @@ class SnoozePanel extends Component<Props, State> {
     delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       period,
+      closeTab: true,
     });
   }
 
