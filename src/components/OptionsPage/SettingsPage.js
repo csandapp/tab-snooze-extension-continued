@@ -18,6 +18,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import LoveIcon from '@material-ui/icons/Favorite';
 import StarIcon from '@material-ui/icons/Star';
+import RateReviewIcon from '@material-ui/icons/RateReview';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import MoonIcon from '@material-ui/icons/Brightness2';
 // import UserIcon from '@material-ui/icons/AccountCircle';
@@ -40,6 +41,7 @@ import {
   CHROME_SETTINGS_SHORTCUTS,
   getUpgradeUrl,
   TAB_SNOOZE_FEATURE_VOTE_URL,
+  PAYPAL_DONATE_URL,
 } from '../../paths';
 import { EVENTS, track } from '../../core/analytics';
 import {
@@ -474,13 +476,19 @@ class SettingsPage extends Component<Props, State> {
 
           <Header>Miscellaneous</Header>
           {this.renderButtonSetting({
-            icon: <LoveIcon />,
+            icon: <StarIcon />,
             title: 'Loving Tab Snooze?',
             description: 'Rate Tab Snooze the Chrome Web Store!',
             href: CHROME_WEB_STORE_REVIEW,
           })}
           {this.renderButtonSetting({
-            icon: <StarIcon />,
+            icon: <LoveIcon />,
+            title: 'Donate to support this free tool',
+            description: 'Support Tab Snooze single developer',
+            href: PAYPAL_DONATE_URL,
+          })}
+          {this.renderButtonSetting({
+            icon: <RateReviewIcon />,
             title: 'Suggest & vote on new features',
             description: 'Tell us about your ideas for Tab Snooze',
             href: TAB_SNOOZE_FEATURE_VOTE_URL,

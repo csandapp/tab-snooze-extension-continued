@@ -26,6 +26,8 @@ export const CHROME_WEB_STORE_INSTALL_SHARE_LINK =
   'http://bit.ly/get-tab-snooze';
 export const CHROME_WEB_STORE_REVIEW =
   'https://chrome.google.com/webstore/detail/tab-snooze/pdiebiamhaleloakpcgmpnenggpjbcbm/reviews';
+export const PAYPAL_DONATE_URL =
+  'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=82HLJCDURLVME&currency_code=USD&source=url';
 export const CHROME_SETTINGS_SHORTCUTS =
   'chrome://extensions/shortcuts';
 export const MESSENGER_PROFILE_URL = 'https://m.me/tabsnooze';
