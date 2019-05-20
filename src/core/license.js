@@ -36,10 +36,13 @@ export async function isProUser() {
 // }
 
 export async function isInPaywallTest(): Promise<boolean> {
-  const { installDate } = await getSettings();
+  // const { installDate } = await getSettings();
+
+  // REMOVED FAKE PAYWALL :( 20 May...
+  return false;
 
   // All users past March 2019 are in this test, and will see the paywall
-  return moment(installDate) > moment('20190301', 'YYYYMMDD');
+  // return moment(installDate) > moment('20190301', 'YYYYMMDD');
 }
 
 export async function incrementWeeklyUsage(): Promise<void> {

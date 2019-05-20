@@ -36,7 +36,7 @@ export function createTabs(
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map(tabInfo =>
       chromep.tabs.create({
-        url: attachAffiliationTag(tabInfo.url),
+        url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
       })
     )
