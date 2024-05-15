@@ -1,0 +1,8 @@
+# Work in Progress
+0) download things like npm if you don't have it already
+1) run `npm install --legacy-peer-deps` because this extension uses a lot of legacy code
+2) update the package.json build script to have `react-app-rewired build` to have `NODE_OPTIONS=--openssl-legacy-provider` in front of it. We do this because there was an error when running build without this option. According to ChatGPT, the error you're encountering, ERR_OSSL_EVP_UNSUPPORTED, is related to a compatibility issue between the version of Node.js you're using and the cryptographic algorithms used by Webpack. This is a common problem with newer versions of Node.js (v17 and later) because of changes in the OpenSSL library, and reccommended adding the NODE_OPTION to the build script. 
+3) run `npm run build`
+4) upload the build/ folder to load unpacked extension in chrome to test it
+
+TODO in the future is to have the build not minify the app https://stackoverflow.com/questions/55165466/how-to-build-a-production-version-of-react-without-minification
