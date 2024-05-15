@@ -10,6 +10,7 @@ if (isBackgroundScript()) {
   runBackgroundScript();
 } else {
   const rootEl = document.getElementById('root');
+  rootEl.style.width = "max-content";
 
   if (!rootEl) {
     throw new Error('React root element is missing');
