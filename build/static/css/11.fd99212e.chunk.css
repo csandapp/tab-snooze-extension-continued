@@ -1,0 +1,51 @@
+.DayPicker-Month {
+  width: 100%;
+  margin: 0;
+
+  border-collapse: collapse;
+  /* border: 1px solid red; */
+  font-size: 20px !important;
+}
+
+.DayPicker-Day {
+  border-radius: 8px;
+  padding: 0.45em;
+  /* transition: all 0.1s; */
+}
+.DayPicker-Day:not(.DayPicker-Day--outside) {
+  font-weight: 500;
+}
+
+.DayPicker:not(.DayPicker--interactionDisabled)
+  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover,
+  .DayPicker-Day--outside:not(.DayPicker-Day--disabled):hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside),
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
+  /* transition: all 0.1s; */
+  background-color: #75ddff; /*#54caf0;*/
+  font-weight: 500;
+  /* background-color: #fff;
+  border: 4px solid #54caf0;
+  border-radius: 10px; */
+}
+
+.DayPicker-Day--outside:not(.DayPicker-Day--disabled) {
+  color: #aaa;
+}
+
+.DayPicker-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+.DayPicker-Weekday {
+  color: #999;
+  font-weight: 700;
+}
+
+
+/*# sourceMappingURL=11.fd99212e.chunk.css.map*/
