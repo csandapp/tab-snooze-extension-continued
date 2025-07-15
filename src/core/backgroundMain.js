@@ -104,6 +104,23 @@ export function runBackgroundScript() {
   });
 }
 
+let offscreenDocumentCreated = false;
+
+// Helper function to ensure offscreen document exists
+export async function ensureOffscreenDocument() {
+  
+  console.log("Ensuring offscreen document is created...");
+
+  if (!offscreenDocumentCreated) {
+    await chrome.offscreen.createDocument({
+      url: 'offscreen.html',
+      reasons: ['AUDIO_PLAYBACK'],
+      justification: 'Play notification and alert sounds'
+    });
+    offscreenDocumentCreated = true;
+  }
+}
+
 async function extensionMain() {
   /**
    * Run pending migrations!

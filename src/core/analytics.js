@@ -70,6 +70,8 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
   const snoozedTabs = await getSnoozedTabs();
 
+  console.log('Tracking tab snooze:', snoozedTab);
+
   var hostname = new URL(snoozedTab.url).hostname;
 
   track(EVENTS.TAB_SNOOZE, {

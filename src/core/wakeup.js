@@ -78,7 +78,7 @@ export async function wakeupTabs(
   return createdTabs;
 }
 
-export async function wakeupReadyTabs() {
+export async function wakeupReadyTabs(isBackgroundScript: boolean = false): Promise<void> {
   const settings = await getSettings();
   let snoozedTabs = await getSnoozedTabs();
   let now = new Date();
@@ -126,7 +126,16 @@ export async function wakeupReadyTabs() {
     }
 
     if (settings.playNotificationSound) {
-      playAudio(SOUND_NOTIFICATION);
+      if (isBackgroundScript) {
+        // send message to foreground script to play sound
+        await chromeruntime.sendMessage({
+          action: 'playAudio',
+          sound: SOUND_NOTIFICATION,
+        });
+      } else {
+        // Play sound in foreground script
+        playAudio(SOUND_NOTIFICATION);
+      }
     }
   }
 }
@@ -135,7 +144,7 @@ export async function wakeupReadyTabs() {
     Clear all existing alarms and reschedule new alarms
     based on current snoozedTabs array.
 */
-export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
+export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> {
   await cancelWakeupAlarm();
 
   const snoozedTabs = await getSnoozedTabs();
@@ -174,7 +183,7 @@ export function registerEventListeners() {
       console.log('Alarm fired - waking up ready tabs');
 
       // wake up ready tabs, if any
-      await wakeupReadyTabs();
+      await wakeupReadyTabs({ isBackgroundScript: true });
 
       // Schedule wakeup for next tabs
       await scheduleWakeupAlarm('auto');
