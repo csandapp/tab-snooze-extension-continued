@@ -128,7 +128,7 @@ export async function wakeupReadyTabs(isBackgroundScript: boolean = false): Prom
     if (settings.playNotificationSound) {
       if (isBackgroundScript) {
         // send message to foreground script to play sound
-        await chromeruntime.sendMessage({
+        await chrome.runtime.sendMessage({
           action: 'playAudio',
           sound: SOUND_NOTIFICATION,
         });
