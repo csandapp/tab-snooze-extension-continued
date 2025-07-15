@@ -45,9 +45,9 @@ export async function updateBadge() {
     snoozedCount = '';
   }
 
-  chrome.browserAction.setBadgeBackgroundColor({
+  chrome.action.setBadgeBackgroundColor({
     color: styledComponentsTheme.primary,
   });
 
-  chrome.browserAction.setBadgeText({ text: '' + snoozedCount });
+  chrome.action.setBadgeText({ text: '' + snoozedCount });
 }
