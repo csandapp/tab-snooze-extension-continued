@@ -8,43 +8,43 @@
   "author": "Tab Snooze",
   "homepage_url": "http://www.tabsnooze.com",
   "permissions": [
-    
-    
+    // TODO figure out if I need tabs permission
+    // "tabs",
     "alarms",
     "storage",
     "notifications",
     "idle"
   ],
-  
-  
-  
-  
+  // TODO I don't think I need host permissions
+  // "host_permissions": [
+  //   "<all_urls>"
+  // ],
   
 
-  
+  // TODO see if I need web_accessible_resources
   "web_accessible_resources": [{
     "resources": ["images/*", "fonts/*", "sounds/*"],
     "matches": ["<all_urls>"]
   }],
   
-  
+  // seems like action should be used instead of browser action https://developer.chrome.com/docs/extensions/reference/manifest
   "action": {
     "default_title": "Snooze This Tab",
     "default_popup": "index.html#popup",
-    
+    // TODO why did I change from 32 to 128?
     "default_icon": {
       "128": "images/extension_icon_128.png"
     }
   },
   "options_page": "index.html#options/settings",
   "background": {
-    
-    
-    "service_worker": "static/js/background.js",  
+    // mainunbobs seems to have some nice stuff
+    // background was this one... "page": "index.html#background",
+    "service_worker": "static/js/background.js",  // imports don't seem to work in src/background.index.js even when files definitely exist
     "type": "module"
   },
   "commands": {
-    
+    // changed from _execute__browser_action
     "_execute_action": {
       "suggested_key": {
         "default": "Alt+S"

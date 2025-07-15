@@ -11,10 +11,10 @@ import {
 import { getSettings } from './settings';
 import { playAudio, SOUND_NOTIFICATION } from './audio';
 import { resnoozePeriodicTab } from './snooze';
-import bugsnag from '../bugsnag';
+// import bugsnag from '../bugsnag';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
@@ -93,13 +93,15 @@ export async function wakeupReadyTabs() {
   // ****** THIS SHOULD NOT HAPPEN ***** //
   // ****** THIS SHOULD NOT HAPPEN ***** //
   if (snoozedTabs.findIndex(tab => !tab) !== -1) {
-    bugsnag.notify(new Error('Found null in snoozedTabs'), {
-      metaData: {
-        storage: {
-          snoozedTabs,
-        },
-      },
-    });
+    console.error('Found null in snoozedTabs');
+    // Notify bugsnag about this error
+    // bugsnag.notify(new Error('Found null in snoozedTabs'), {
+    //   metaData: {
+    //     storage: {
+    //       snoozedTabs,
+    //     },
+    //   },
+    // });
 
     // TEMP FIX, remove null tabs
     snoozedTabs = snoozedTabs.filter(tab => tab);

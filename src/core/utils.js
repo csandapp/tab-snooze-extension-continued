@@ -5,7 +5,7 @@ import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
 import URL from 'url';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
 
@@ -18,13 +18,13 @@ export function isMacOS() {
   return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 }
 
-export function exposeFunctionForDebug(functions: Array<Function>) {
-  if (!Array.isArray(functions)) {
-    functions = [functions];
-  }
-  // expose on window
-  functions.forEach(fn => (window[`tabSnoozeDebug_${fn.name}`] = fn));
-}
+// export function exposeFunctionForDebug(functions: Array<Function>) {
+//   if (!Array.isArray(functions)) {
+//     functions = [functions];
+//   }
+//   // expose on window
+//   functions.forEach(fn => (window[`tabSnoozeDebug_${fn.name}`] = fn));
+// }
 
 /*
     Create tabs and call callback() when they are all created.

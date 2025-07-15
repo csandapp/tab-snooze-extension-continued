@@ -2,6 +2,7 @@ const reactAppRewireBuildDev = require('react-app-rewire-build-dev');
 const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
+const webpack = require('webpack');
 
 const {
   BugsnagBuildReporterPlugin,
@@ -31,9 +32,43 @@ module.exports = function override(config, env) {
     // Disable code mangling (obfuscation/uglification)
     // because Chrome Web Store do not allow it in review process
     // config = disableCodeObfuscation(config);
+    config.optimization.minimize = false;
   }
 
   // Do the following for production + development:
+  
+  // Add background script as separate entry point
+  config.entry = {
+    index: './src/index.js',
+    background: './src/core/backgroundMain.js'
+  };
+  
+  // Add globalThis polyfill for background scripts; prevents "global is not defined" error"q
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'global': 'globalThis'
+    })
+  );
+  
+  // Create cleaner output filenames
+  config.output.filename = 'static/js/[name].js';
+  
+  // Disable runtime chunk splitting for cleaner files
+  config.optimization.runtimeChunk = false;
+  
+  // Simplify chunk splitting
+  config.optimization.splitChunks = {
+    cacheGroups: {
+      default: false,
+      vendors: false,
+      background: {
+        name: 'background',
+        chunks: 'all',
+        test: /backgroundMain/,
+        enforce: true
+      }
+    }
+  };
 
   // Cherry picks components/funcs used in many libs like material-ui, lodash, etc.
   config = rewireImport(config, env, {
