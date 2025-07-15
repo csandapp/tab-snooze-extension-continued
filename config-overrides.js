@@ -2,6 +2,7 @@ const reactAppRewireBuildDev = require('react-app-rewire-build-dev');
 const rewireStyledComponents = require('react-app-rewire-styled-components');
 const rewireImport = require('react-app-rewire-import');
 const fs = require('fs-extra');
+const webpack = require('webpack');
 
 const {
   BugsnagBuildReporterPlugin,
@@ -41,6 +42,13 @@ module.exports = function override(config, env) {
     index: './src/index.js',
     background: './src/core/backgroundMain.js'
   };
+  
+  // Add globalThis polyfill for background scripts; prevents "global is not defined" error"q
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'global': 'globalThis'
+    })
+  );
   
   // Create cleaner output filenames
   config.output.filename = 'static/js/[name].js';
