@@ -24,7 +24,6 @@ import {
 import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
 import chromep from 'chrome-promise';
-import { performMigrations } from './migrationManager';
 import {
   updateBadge,
   registerEventListeners as registerBadgeEventListeners,
@@ -112,7 +111,6 @@ async function extensionMain() {
    * isn't. So we perform critical stuff here, like storage migration, as we
    * are certain it will be called **first thing** after an update.
    */
-  await performMigrations();
 
   // Set 1 mintue delay for Chrome to load after startup before
   // waking up tabs so chrome is not stuck
