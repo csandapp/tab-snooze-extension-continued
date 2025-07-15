@@ -31,6 +31,7 @@ module.exports = function override(config, env) {
     // Disable code mangling (obfuscation/uglification)
     // because Chrome Web Store do not allow it in review process
     // config = disableCodeObfuscation(config);
+    config.optimization.minimize = false;
   }
 
   // Do the following for production + development:
