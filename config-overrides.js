@@ -94,6 +94,26 @@ module.exports = function override(config, env) {
     return;
   }
 
+    const eslintRule = config.module.rules.find(rule => 
+    rule.use && rule.use.find(use => 
+      use.loader && use.loader.includes('eslint-loader')
+    )
+  );
+  
+  if (eslintRule) {
+    const eslintLoader = eslintRule.use.find(use => 
+      use.loader && use.loader.includes('eslint-loader')
+    );
+    if (eslintLoader) {
+      eslintLoader.options.baseConfig = {
+        ...eslintLoader.options.baseConfig,
+        globals: {
+          chrome: 'readonly'
+        }
+      };
+    }
+  }
+
   return config;
 };
 

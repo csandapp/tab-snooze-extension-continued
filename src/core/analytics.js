@@ -22,7 +22,7 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 // initUserTracking();
 
 // async function initUserTracking() {
-//   const { betaTester } = await chromep.storage.local.get(
+//   const { betaTester } = await chrome.storage.local.get(
 //     'betaTester'
 //   );
 
@@ -59,7 +59,7 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 
 //   mixpanel.track('Signup');
 
-//   chromep.storage.local.set({
+//   chrome.storage.local.set({
 //     betaTester: {
 //       email: email,
 //       name: name,
@@ -69,6 +69,8 @@ mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN);
 
 export async function trackTabSnooze(snoozedTab: SnoozedTab) {
   const snoozedTabs = await getSnoozedTabs();
+
+  console.log('Tracking tab snooze:', snoozedTab);
 
   var hostname = new URL(snoozedTab.url).hostname;
 

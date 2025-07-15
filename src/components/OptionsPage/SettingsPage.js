@@ -33,7 +33,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Switch from '@material-ui/core/Switch';
 import Select from '../SnoozePanel/Select';
 import { getSettings, saveSettings } from '../../core/settings';
-import chromep from 'chrome-promise';
+
+
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
@@ -98,7 +99,7 @@ class SettingsPage extends Component<Props, State> {
     const settings = await getSettings();
 
     // shortcut settings are loaded from chrome api
-    const commands = await chromep.commands.getAll();
+    const commands = await chrome.commands.getAll();
 
     const isPro = await isProUser();
 
@@ -211,7 +212,7 @@ class SettingsPage extends Component<Props, State> {
         <KeyCombo
           combo={options.shortcut}
           onClick={() =>
-            chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
+            chrome.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
           }
         />
       ),
@@ -514,7 +515,7 @@ class SettingsPage extends Component<Props, State> {
 //           To edit the shortcuts{' '}
 //           <MyLink
 //             onClick={() =>
-//               chromep.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
+//               chrome.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
 //             }
 //           >
 //             please click here

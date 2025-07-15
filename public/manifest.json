@@ -8,8 +8,8 @@
   "author": "Tab Snooze",
   "homepage_url": "http://www.tabsnooze.com",
   "permissions": [
-    
-    
+    "offscreen",
+    "tabs",
     "alarms",
     "storage",
     "notifications",

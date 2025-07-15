@@ -1,11 +1,9 @@
 // @flow
-import chromep from 'chrome-promise';
+
 import moment from 'moment';
 import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
 import URL from 'url';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
 
@@ -35,7 +33,7 @@ export function createTabs(
 ): Promise<Array<ChromeTab>> {
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map(tabInfo =>
-      chromep.tabs.create({
+      chrome.tabs.create({
         url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
       })
@@ -63,7 +61,7 @@ export async function createCenteredWindow(
   width: number,
   height: number
 ) {
-  const newWindow = await chromep.windows.create({
+  const newWindow = await chrome.windows.create({
     type: 'popup',
     state: 'normal',
     url: APP_BASE_PATH + path,
@@ -74,7 +72,7 @@ export async function createCenteredWindow(
     focused: true,
   });
 
-  chromep.windows.update(newWindow.id, { focused: true });
+  chrome.windows.update(newWindow.id, { focused: true });
 }
 
 export async function createTab(path: string) {
@@ -82,12 +80,12 @@ export async function createTab(path: string) {
     path = APP_BASE_PATH + path;
   }
 
-  const newTab = await chromep.tabs.create({
+  const newTab = await chrome.tabs.create({
     url: path,
     active: true,
   });
 
-  chromep.windows.update(newTab.windowId, { focused: true });
+  chrome.windows.update(newTab.windowId, { focused: true });
 }
 
 /* 
@@ -123,7 +121,7 @@ export async function notifyUserAboutNewTabs(
   }
 
   // Desktop notification
-  const createdNotifId = await chromep.notifications.create('', {
+  const createdNotifId = await chrome.notifications.create('', {
     type: 'basic',
     title,
     message,
@@ -136,12 +134,12 @@ export async function notifyUserAboutNewTabs(
     notifId
   ) {
     if (notifId === createdNotifId) {
-      chromep.tabs.update(jumpToTab.id, { active: true });
-      chromep.windows.update(jumpToTab.windowId, {
+      chrome.tabs.update(jumpToTab.id, { active: true });
+      chrome.windows.update(jumpToTab.windowId, {
         focused: true,
       });
 
-      chromep.notifications.clear(createdNotifId);
+      chrome.notifications.clear(createdNotifId);
       chrome.notifications.onClicked.removeListener(makeTabActive);
     }
   });
@@ -152,7 +150,7 @@ export function addMinutes(date: Date, minutes: number) {
 }
 
 export async function getActiveTab() {
-  const tabs = await chromep.tabs.query({
+  const tabs = await chrome.tabs.query({
     active: true,
     currentWindow: true,
   });

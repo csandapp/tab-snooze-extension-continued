@@ -1,6 +1,6 @@
 // @flow
 import { getSnoozedTabs, saveSnoozedTabs } from './storage';
-import chromep from 'chrome-promise';
+
 import {
   createTabs,
   notifyUserAboutNewTabs,
@@ -13,8 +13,6 @@ import { playAudio, SOUND_NOTIFICATION } from './audio';
 import { resnoozePeriodicTab } from './snooze';
 // import bugsnag from '../bugsnag';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
@@ -78,7 +76,7 @@ export async function wakeupTabs(
   return createdTabs;
 }
 
-export async function wakeupReadyTabs() {
+export async function wakeupReadyTabs(isBackgroundScript: boolean = false): Promise<void> {
   const settings = await getSettings();
   let snoozedTabs = await getSnoozedTabs();
   let now = new Date();
@@ -126,7 +124,16 @@ export async function wakeupReadyTabs() {
     }
 
     if (settings.playNotificationSound) {
-      playAudio(SOUND_NOTIFICATION);
+      if (isBackgroundScript) {
+        // send message to foreground script to play sound
+        await chrome.runtime.sendMessage({
+          action: 'playAudio',
+          sound: SOUND_NOTIFICATION,
+        });
+      } else {
+        // Play sound in foreground script
+        playAudio(SOUND_NOTIFICATION);
+      }
     }
   }
 }
@@ -135,7 +142,7 @@ export async function wakeupReadyTabs() {
     Clear all existing alarms and reschedule new alarms
     based on current snoozedTabs array.
 */
-export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
+export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> {
   await cancelWakeupAlarm();
 
   const snoozedTabs = await getSnoozedTabs();
@@ -161,7 +168,7 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
 }
 
 export function cancelWakeupAlarm(): Promise<void> {
-  return chromep.alarms.clear(WAKEUP_TABS_ALARM_NAME);
+  return chrome.alarms.clear(WAKEUP_TABS_ALARM_NAME);
 }
 
 /**
@@ -174,7 +181,7 @@ export function registerEventListeners() {
       console.log('Alarm fired - waking up ready tabs');
 
       // wake up ready tabs, if any
-      await wakeupReadyTabs();
+      await wakeupReadyTabs({ isBackgroundScript: true });
 
       // Schedule wakeup for next tabs
       await scheduleWakeupAlarm('auto');

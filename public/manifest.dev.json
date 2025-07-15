@@ -8,8 +8,8 @@
   "author": "Tab Snooze",
   "homepage_url": "http://www.tabsnooze.com",
   "permissions": [
-    // TODO figure out if I need tabs permission
-    // "tabs",
+    "offscreen",
+    "tabs",
     "alarms",
     "storage",
     "notifications",
