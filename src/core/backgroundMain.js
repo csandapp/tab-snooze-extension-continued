@@ -146,3 +146,5 @@ async function notifyAboutNewBetaVersion() {
     }
   );
 }
+
+runBackgroundScript();

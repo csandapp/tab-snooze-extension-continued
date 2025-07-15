@@ -34,6 +34,32 @@ module.exports = function override(config, env) {
   }
 
   // Do the following for production + development:
+  
+  // Add background script as separate entry point
+  config.entry = {
+    index: './src/index.js',
+    background: './src/core/backgroundMain.js'
+  };
+  
+  // Create cleaner output filenames
+  config.output.filename = 'static/js/[name].js';
+  
+  // Disable runtime chunk splitting for cleaner files
+  config.optimization.runtimeChunk = false;
+  
+  // Simplify chunk splitting
+  config.optimization.splitChunks = {
+    cacheGroups: {
+      default: false,
+      vendors: false,
+      background: {
+        name: 'background',
+        chunks: 'all',
+        test: /backgroundMain/,
+        enforce: true
+      }
+    }
+  };
 
   // Cherry picks components/funcs used in many libs like material-ui, lodash, etc.
   config = rewireImport(config, env, {

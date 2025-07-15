@@ -30,17 +30,17 @@
   // seems like action should be used instead of browser action https://developer.chrome.com/docs/extensions/reference/manifest
   "action": {
     "default_title": "Snooze This Tab",
-    "default_popup": "indexunobs.html#popup",
+    "default_popup": "index.html#popup",
     // TODO why did I change from 32 to 128?
     "default_icon": {
       "128": "images/extension_icon_128.png"
     }
   },
-  "options_page": "indexunobs.html#options/settings",
+  "options_page": "index.html#options/settings",
   "background": {
     // mainunbobs seems to have some nice stuff
     // background was this one... "page": "index.html#background",
-    "service_worker": "src/background.index.js",  // imports don't seem to work in src/background.index.js even when files definitely exist
+    "service_worker": "static/js/background.js",  // imports don't seem to work in src/background.index.js even when files definitely exist
     "type": "module"
   },
   "commands": {

@@ -30,17 +30,17 @@
   
   "action": {
     "default_title": "Snooze This Tab",
-    "default_popup": "indexunobs.html#popup",
+    "default_popup": "index.html#popup",
     
     "default_icon": {
       "128": "images/extension_icon_128.png"
     }
   },
-  "options_page": "indexunobs.html#options/settings",
+  "options_page": "index.html#options/settings",
   "background": {
     
     
-    "service_worker": "src/background.index.js",  
+    "service_worker": "static/js/background.js",  
     "type": "module"
   },
   "commands": {
