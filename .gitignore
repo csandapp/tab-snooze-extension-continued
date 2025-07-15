@@ -27,5 +27,3 @@ yarn-error.log*
 /dist
 
 .dependencygraph/
-
-yarn.lock
