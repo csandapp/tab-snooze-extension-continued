@@ -1,7 +1,7 @@
 // @flow
 import chromep from 'chrome-promise';
 import { BADGE_HIDDEN } from './badge';
-import { exposeFunctionForDebug } from './utils';
+// import { exposeFunctionForDebug } from './utils';
 
 export const STORAGE_KEY_SETTINGS = 'settings';
 
@@ -60,9 +60,9 @@ async function printSettings() {
   console.table(settings);
 }
 
-exposeFunctionForDebug([
-  getSettings,
-  saveSettings,
-  printSettings,
-  resetSettings,
-]);
+// exposeFunctionForDebug([
+//   getSettings,
+//   saveSettings,
+//   printSettings,
+//   resetSettings,
+// ]);

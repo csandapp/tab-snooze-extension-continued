@@ -4,7 +4,7 @@ import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import bugsnag from '../../bugsnag';
+// import bugsnag from '../../bugsnag';
 import calcSnoozeOptions, {
   SNOOZE_TYPE_REPEATED,
   SNOOZE_TYPE_SPECIFIC_DATE,
@@ -389,10 +389,12 @@ function playSnoozeSound() {
     try {
       snoozeSound.play();
     } catch (err) {
-      bugsnag.notify(new Error("Couldn't play sound"));
+      console.error('Error playing snooze sound:', err);
+      // bugsnag.notify(new Error("Couldn't play sound"));
     }
   } else {
-    bugsnag.notify(new Error('Snooze sound file not loaded'));
+    console.error('Snooze sound file not loaded');
+    // bugsnag.notify(new Error('Snooze sound file not loaded'));
   }
 }
 
