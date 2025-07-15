@@ -14,7 +14,7 @@ import { resnoozePeriodicTab } from './snooze';
 import bugsnag from '../bugsnag';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 

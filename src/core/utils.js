@@ -5,7 +5,7 @@ import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
 import URL from 'url';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
 

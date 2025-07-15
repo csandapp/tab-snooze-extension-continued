@@ -32,7 +32,7 @@ import {
 import { saveSettings } from './settings';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 /**
  * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension

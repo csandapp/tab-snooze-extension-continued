@@ -5,7 +5,7 @@ import { getSettings } from './settings';
 import moment from 'moment';
 
 // Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
+/* global chrome */
 
 export const BADGE_HIDDEN = 'hidden';
 export const BADGE_DUE_TODAY = 'due_today';
