@@ -1,5 +1,5 @@
 // @flow
-import chromep from 'chrome-promise';
+
 import './debugStorage';
 
 export const STORAGE_KEY_TS_VERSION = 'tsVersion';
@@ -17,7 +17,7 @@ export const STORAGE_KEY_BACKUPS = 'backups';
     each tab in a different key... instead of one big array :( it's sad
 */
 export async function getSnoozedTabs(): Promise<Array<SnoozedTab>> {
-  const { snoozedTabs } = await chromep.storage.local.get(
+  const { snoozedTabs } = await chrome.storage.local.get(
     STORAGE_KEY_SNOOZED_TABS
   );
 
@@ -27,13 +27,13 @@ export async function getSnoozedTabs(): Promise<Array<SnoozedTab>> {
 export function saveSnoozedTabs(
   snoozedTabs: Array<SnoozedTab>
 ): Promise<void> {
-  return chromep.storage.local.set({
+  return chrome.storage.local.set({
     [STORAGE_KEY_SNOOZED_TABS]: snoozedTabs,
   });
 }
 
 // export function getSnoozeHistory() {
-//   return chromep.storage.local
+//   return chrome.storage.local
 //     .get()
 //     .then(allStorage => allStorage.snoozeHistory || []);
 // }
@@ -42,7 +42,7 @@ export function saveSnoozedTabs(
 //   const history = await getSnoozeHistory();
 //   history.push(tabInfo);
 
-//   chromep.storage.local.set({ snoozeHistory: history });
+//   chrome.storage.local.set({ snoozeHistory: history });
 
 //   return history;
 // }

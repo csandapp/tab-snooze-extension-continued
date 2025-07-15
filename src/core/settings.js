@@ -1,5 +1,5 @@
 // @flow
-import chromep from 'chrome-promise';
+
 import { BADGE_HIDDEN } from './badge';
 // import { exposeFunctionForDebug } from './utils';
 
@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
-  let { settings } = await chromep.storage.local.get(
+  let { settings } = await chrome.storage.local.get(
     STORAGE_KEY_SETTINGS
   );
 
@@ -46,13 +46,13 @@ export async function saveSettings(
 
   newSettings = Object.assign(currentSettings, newSettings);
 
-  return chromep.storage.local.set({
+  return chrome.storage.local.set({
     [STORAGE_KEY_SETTINGS]: newSettings,
   });
 }
 
 async function resetSettings() {
-  chromep.storage.local.remove(STORAGE_KEY_SETTINGS);
+  chrome.storage.local.remove(STORAGE_KEY_SETTINGS);
 }
 
 async function printSettings() {

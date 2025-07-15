@@ -23,15 +23,13 @@ import {
 } from './commands';
 import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
-import chromep from 'chrome-promise';
+
 import {
   updateBadge,
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { saveSettings } from './settings';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 /**
  * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension
@@ -141,7 +139,7 @@ async function extensionMain() {
 }
 
 async function notifyAboutNewBetaVersion() {
-  const notificationId = await chromep.notifications.create('', {
+  const notificationId = await chrome.notifications.create('', {
     type: 'basic',
     title: `Tab Snooze ${APP_VERSION} installed`,
     message: 'Click to open the changelog',

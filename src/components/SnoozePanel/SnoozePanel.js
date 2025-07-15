@@ -35,7 +35,7 @@ import {
 } from '../../core/utils';
 import { getUpgradeUrl } from '../../paths';
 import Loadable from 'react-loadable';
-import chromep from 'chrome-promise';
+
 
 const AsyncComp = props =>
   Loadable({ ...props, loading: () => null });
@@ -357,7 +357,7 @@ function delayedSnoozeActiveTab(config: SnoozeConfig) {
       // close tab manually
       const activeTab = await getActiveTab();
 
-      chromep.tabs.remove(activeTab.id);
+      chrome.tabs.remove(activeTab.id);
     } else {
       // just close extension popup window
       window.close();

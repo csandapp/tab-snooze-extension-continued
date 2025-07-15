@@ -1,6 +1,6 @@
 // @flow
 import { getSnoozedTabs, saveSnoozedTabs } from './storage';
-import chromep from 'chrome-promise';
+
 import {
   createTabs,
   notifyUserAboutNewTabs,
@@ -13,8 +13,6 @@ import { playAudio, SOUND_NOTIFICATION } from './audio';
 import { resnoozePeriodicTab } from './snooze';
 // import bugsnag from '../bugsnag';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
@@ -170,7 +168,7 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> 
 }
 
 export function cancelWakeupAlarm(): Promise<void> {
-  return chromep.alarms.clear(WAKEUP_TABS_ALARM_NAME);
+  return chrome.alarms.clear(WAKEUP_TABS_ALARM_NAME);
 }
 
 /**

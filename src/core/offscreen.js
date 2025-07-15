@@ -2,8 +2,6 @@
 import { playAudio } from "./audio";
 import { ensureOffscreenDocument } from "./backgroundMain";
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 // TODO 
 // someone make it so that offscreen.html shows up properly
