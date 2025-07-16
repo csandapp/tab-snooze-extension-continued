@@ -9,8 +9,6 @@
   "dependencies": {
     "@bugsnag/js": "5.1.0",
     "@bugsnag/plugin-react": "5.1.0",
-    "@material-ui/core": "3.7.1",
-    "@material-ui/icons": "3.0.1",
     "chrome-promise": "3.0.4",
     "chrome-webstore-upload": "0.2.2",
     "clone": "2.1.2",
@@ -22,15 +20,10 @@
     "moment": "2.23.0",
     "prettier": "1.15.3",
     "query-string": "6.2.0",
-    "react": "^16.7.0",
-    "react-app-rewire-build-dev": "1.0.1",
-    "react-app-rewire-import": "1.0.1",
-    "react-app-rewire-styled-components": "3.0.2",
-    "react-app-rewire-webpack-bundle-analyzer": "1.0.1",
-    "react-app-rewired": "1.6.2",
+    "react": "18.3.1",
     "react-contenteditable": "3.2.4",
-    "react-day-picker": "7.2.4",
-    "react-dom": "^16.7.0",
+    "react-day-picker": "9.8.0",
+    "react-dom": "18.3.1",
     "react-helmet": "5.2.0",
     "react-loadable": "5.5.0",
     "react-router-dom": "4.3.1",
@@ -46,7 +39,7 @@
   "scripts": {
     "start-beta": "REACT_APP_IS_BETA=true npm run start",
     "start": "react-app-rewired start",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider react-app-rewired build", 
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-app-rewired build",
     "deploy": "DEPLOY_BUILD=true npm run build && node ./deploy",
     "deploy-beta": "REACT_APP_IS_BETA=true npm run deploy",
     "test": "react-app-rewired test",
@@ -65,9 +58,5 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "babel-loader": "^8.0.4"
-  },
-  "engines": {
-    "node": "8.11.4",
-    "npm": "5.6.0"
   }
 }
