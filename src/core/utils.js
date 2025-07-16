@@ -104,21 +104,25 @@ export async function notifyUserAboutNewTabs(
   // Console log
   console.log(title);
 
-  const faviconUrl = tabs[0].favicon;
-  let faviconURI;
+  // This section kept throwing a 
+  // Access to fetch at [iconurl] from origin [tabsnooze] has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+  // const faviconUrl = tabs[0].favicon;
+  // let faviconURI;
 
-  if (faviconUrl) {
-    try {
-      faviconURI = await imageUrlToBase64(faviconUrl);
-    } catch (error) {
-      // ignore failed attempts to download image
-    }
-  }
+  // if (faviconUrl) {
+  //   try {
+  //     faviconURI = await imageUrlToBase64(faviconUrl);
+  //   } catch (error) {
+  //     // ignore failed attempts to download image
+  //   }
+  // }
 
   // if failed to fetch favicon (CORS is annoying!)
-  if (!faviconURI) {
-    faviconURI = 'images/extension_icon_128.png';
-  }
+  // if (!faviconURI) {
+  //   faviconURI = 'images/extension_icon_128.png';
+  // }
+
+  let faviconURI = 'images/extension_icon_128.png';
 
   // Desktop notification
   const createdNotifId = await chrome.notifications.create('', {
