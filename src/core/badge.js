@@ -4,8 +4,6 @@ import { styledComponentsTheme } from '../theme';
 import { getSettings } from './settings';
 import moment from 'moment';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 export const BADGE_HIDDEN = 'hidden';
 export const BADGE_DUE_TODAY = 'due_today';
@@ -45,9 +43,9 @@ export async function updateBadge() {
     snoozedCount = '';
   }
 
-  chrome.browserAction.setBadgeBackgroundColor({
+  chrome.action.setBadgeBackgroundColor({
     color: styledComponentsTheme.primary,
   });
 
-  chrome.browserAction.setBadgeText({ text: '' + snoozedCount });
+  chrome.action.setBadgeText({ text: '' + snoozedCount });
 }

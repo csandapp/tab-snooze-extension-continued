@@ -23,15 +23,13 @@ import {
 } from './commands';
 import { createTab, IS_BETA, APP_VERSION } from './utils';
 import { track, EVENTS } from './analytics';
-import chromep from 'chrome-promise';
+
 import {
   updateBadge,
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { saveSettings } from './settings';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 /**
  * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension
@@ -104,6 +102,29 @@ export function runBackgroundScript() {
   });
 }
 
+export async function ensureOffscreenDocument() {
+  console.log("Ensuring offscreen document is created...");
+  
+  // Check if offscreen document actually exists
+  const offscreenUrl = chrome.runtime.getURL('offscreen.html');
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT'],
+    documentUrls: [offscreenUrl]
+  });
+
+  if (existingContexts.length === 0) {
+    // No offscreen document exists, create one
+    await chrome.offscreen.createDocument({
+      url: 'offscreen.html',
+      reasons: ['AUDIO_PLAYBACK'],
+      justification: 'Play notification and alert sounds'
+    });
+    console.log("Offscreen document created");
+  } else {
+    console.log("Offscreen document already exists");
+  }
+}
+
 async function extensionMain() {
   /**
    * Run pending migrations!
@@ -124,7 +145,7 @@ async function extensionMain() {
 }
 
 async function notifyAboutNewBetaVersion() {
-  const notificationId = await chromep.notifications.create('', {
+  const notificationId = await chrome.notifications.create('', {
     type: 'basic',
     title: `Tab Snooze ${APP_VERSION} installed`,
     message: 'Click to open the changelog',

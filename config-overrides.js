@@ -40,10 +40,11 @@ module.exports = function override(config, env) {
   // Add background script as separate entry point
   config.entry = {
     index: './src/index.js',
-    background: './src/core/backgroundMain.js'
+    background: './src/core/backgroundMain.js',
+    offscreen: './src/core/offscreen.js'
   };
   
-  // Add globalThis polyfill for background scripts; prevents "global is not defined" error"q
+  // Add globalThis polyfill for background scripts; prevents "global is not defined" error"
   config.plugins.push(
     new webpack.DefinePlugin({
       'global': 'globalThis'
@@ -55,18 +56,12 @@ module.exports = function override(config, env) {
   
   // Disable runtime chunk splitting for cleaner files
   config.optimization.runtimeChunk = false;
-  
-  // Simplify chunk splitting
+
+  // COMPLETELY disable chunk splitting - this is key!
   config.optimization.splitChunks = {
     cacheGroups: {
       default: false,
-      vendors: false,
-      background: {
-        name: 'background',
-        chunks: 'all',
-        test: /backgroundMain/,
-        enforce: true
-      }
+      vendors: false
     }
   };
 
@@ -92,6 +87,26 @@ module.exports = function override(config, env) {
     // For Debug:
     printConfig(config);
     return;
+  }
+
+    const eslintRule = config.module.rules.find(rule => 
+    rule.use && rule.use.find(use => 
+      use.loader && use.loader.includes('eslint-loader')
+    )
+  );
+  
+  if (eslintRule) {
+    const eslintLoader = eslintRule.use.find(use => 
+      use.loader && use.loader.includes('eslint-loader')
+    );
+    if (eslintLoader) {
+      eslintLoader.options.baseConfig = {
+        ...eslintLoader.options.baseConfig,
+        globals: {
+          chrome: 'readonly'
+        }
+      };
+    }
   }
 
   return config;

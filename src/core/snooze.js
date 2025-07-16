@@ -9,7 +9,7 @@ import {
 import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
-import chromep from 'chrome-promise';
+
 import { FIRST_SNOOZE_PATH, RATE_TS_PATH } from '../paths';
 import { incrementWeeklyUsage } from './license';
 
@@ -78,7 +78,7 @@ export async function snoozeTab(
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
   // the flow of this code before finish. so close tab at the end.
   if (closeTab) {
-    chromep.tabs.remove(tab.id);
+    chrome.tabs.remove(tab.id);
   }
 
   // Add tab to history

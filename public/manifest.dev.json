@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "Tab Snooze - Works as of Nov 7 2021",
+  "name": "Tab Snooze - Manifest V3",
   "short_name": "Tab Snooze",
-  "version": "2025.06.14",
+  "version": "12.0.0",
   "description": "Save articles, videos and todos for later. They'll magically reopen when you need them.",
   "icons": { "128": "images/extension_icon_128.png" },
-  "author": "Tab Snooze",
-  "homepage_url": "http://www.tabsnooze.com",
+  "author": "csandapp",
   "permissions": [
-    // TODO figure out if I need tabs permission
-    // "tabs",
+    "offscreen",
+    "tabs",
+    "activeTab",
     "alarms",
     "storage",
     "notifications",
@@ -23,7 +23,7 @@
 
   // TODO see if I need web_accessible_resources
   "web_accessible_resources": [{
-    "resources": ["images/*", "fonts/*", "sounds/*"],
+    "resources": ["images/*", "fonts/*", "sounds/*", "offscreen.html"],
     "matches": ["<all_urls>"]
   }],
   
@@ -33,14 +33,14 @@
     "default_popup": "index.html#popup",
     // TODO why did I change from 32 to 128?
     "default_icon": {
-      "128": "images/extension_icon_128.png"
+      "32": "images/browser_action_32.png"
     }
   },
   "options_page": "index.html#options/settings",
   "background": {
     // mainunbobs seems to have some nice stuff
     // background was this one... "page": "index.html#background",
-    "service_worker": "static/js/background.js",  // imports don't seem to work in src/background.index.js even when files definitely exist
+    "service_worker": "static/js/background.js", 
     "type": "module"
   },
   "commands": {

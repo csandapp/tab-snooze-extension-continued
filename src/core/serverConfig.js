@@ -1,6 +1,6 @@
 // @flow
 // import { SERVER_CONFIG_URL } from '../paths';
-// import chromep from 'chrome-promise';
+// import chrome from 'chrome-promise';
 // import { STORAGE_KEY_SERVER_CONFIG } from './storage';
 
 // // update serverConfig once per 24 hours
@@ -20,7 +20,7 @@
 // |};
 
 // export async function getServerConfig(): Promise<ServerConfig> {
-//   const result = await chromep.storage.local.get(
+//   const result = await chrome.storage.local.get(
 //     STORAGE_KEY_SERVER_CONFIG
 //   );
 //   const cachedServerConfig: CachedServerConfig =
@@ -58,7 +58,7 @@
 //     };
 
 //     // cache the response
-//     await chromep.storage.local.set({
+//     await chrome.storage.local.set({
 //       [STORAGE_KEY_SERVER_CONFIG]: cachedServerConfig,
 //     });
 

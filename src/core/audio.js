@@ -1,19 +1,11 @@
 // @flow
-import { getSettings } from './settings';
 // import bugsnag from '../bugsnag';
 
 // export const SOUND_TAB_SNOOZE1 = 'sounds/snooze1.mp3';
 // export const SOUND_TAB_SNOOZE2 = 'sounds/snooze2.mp3';
 // export const SOUND_TAB_SNOOZE3 = 'sounds/snooze3.mp3';
-export const SOUND_TAB_SNOOZE1 = 'sounds/snooze.m4a';
-export const SOUND_TAB_SNOOZE2 = 'sounds/snooze.m4a';
-export const SOUND_TAB_SNOOZE3 = 'sounds/snooze.m4a';
-export const SOUND_NOTIFICATION = 'sounds/wakeup_notification.mp3';
-
-let playSoundEffects = true;
-getSettings().then(
-  settings => (playSoundEffects = settings.playSoundEffects)
-);
+export const SOUND_SNOOZE = 'sounds/snooze.m4a';
+export const SOUND_WAKEUP = 'sounds/wakeup_notification.mp3';
 
 export function loadAudio(sound: string): HTMLAudioElement {
   const audio = new window.Audio();
@@ -26,22 +18,11 @@ export function loadAudio(sound: string): HTMLAudioElement {
   return audio;
 }
 
-export function loadSoundEffect(sound: string): HTMLAudioElement {
-  if (playSoundEffects) {
-    return loadAudio(sound);
-  } else {
-    // return dummy stub func
-    return new window.Audio();
-  }
-}
-
-export function playAudio(sound: string) {
-  if (playSoundEffects) {
-    try {
-      loadAudio(sound).play();
-    } catch (err) {
-      console.error('Error playing snooze sound:', err);
-      // bugsnag.notify(err);
-    }
+export function playAudio(sound: string): void {
+  try {
+    loadAudio(sound).play();
+  } catch (err) {
+    console.error('Error playing snooze sound:', err);
+    // bugsnag.notify(err);
   }
 }

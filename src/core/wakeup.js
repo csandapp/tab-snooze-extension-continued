@@ -1,6 +1,6 @@
 // @flow
 import { getSnoozedTabs, saveSnoozedTabs } from './storage';
-import chromep from 'chrome-promise';
+
 import {
   createTabs,
   notifyUserAboutNewTabs,
@@ -8,13 +8,17 @@ import {
   areTabsEqual,
   getFirstTabToWakeup,
 } from './utils';
+
 import { getSettings } from './settings';
-import { playAudio, SOUND_NOTIFICATION } from './audio';
+
+import { SOUND_WAKEUP } from './audio';
+
 import { resnoozePeriodicTab } from './snooze';
+
+import { ensureOffscreenDocument } from "./backgroundMain";
+
 // import bugsnag from '../bugsnag';
 
-// Adding chrome manually to global scope, for ESLint
-/* global chrome */
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
@@ -78,7 +82,7 @@ export async function wakeupTabs(
   return createdTabs;
 }
 
-export async function wakeupReadyTabs() {
+export async function handleScheduledWakeup(): Promise<void> {
   const settings = await getSettings();
   let snoozedTabs = await getSnoozedTabs();
   let now = new Date();
@@ -126,7 +130,17 @@ export async function wakeupReadyTabs() {
     }
 
     if (settings.playNotificationSound) {
-      playAudio(SOUND_NOTIFICATION);
+      console.log('Playing sound in background script');
+      // Note: handleScheduledWakeup() is ONLY called in background script
+
+      // ensure offscreen document is created
+      await ensureOffscreenDocument();
+
+      // send message to foreground script to play sound
+      await chrome.runtime.sendMessage({
+        action: 'playAudio',
+        sound: SOUND_WAKEUP,
+      });
     }
   }
 }
@@ -135,7 +149,7 @@ export async function wakeupReadyTabs() {
     Clear all existing alarms and reschedule new alarms
     based on current snoozedTabs array.
 */
-export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
+export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> {
   await cancelWakeupAlarm();
 
   const snoozedTabs = await getSnoozedTabs();
@@ -161,20 +175,23 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min') {
 }
 
 export function cancelWakeupAlarm(): Promise<void> {
-  return chromep.alarms.clear(WAKEUP_TABS_ALARM_NAME);
+  return chrome.alarms.clear(WAKEUP_TABS_ALARM_NAME);
 }
 
 /**
  * Init the automatic wake up methods
  */
-export function registerEventListeners() {
+export function registerEventListeners(): void {
+  // Note: registerEventListeners is only called in background script
+  
   // Wake up tabs on scheduled dates
   chrome.alarms.onAlarm.addListener(async function(alarm) {
     if (alarm.name === WAKEUP_TABS_ALARM_NAME) {
       console.log('Alarm fired - waking up ready tabs');
 
       // wake up ready tabs, if any
-      await wakeupReadyTabs();
+      
+      await handleScheduledWakeup();
 
       // Schedule wakeup for next tabs
       await scheduleWakeupAlarm('auto');
