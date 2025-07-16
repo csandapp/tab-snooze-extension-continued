@@ -18,10 +18,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 
 import StarIcon from '@material-ui/icons/Star';
+import GiftCardIcon from '@material-ui/icons/CardGiftcard';
 import LoveIcon from '@material-ui/icons/Favorite';
-import DrinkIcon from '@material-ui/icons/LocalDrink';
-import RateReviewIcon from '@material-ui/icons/RateReview';
-import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+import CodeIcon from '@material-ui/icons/Code';
+import MailIcon from '@material-ui/icons/Mail';
 
 import MoonIcon from '@material-ui/icons/Brightness2';
 // import UserIcon from '@material-ui/icons/AccountCircle';
@@ -488,25 +488,25 @@ class SettingsPage extends Component<Props, State> {
             href: CHROME_WEB_STORE_REVIEW,
           })}
           {this.renderButtonSetting({
-            icon: <LoveIcon />,
+            icon: <GiftCardIcon />,
             title: 'Donate to support further development',
             description: 'Support the person who continued Tab Snooze',
             href: CURR_DEVELOPER_DONATE_URL,
           })}
           {this.renderButtonSetting({
-            icon: <DrinkIcon />,
+            icon: <LoveIcon />,
             title: 'Donate to support the original developer',
             description: 'Support the person who started Tab Snooze',
             href: ORIGINAL_DEVLOPER_DONATE_URL,
           })}
           {this.renderButtonSetting({
-            icon: <RateReviewIcon />,
+            icon: <CodeIcon />,
             title: 'Open Source Code',
             description: 'Share ideas or contribute to the Tab Snooze code base',
             href: GITHUB_REPO_URL,
           })}
           {this.renderButtonSetting({
-            icon: <ContactSupportIcon />,
+            icon: <MailIcon />,
             title: 'Support',
             description:
               'Contact us for help, questions, or any feature requests',
