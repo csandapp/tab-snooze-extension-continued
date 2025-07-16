@@ -8,9 +8,15 @@ import {
   areTabsEqual,
   getFirstTabToWakeup,
 } from './utils';
+
 import { getSettings } from './settings';
-import { playAudio, SOUND_NOTIFICATION } from './audio';
+
+import { SOUND_NOTIFICATION } from './audio';
+
 import { resnoozePeriodicTab } from './snooze';
+
+import { ensureOffscreenDocument } from "./backgroundMain";
+
 // import bugsnag from '../bugsnag';
 
 
@@ -76,7 +82,7 @@ export async function wakeupTabs(
   return createdTabs;
 }
 
-export async function wakeupReadyTabs(isBackgroundScript: boolean = false): Promise<void> {
+export async function handleScheduledWakeup(): Promise<void> {
   const settings = await getSettings();
   let snoozedTabs = await getSnoozedTabs();
   let now = new Date();
@@ -124,16 +130,17 @@ export async function wakeupReadyTabs(isBackgroundScript: boolean = false): Prom
     }
 
     if (settings.playNotificationSound) {
-      if (isBackgroundScript) {
-        // send message to foreground script to play sound
-        await chrome.runtime.sendMessage({
-          action: 'playAudio',
-          sound: SOUND_NOTIFICATION,
-        });
-      } else {
-        // Play sound in foreground script
-        playAudio(SOUND_NOTIFICATION);
-      }
+      console.log('Playing sound in background script');
+      // Note: handleScheduledWakeup() is ONLY called in background script
+
+      // ensure offscreen document is created
+      await ensureOffscreenDocument();
+
+      // send message to foreground script to play sound
+      await chrome.runtime.sendMessage({
+        action: 'playAudio',
+        sound: SOUND_NOTIFICATION,
+      });
     }
   }
 }
@@ -174,14 +181,17 @@ export function cancelWakeupAlarm(): Promise<void> {
 /**
  * Init the automatic wake up methods
  */
-export function registerEventListeners() {
+export function registerEventListeners(): void {
+  // Note: registerEventListeners is only called in background script
+  
   // Wake up tabs on scheduled dates
   chrome.alarms.onAlarm.addListener(async function(alarm) {
     if (alarm.name === WAKEUP_TABS_ALARM_NAME) {
       console.log('Alarm fired - waking up ready tabs');
 
       // wake up ready tabs, if any
-      await wakeupReadyTabs({ isBackgroundScript: true });
+      
+      await handleScheduledWakeup();
 
       // Schedule wakeup for next tabs
       await scheduleWakeupAlarm('auto');
