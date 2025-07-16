@@ -22,14 +22,17 @@ export const TUTORIAL_PATH = '/tutorial';
 export const BACKGROUND_PATH = 'background';
 
 // External links
-export const CHROME_WEB_STORE_INSTALL_SHARE_LINK =
-  'http://bit.ly/get-tab-snooze';
-export const CHROME_WEB_STORE_REVIEW =
-  'https://chrome.google.com/webstore/detail/tab-snooze/pdiebiamhaleloakpcgmpnenggpjbcbm/reviews';
-export const PAYPAL_DONATE_URL =
-  'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=82HLJCDURLVME&currency_code=USD&source=url';
-export const CHROME_SETTINGS_SHORTCUTS =
-  'chrome://extensions/shortcuts';
+// export const CHROME_WEB_STORE_INSTALL_SHARE_LINK = 'https://chromewebstore.google.com/detail/tab-snooze-works-as-of-no/kgnigbfnfjgpfaiaafcbgdkpalapiinb';
+export const CHROME_SETTINGS_SHORTCUTS = 'chrome://extensions/shortcuts';
+
+// Miscellaneous Section on Settings Page
+export const CHROME_WEB_STORE_REVIEW = 'https://chromewebstore.google.com/detail/tab-snooze-works-as-of-no/kgnigbfnfjgpfaiaafcbgdkpalapiinb/reviews';
+export const ORIGINAL_DEVLOPER_DONATE_URL = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=82HLJCDURLVME&currency_code=USD&source=url';
+export const CURR_DEVELOPER_DONATE_URL = "https://ko-fi.com/csandapp"
+export const GITHUB_REPO_URL = "https://github.com/csandapp/tab-snooze-extension-continued"
+export const SUPPORT_EMAIL_URL = "mailto:csandapp@gmail.com"
+
+// Links on Beta page
 export const MESSENGER_PROFILE_URL = 'https://m.me/tabsnooze';
 export const CHANGELOG_URL =
   'https://headwayapp.co/tab-snooze-changelog';
