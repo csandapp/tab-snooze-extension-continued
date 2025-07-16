@@ -38,11 +38,13 @@ import { getSettings, saveSettings } from '../../core/settings';
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
-  CHROME_WEB_STORE_REVIEW,
-  CHROME_SETTINGS_SHORTCUTS,
   getUpgradeUrl,
-  TAB_SNOOZE_FEATURE_VOTE_URL,
-  PAYPAL_DONATE_URL,
+  CHROME_SETTINGS_SHORTCUTS,
+  CHROME_WEB_STORE_REVIEW,
+  CURR_DEVELOPER_DONATE_URL,
+  ORIGINAL_DEVLOPER_DONATE_URL,
+  GITHUB_REPO_URL,
+  SUPPORT_EMAIL_URL
 } from '../../paths';
 import { EVENTS, track } from '../../core/analytics';
 import {
@@ -484,22 +486,28 @@ class SettingsPage extends Component<Props, State> {
           })}
           {this.renderButtonSetting({
             icon: <LoveIcon />,
-            title: 'Donate to support this free tool',
-            description: 'Support Tab Snooze single developer',
-            href: PAYPAL_DONATE_URL,
+            title: 'Donate to support further development',
+            description: 'Support the person who continued Tab Snooze',
+            href: CURR_DEVELOPER_DONATE_URL,
+          })}
+          {this.renderButtonSetting({
+            icon: <LoveIcon />,
+            title: 'Donate to support the original developer',
+            description: 'Support the person who started Tab Snooze',
+            href: ORIGINAL_DEVLOPER_DONATE_URL,
           })}
           {this.renderButtonSetting({
             icon: <RateReviewIcon />,
-            title: 'Suggest & vote on new features',
-            description: 'Tell us about your ideas for Tab Snooze',
-            href: TAB_SNOOZE_FEATURE_VOTE_URL,
+            title: 'Open Source Code',
+            description: 'Share ideas or contribute to the Tab Snooze code base',
+            href: GITHUB_REPO_URL,
           })}
           {this.renderButtonSetting({
             icon: <ContactSupportIcon />,
             title: 'Support',
             description:
               'Contact us for help, questions, or any feature requests',
-            href: 'mailto:tabsnoozeapp@gmail.com',
+            href: SUPPORT_EMAIL_URL,
           })}
         </List>
       </Root>
