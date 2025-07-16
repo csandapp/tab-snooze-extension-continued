@@ -11,7 +11,7 @@ import {
 
 import { getSettings } from './settings';
 
-import { SOUND_NOTIFICATION } from './audio';
+import { SOUND_WAKEUP } from './audio';
 
 import { resnoozePeriodicTab } from './snooze';
 
@@ -139,7 +139,7 @@ export async function handleScheduledWakeup(): Promise<void> {
       // send message to foreground script to play sound
       await chrome.runtime.sendMessage({
         action: 'playAudio',
-        sound: SOUND_NOTIFICATION,
+        sound: SOUND_WAKEUP,
       });
     }
   }

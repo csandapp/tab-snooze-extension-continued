@@ -21,9 +21,7 @@ import {
 import SnoozeFooter from './SnoozeFooter';
 import {
   loadSoundEffect,
-  SOUND_TAB_SNOOZE1,
-  // SOUND_TAB_SNOOZE2,
-  // SOUND_TAB_SNOOZE3,
+  SOUND_SNOOZE,
 } from '../../core/audio';
 import keycode from 'keycode';
 import { getSnoozedTabs } from '../../core/storage';
@@ -103,7 +101,7 @@ class SnoozePanel extends Component<Props, State> {
     }, 300);
 
     // load the next snooze sound to play
-    loadSnoozeSound();
+    getSnoozeAudio();
   }
 
   onKeyPress(event: Event) {
@@ -320,8 +318,6 @@ class SnoozePanel extends Component<Props, State> {
   }
 }
 
-let snoozeSound;
-
 const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   L: 0,
   E: 1,
@@ -336,11 +332,6 @@ const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   D: 8,
 };
 const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
-const SNOOZE_SOUNDS = [
-  SOUND_TAB_SNOOZE1,
-  // SOUND_TAB_SNOOZE2,
-  // SOUND_TAB_SNOOZE3,
-];
 
 // give time for animation & sound to finish before snoozing (closing) tab
 function delayedSnoozeActiveTab(config: SnoozeConfig) {
@@ -367,34 +358,24 @@ function delayedSnoozeActiveTab(config: SnoozeConfig) {
   playSnoozeSound();
 }
 
-/**
- * We play 3 sounds, one after the other, on each snooze.
- * when too much time passes by, it resets to first sound.
- * e.g.
- * example 1: soundA -> soundB -> soundC -> soundA
- * example 2: soundA -> soundB -> (much time has passed, reset) soundA
- */
-async function loadSnoozeSound() {
-  const snoozedTabs = await getSnoozedTabs();
-  const consecutiveCount = countConsecutiveSnoozes(
-    snoozedTabs,
-    CONSECUTIVE_SNOOZE_TIMEOUT
-  );
-  const nextSoundIndex = consecutiveCount % SNOOZE_SOUNDS.length;
-  snoozeSound = loadSoundEffect(SNOOZE_SOUNDS[nextSoundIndex]);
+
+let cachedSnoozeAudio: ?HTMLAudioElement = null;
+
+function getSnoozeAudio(): HTMLAudioElement {
+  if (!cachedSnoozeAudio) {
+    cachedSnoozeAudio = loadSoundEffect(SOUND_SNOOZE);
+  }
+  return cachedSnoozeAudio;
 }
 
-function playSnoozeSound() {
-  if (snoozeSound) {
+async function playSnoozeSound() {
+  const settings = await getSettings();
+  if (settings.playSoundEffects) {
     try {
-      snoozeSound.play();
+      getSnoozeAudio().play();
     } catch (err) {
       console.error('Error playing snooze sound:', err);
-      // bugsnag.notify(new Error("Couldn't play sound"));
     }
-  } else {
-    console.error('Snooze sound file not loaded');
-    // bugsnag.notify(new Error('Snooze sound file not loaded'));
   }
 }
 
