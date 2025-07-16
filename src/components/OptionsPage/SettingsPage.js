@@ -16,10 +16,13 @@ import WorkIcon from '@material-ui/icons/Work';
 import SomedayIcon from '@material-ui/icons/BeachAccess';
 import EditIcon from '@material-ui/icons/Edit';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
-import LoveIcon from '@material-ui/icons/Favorite';
+
 import StarIcon from '@material-ui/icons/Star';
+import LoveIcon from '@material-ui/icons/Favorite';
+import DrinkIcon from '@material-ui/icons/LocalDrink';
 import RateReviewIcon from '@material-ui/icons/RateReview';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+
 import MoonIcon from '@material-ui/icons/Brightness2';
 // import UserIcon from '@material-ui/icons/AccountCircle';
 import CloudIcon from '@material-ui/icons/Cloud';
@@ -491,7 +494,7 @@ class SettingsPage extends Component<Props, State> {
             href: CURR_DEVELOPER_DONATE_URL,
           })}
           {this.renderButtonSetting({
-            icon: <LoveIcon />,
+            icon: <DrinkIcon />,
             title: 'Donate to support the original developer',
             description: 'Support the person who started Tab Snooze',
             href: ORIGINAL_DEVLOPER_DONATE_URL,
