@@ -102,20 +102,26 @@ export function runBackgroundScript() {
   });
 }
 
-let offscreenDocumentCreated = false;
-
-// Helper function to ensure offscreen document exists
 export async function ensureOffscreenDocument() {
-  
   console.log("Ensuring offscreen document is created...");
+  
+  // Check if offscreen document actually exists
+  const offscreenUrl = chrome.runtime.getURL('offscreen.html');
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT'],
+    documentUrls: [offscreenUrl]
+  });
 
-  if (!offscreenDocumentCreated) {
+  if (existingContexts.length === 0) {
+    // No offscreen document exists, create one
     await chrome.offscreen.createDocument({
       url: 'offscreen.html',
       reasons: ['AUDIO_PLAYBACK'],
       justification: 'Play notification and alert sounds'
     });
-    offscreenDocumentCreated = true;
+    console.log("Offscreen document created");
+  } else {
+    console.log("Offscreen document already exists");
   }
 }
 
