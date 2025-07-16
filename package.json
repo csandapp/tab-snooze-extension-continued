@@ -1,10 +1,10 @@
 {
   "name": "tab-snooze-extension",
-  "version": "0.1.0",
-  "private": true,
+  "version": "12.0.0",
+  "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/eyalw/tab-snooze-extension.git"
+    "url": "https://github.com/csandapp/tab-snooze-extension-continued.git"
   },
   "dependencies": {
     "@bugsnag/js": "5.1.0",
