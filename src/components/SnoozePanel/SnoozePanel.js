@@ -20,7 +20,7 @@ import {
 } from '../../core/license';
 import SnoozeFooter from './SnoozeFooter';
 import {
-  loadSoundEffect,
+  loadAudio,
   SOUND_SNOOZE,
 } from '../../core/audio';
 import keycode from 'keycode';
@@ -363,7 +363,7 @@ let cachedSnoozeAudio: ?HTMLAudioElement = null;
 
 function getSnoozeAudio(): HTMLAudioElement {
   if (!cachedSnoozeAudio) {
-    cachedSnoozeAudio = loadSoundEffect(SOUND_SNOOZE);
+    cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
   }
   return cachedSnoozeAudio;
 }

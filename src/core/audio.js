@@ -18,10 +18,6 @@ export function loadAudio(sound: string): HTMLAudioElement {
   return audio;
 }
 
-export function loadSoundEffect(sound: string): HTMLAudioElement {
-  return loadAudio(sound);
-}
-
 export function playAudio(sound: string): void {
   try {
     loadAudio(sound).play();
