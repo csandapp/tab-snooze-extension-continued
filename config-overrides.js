@@ -40,7 +40,8 @@ module.exports = function override(config, env) {
   // Add background script as separate entry point
   config.entry = {
     index: './src/index.js',
-    background: './src/core/backgroundMain.js'
+    background: './src/core/backgroundMain.js',
+    offscreen: './src/core/offscreen.js'
   };
   
   // Add globalThis polyfill for background scripts; prevents "global is not defined" error"q
@@ -65,6 +66,12 @@ module.exports = function override(config, env) {
         name: 'background',
         chunks: 'all',
         test: /backgroundMain/,
+        enforce: true
+      },
+      offscreen: {
+        name: 'offscreen',
+        chunks: 'all',
+        test: /offscreen/,
         enforce: true
       }
     }
