@@ -23,7 +23,7 @@
 
   
   "web_accessible_resources": [{
-    "resources": ["images/*", "fonts/*", "sounds/*"],
+    "resources": ["images/*", "fonts/*", "sounds/*", "offscreen.html"],
     "matches": ["<all_urls>"]
   }],
   
