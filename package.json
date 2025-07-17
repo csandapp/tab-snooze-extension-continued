@@ -21,8 +21,10 @@
     "query-string": "^9.2.2",
     "react": "^18.3.1",
     "react-contenteditable": "^3.3.7",
+    "react-day-picker": "^9.8.0",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
+    "react-loadable": "^5.5.0",
     "react-router-dom": "^7.7.0",
     "sanitize-html": "^2.17.0",
     "styled-components": "^6.1.19"
