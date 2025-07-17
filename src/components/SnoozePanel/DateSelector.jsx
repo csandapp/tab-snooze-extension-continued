@@ -5,7 +5,7 @@ import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
 import Button from './Button';
 import DayPicker from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
+import 'react-day-picker/style.css';
 import './MyDayPickerStyle.css';
 import { HourOptions } from './periodOptions';
 import { getSettings } from '../../core/settings';
