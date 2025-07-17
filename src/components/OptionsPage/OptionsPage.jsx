@@ -12,13 +12,12 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import SleepingIcon from '@material-ui/icons/Hotel';
 import SleepingTabsPage from './SleepingTabsPage';
 import SettingsPage from './SettingsPage';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Routes, Route, useLocation } from 'react-router-dom';
 import {
   SLEEPING_TABS_PATH,
   SETTINGS_PATH,
   TS_HOMEPAGE_URL,
 } from '../../paths';
-import { Route } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 
 const styles = theme => ({
@@ -34,7 +33,8 @@ const styles = theme => ({
 });
 
 function OptionsPage(props) {
-  const { classes, location } = props;
+  const { classes } = props;
+  const location = useLocation();
 
   return (
     <Fragment>
@@ -67,14 +67,16 @@ function OptionsPage(props) {
         </Toolbar>
       </AppBar>
       <Root>
-        {/* Toolbar is a palceholder for paddingTop */}
+        {/* Toolbar is a placeholder for paddingTop */}
         <Toolbar style={{ opacity: 0 }} />
         <Main>
-          <Route
-            path={SLEEPING_TABS_PATH}
-            component={SleepingTabsPage}
-          />
-          <Route path={SETTINGS_PATH} component={SettingsPage} />
+          <Routes>
+            <Route
+              path={SLEEPING_TABS_PATH}
+              element={<SleepingTabsPage />}
+            />
+            <Route path={SETTINGS_PATH} element={<SettingsPage />} />
+          </Routes>
         </Main>
       </Root>
     </Fragment>
