@@ -27,24 +27,19 @@
     "matches": ["<all_urls>"]
   }],
   
-  
   "action": {
     "default_title": "Snooze This Tab",
     "default_popup": "index.html#popup",
-    
     "default_icon": {
       "32": "images/browser_action_32.png"
     }
   },
   "options_page": "index.html#options/settings",
   "background": {
-    
-    
-    "service_worker": "static/js/background.js", 
+    "service_worker": "src/core/backgroundMain.js",
     "type": "module"
   },
   "commands": {
-    
     "_execute_action": {
       "suggested_key": {
         "default": "Alt+S"
