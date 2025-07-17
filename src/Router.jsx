@@ -5,6 +5,8 @@ import SnoozePanel from './components/SnoozePanel';
 import {
   POPUP_PATH,
   OPTIONS_PATH,
+  SLEEPING_TABS_PATH,
+  SETTINGS_PATH,
   TODO_PATH,
   FIRST_SNOOZE_PATH,
   RATE_TS_PATH,
@@ -40,7 +42,10 @@ const Router = () => (
         <Route path="/" element={<Navigate to={POPUP_PATH} replace />} />
         
         <Route path={POPUP_PATH} element={<SnoozePanel />} />
-        <Route path={OPTIONS_PATH} element={<AsyncOptionsPage />} />
+        
+        {/* Options routes - handle both base and sub-paths */}
+        <Route path={`${OPTIONS_PATH}/*`} element={<AsyncOptionsPage />} />
+        
         <Route path={TODO_PATH} element={<AsyncTodoPage />} />
         <Route
           path={FIRST_SNOOZE_PATH}
