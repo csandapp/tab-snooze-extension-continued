@@ -1,8 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CheckboxIcon from '@material-ui/icons/CheckBoxRounded';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CheckboxIcon from '@mui/icons-material/CheckBoxRounded';
 import { Link } from 'react-router-dom';
 import {
   SLEEPING_TABS_PATH,

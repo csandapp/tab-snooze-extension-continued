@@ -3,7 +3,7 @@ import type { WakeupTimeRange } from './wakeupTimeRanges';
 import moment from 'moment';
 import { ordinalNum } from '../../core/utils';
 import React, { Fragment } from 'react';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 export function formatWakeupDescription(
   timeRange: WakeupTimeRange,

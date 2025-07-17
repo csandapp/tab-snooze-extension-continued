@@ -11,11 +11,11 @@ import {
 } from '../../paths';
 import { createTab, APP_VERSION } from '../../core/utils';
 import TSDialog from './TSDialog';
-import BugIcon from '@material-ui/icons/BugReport';
-import SchoolIcon from '@material-ui/icons/School';
-import StarIcon from '@material-ui/icons/Star';
-import TextIcon from '@material-ui/icons/Textsms';
-import ChangelogIcon from '@material-ui/icons/ImportContacts';
+import BugIcon from '@mui/icons-material/BugReport';
+import SchoolIcon from '@mui/icons-material/School';
+import StarIcon from '@mui/icons-material/Star';
+import TextIcon from '@mui/icons-material/Textsms';
+import ChangelogIcon from '@mui/icons-material/ImportContacts';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
