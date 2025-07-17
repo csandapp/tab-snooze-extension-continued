@@ -11,7 +11,6 @@ export default defineConfig({
     }
   })],
   
-  // Keep esbuild enabled but configure it properly
   esbuild: {
     target: 'chrome88'
   },
@@ -40,16 +39,12 @@ export default defineConfig({
         background: resolve(__dirname, 'src/core/backgroundMain.js'),
       },
       output: {
-        // Use IIFE format for Chrome extensions
-        format: 'iife',
+        // Use ES modules format for Chrome extensions (works with multiple entries)
+        format: 'es',
         // Clean output filenames (no hash)
         entryFileNames: 'static/js/[name].js',
         chunkFileNames: 'static/js/[name].js',
         assetFileNames: 'static/[ext]/[name].[ext]',
-        // Disable chunk splitting for Chrome extensions
-        manualChunks: undefined,
-        // Explicitly disable inlineDynamicImports for multiple entries
-        inlineDynamicImports: false,
       },
     },
     // Don't minimize for Chrome Web Store review process
@@ -59,10 +54,6 @@ export default defineConfig({
     // Output to build directory
     outDir: 'build',
     emptyOutDir: true,
-    // Disable dynamic import inlining at build level too
-    dynamicImportVarsOptions: {
-      exclude: []
-    }
   },
   
   // Define globals for background scripts
