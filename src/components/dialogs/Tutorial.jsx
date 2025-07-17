@@ -4,6 +4,10 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import Zoom from '@mui/material/Zoom';
 
+import tutorialNavImage from './images/tutorial_article_nav.svg';
+import tutorialArticleImage from './images/tutorial_article.svg';
+import tutorialBubbleImage from './images/tutorial_bubble.png';
+
 export default class Tutorial extends Component<
   {},
   { isChatBubbleOpen: boolean } 
@@ -23,14 +27,14 @@ export default class Tutorial extends Component<
       <Root>
         <FakeNav>
           <img
-            src={require('./images/tutorial_article_nav.svg')}
+            src={tutorialNavImage}
             alt=""
           />
         </FakeNav>
         <div style={{ position: 'relative' }}>
-          <Article src={require('./images/tutorial_article.svg')} />
+          <Article src={tutorialArticleImage} />
           <Zoom in={isChatBubbleOpen}>
-            <Bubble src={require('./images/tutorial_bubble.png')} />
+            <Bubble src={tutorialBubbleImage} />
           </Zoom>
         </div>
         <Spacer />

@@ -1,17 +1,20 @@
 // @flow
-
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { CHROME_WEB_STORE_REVIEW } from '../../paths';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
 
+// Import images at the top
+import loveImage from './images/love.png';
+import chromeWebStoreImage from './images/chrome_web_store.png';
+
 export default class RateTSDialog extends Component<{}> {
   render() {
     return (
       <TSDialog
         title="Lovin' Tab Snooze?"
-        image={require('./images/love.png')}
+        image={loveImage}
         headline="Lovin' Tab Snooze?"
         subheader={
           <Fragment>
@@ -46,10 +49,11 @@ const RateUsButton = styled(Button)`
 `;
 
 const CWSLogo = styled.img.attrs({
-  src: require('./images/chrome_web_store.png'),
+  src: chromeWebStoreImage,
 })`
   margin-right: 10px;
 `;
+
 const ButtonText = styled.div``;
 const Primary = styled.div`
   font-weight: 500;

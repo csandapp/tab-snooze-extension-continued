@@ -7,6 +7,8 @@ import Button from './Button';
 // import ProBadge from '../OptionsPage/ProBadge';
 import { FREE_WEEKLY_SNOOZE_COUNT } from '../../core/license';
 
+import starImage from './images/super_star.svg';
+
 type Props = {
   visible: boolean,
   onDismiss: void => void,
@@ -35,7 +37,7 @@ export default class UpgradeDialog extends Component<Props, State> {
     return (
       <SnoozeModal visible={visible}>
         <Root>
-          <Star src={require('./images/super_star.svg')} />
+          <Star src={starImage} />
           <Title>
             {/* Become a Tab Snooze <ProBadge big /> ! */}
           </Title>

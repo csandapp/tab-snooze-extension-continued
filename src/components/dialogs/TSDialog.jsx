@@ -7,6 +7,8 @@ import { Helmet } from 'react-helmet-async';
 import Fade from '@mui/material/Fade';
 import Button from '../SnoozePanel/Button';
 
+import logoImage from './images/logo.svg';
+
 export default class TSDialog extends Component<{
   image: string,
   title?: string,
@@ -81,7 +83,7 @@ const Content = styled.div`
 `;
 
 const Logo = styled.img.attrs({
-  src: require('./images/logo.svg'),
+  src: logoImage,
 })`
   position: absolute;
   top: ${PADDING}px;

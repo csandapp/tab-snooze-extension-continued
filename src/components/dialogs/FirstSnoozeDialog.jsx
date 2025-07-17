@@ -7,6 +7,7 @@ import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
 import HotelIcon from '@mui/icons-material/Hotel';
 import { Link } from 'react-router-dom';
+import congratsImage from './images/congrats.png';
 
 export default class FirstSnoozeDialog extends Component<{}> {
   render() {
@@ -15,7 +16,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
     return (
       <TSDialog
         // title="Congrats!"
-        image={require('./images/congrats.png')}
+        image={congratsImage}
         headline="Awesome! You snoozed your first Tab!"
         subheader={
           <Fragment>

@@ -10,6 +10,9 @@ import './MyDayPickerStyle.css';
 import { HourOptions } from './periodOptions';
 import { getSettings } from '../../core/settings';
 
+import leftIcon from './icons/left.svg';
+import rightIcon from './icons/right.svg';
+
 type Props = { visible: boolean, onDateSelected: Date => void };
 type State = {
   selectedDate: any,
@@ -100,14 +103,14 @@ const Navbar = ({
 }) => (
   <NavbarDiv>
     <NavButton onClick={() => onPreviousClick()}>
-      <img src={require('./icons/left.svg')} alt="Previous Month" />
+      <img src={leftIcon} alt="Previous Month" />
     </NavButton>
     {/* Function also as Today button */}
     <MonthName onClick={gotoToday}>
       {moment(month).format('MMMM YYYY')}
     </MonthName>
     <NavButton onClick={() => onNextClick()}>
-      <img src={require('./icons/right.svg')} alt="Next Month" />
+      <img src={rightIcon} alt="Next Month" />
     </NavButton>
     <HourOptions
       value={hour}

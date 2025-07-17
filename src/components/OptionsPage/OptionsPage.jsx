@@ -19,6 +19,8 @@ import {
 } from '../../paths';
 import Tooltip from '@mui/material/Tooltip';
 
+import navbarLogo from './images/navbar_logo.svg';
+
 const styles = theme => ({
   navIcon: { marginRight: 10 },
   openInTabBtn: {
@@ -44,7 +46,7 @@ function OptionsPage(props) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Logo src={require('./images/navbar_logo.svg')} />
+            <Logo src={navbarLogo} />
           </a>
           <NavButton component={NavLink} to={SLEEPING_TABS_PATH}>
             <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
