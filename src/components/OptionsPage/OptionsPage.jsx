@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { withStyles } from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -18,23 +18,27 @@ import {
   TS_HOMEPAGE_URL,
 } from '../../paths';
 import Tooltip from '@mui/material/Tooltip';
-
 import navbarLogo from './images/navbar_logo.svg';
 
-const styles = theme => ({
-  navIcon: { marginRight: 10 },
-  openInTabBtn: {
-    color: '#fff',
-    display: 'none',
-    marginRight: -10,
-    [theme.breakpoints.down(650)]: {
-      display: 'block',
-    },
+// MUI v5 styled components
+const StyledIconButton = muiStyled(IconButton)(({ theme }) => ({
+  color: '#fff',
+  display: 'none',
+  marginRight: -10,
+  [theme.breakpoints.down(650)]: {
+    display: 'block',
   },
+}));
+
+const StyledSleepingIcon = muiStyled(SleepingIcon)({
+  marginRight: 10,
+});
+
+const StyledSettingsIcon = muiStyled(SettingsIcon)({
+  marginRight: 10,
 });
 
 function OptionsPage(props) {
-  const { classes } = props;
   const location = useLocation();
   
   return (
@@ -49,21 +53,20 @@ function OptionsPage(props) {
             <Logo src={navbarLogo} />
           </a>
           <NavButton component={NavLink} to={SLEEPING_TABS_PATH}>
-            <SleepingIcon className={classes.navIcon} /> Sleeping Tabs
+            < StyledSleepingIcon /> Sleeping Tabs
           </NavButton>
           <NavButton component={NavLink} to={SETTINGS_PATH}>
-            <SettingsIcon className={classes.navIcon} /> Settings
+            < StyledSettingsIcon /> Settings
           </NavButton>
           <Spacer />
           <Tooltip title="Open in a tab">
-            <IconButton
+            <StyledIconButton
               component={NavLink}
               to={location.pathname}
               target="_blank"
-              className={classes.openInTabBtn}
             >
               <OpenInNewIcon />
-            </IconButton>
+            </StyledIconButton>
           </Tooltip>
         </Toolbar>
       </AppBar>
@@ -84,7 +87,7 @@ function OptionsPage(props) {
   );
 }
 
-export default withStyles(styles)(OptionsPage);
+export default OptionsPage;
 
 const Root = styled.div`
   display: flex;

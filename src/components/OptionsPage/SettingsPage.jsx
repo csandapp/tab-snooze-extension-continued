@@ -1,7 +1,7 @@
 // @flow
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
 import { Helmet } from 'react-helmet-async';
 import styled, { css } from 'styled-components';
 import List from '@mui/material/List';
@@ -37,7 +37,6 @@ import Switch from '@mui/material/Switch';
 import Select from '../SnoozePanel/Select';
 import { getSettings, saveSettings } from '../../core/settings';
 
-
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
@@ -64,7 +63,7 @@ type ChromeCommand = {
   shortcut: string,
 };
 
-type Props = { classes: Object };
+type Props = {};
 type State = {
   // a local cache of what is stored in chrome.storage.local
   settings: Settings,
@@ -72,11 +71,10 @@ type State = {
   isPro: boolean,
 };
 
-const styles = theme => ({
-  list: {
-    marginBottom: theme.spacing.unit * 2,
-  },
-});
+// MUI v5 styled components
+const StyledList = muiStyled(List)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
 
 class SettingsPage extends Component<Props, State> {
   state = {};
@@ -238,7 +236,6 @@ class SettingsPage extends Component<Props, State> {
 
   render() {
     const { settings, commands, isPro } = this.state;
-    const { classes } = this.props;
 
     if (!settings) {
       return null;
@@ -256,7 +253,7 @@ class SettingsPage extends Component<Props, State> {
         <Helmet>
           <title>Settings - Tab Snooze</title>
         </Helmet>
-        <List className={classes.list}>
+        <StyledList>
           {!isPro && (
             <Fragment>
               <Header>Cloud Sync</Header>
@@ -512,7 +509,7 @@ class SettingsPage extends Component<Props, State> {
               'Contact us for help, questions, or any feature requests',
             href: SUPPORT_EMAIL_URL,
           })}
-        </List>
+        </StyledList>
       </Root>
     );
   }
@@ -596,4 +593,4 @@ const SettingsSelect = styled(Select).attrs({
   }
 `;
 
-export default withStyles(styles)(SettingsPage);
+export default SettingsPage;

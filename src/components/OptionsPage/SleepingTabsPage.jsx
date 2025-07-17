@@ -2,7 +2,7 @@
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { withStyles } from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
@@ -31,40 +31,41 @@ type TabGroup = {
   timeRange: WakeupTimeRange,
   tabs: Array<SnoozedTab>,
 };
-type Props = { classes: Object };
+type Props = {};
 type State = {
   visibleTabGroups: ?Array<TabGroup>,
   hidePeriodic: boolean,
 };
 
-const styles = theme => ({
-  list: {
-    marginBottom: theme.spacing.unit * 2,
+// MUI v5 styled components
+const StyledList = muiStyled(List)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
+const StyledListSubheader = muiStyled(ListSubheader)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  paddingLeft: theme.spacing(3),
+}));
+
+const StyledListItem = muiStyled(ListItem)(({ theme }) => ({
+  paddingLeft: theme.spacing(3),
+  '&:hover .delete-btn': {
+    opacity: 1,
   },
-  subHeader: {
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: theme.spacing.unit * 3,
-  },
-  listItemRoot: {
-    paddingLeft: theme.spacing.unit * 3,
-  },
-  listItemContainer: {
-    '&:hover $deleteBtn': {
-      opacity: 1,
-    },
-  },
-  deleteBtn: {
-    transition: 'opacity 0.2s',
-    opacity: 0,
-    marginRight: theme.spacing.unit * 2,
-  },
-  fabButton: {
-    zIndex: 100,
-    position: 'fixed',
-    bottom: theme.spacing.unit * 3,
-    right: theme.spacing.unit * 3,
-  },
-});
+}));
+
+const StyledDeleteButton = muiStyled(IconButton)(({ theme }) => ({
+  transition: 'opacity 0.2s',
+  opacity: 0,
+  marginRight: theme.spacing(2),
+}));
+
+const StyledFab = muiStyled(Fab)(({ theme }) => ({
+  zIndex: 100,
+  position: 'fixed',
+  bottom: theme.spacing(3),
+  right: theme.spacing(3),
+}));
 
 class SleepingTabsPage extends Component<Props, State> {
   state = { visibleTabGroups: null, hidePeriodic: false };
@@ -121,21 +122,15 @@ class SleepingTabsPage extends Component<Props, State> {
   }
 
   renderTabGroup(tabGroup: TabGroup, index: number) {
-    const { classes } = this.props;
-
     return (
       <Fragment key={index}>
-        <ListSubheader disableSticky className={classes.subHeader}>
+        <StyledListSubheader disableSticky>
           {tabGroup.timeRange.title}
-        </ListSubheader>
+        </StyledListSubheader>
         {tabGroup.tabs.map((tab, index2) => (
-          <ListItem
+          <StyledListItem
             key={index2}
             button
-            classes={{
-              root: classes.listItemRoot,
-              container: classes.listItemContainer,
-            }}
             onClick={event => {
               this.wakeupTab(tab, event);
             }}
@@ -151,15 +146,16 @@ class SleepingTabsPage extends Component<Props, State> {
                 style: { lineHeight: 1.5, marginBottom: 3 },
               }}
             />
-            <ListItemSecondaryAction className={classes.deleteBtn}>
-              <IconButton
+            <ListItemSecondaryAction>
+              <StyledDeleteButton
+                className="delete-btn"
                 onClick={event => this.deleteTab(tab, event)}
                 aria-label="Delete"
               >
                 <DeleteIcon />
-              </IconButton>
+              </StyledDeleteButton>
             </ListItemSecondaryAction>
-          </ListItem>
+          </StyledListItem>
         ))}
       </Fragment>
     );
@@ -167,7 +163,6 @@ class SleepingTabsPage extends Component<Props, State> {
 
   render() {
     const { visibleTabGroups } = this.state;
-    const { classes } = this.props;
 
     if (!visibleTabGroups) {
       // avoid showing placeholder while loading, because
@@ -181,9 +176,9 @@ class SleepingTabsPage extends Component<Props, State> {
           <title>Sleeping Tabs - Tab Snooze</title>
         </Helmet>
         {visibleTabGroups.length > 0 ? (
-          <List className={classes.list}>
+          <StyledList>
             {visibleTabGroups.map(this.renderTabGroup.bind(this))}
-          </List>
+          </StyledList>
         ) : (
           <NoTabsPlaceholder />
         )}
@@ -194,25 +189,24 @@ class SleepingTabsPage extends Component<Props, State> {
   }
 }
 
-const NewTodoBtn = withStyles(styles)(({ classes }) => (
+const NewTodoBtn = () => (
   <Zoom
     in
     style={{
       transitionDelay: `500ms`,
     }}
   >
-    <Fab
+    <StyledFab
       component={Link}
       to={TODO_PATH}
       target="_blank"
       color="secondary"
       aria-label="Add"
-      className={classes.fabButton}
     >
       <AddIcon />
-    </Fab>
+    </StyledFab>
   </Zoom>
-));
+);
 
 const NoTabsPlaceholder = () => (
   <Placeholder>
@@ -253,4 +247,4 @@ const Icon = styled.img`
   border-radius: 3px;
 `;
 
-export default withStyles(styles)(SleepingTabsPage);
+export default SleepingTabsPage;
