@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import Zoom from '@material-ui/core/Zoom';
+import Zoom from '@@mui/material/Zoom';
 
 export default class Tutorial extends Component<
   {},

@@ -13,7 +13,7 @@ import {
 } from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
 import { createTab } from '../../core/utils';
-// import Tooltip from '@material-ui/core/Tooltip';
+// import Tooltip from '@@mui/material/Tooltip';
 
 type Props = {
   tooltip: {

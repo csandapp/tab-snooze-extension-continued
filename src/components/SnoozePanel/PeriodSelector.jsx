@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@@mui/material/Collapse';
 import {
   WeekdayOptions,
   HourOptions,
