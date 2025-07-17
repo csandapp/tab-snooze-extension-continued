@@ -25,9 +25,9 @@ const AsyncFirstSnoozeDialog = React.lazy(() =>
 const AsyncRateTSDialog = React.lazy(() =>
   import('./components/dialogs/RateTSDialog')
 );
-const AsyncBetaDialog = React.lazy(() =>
-  import('./components/dialogs/BetaDialog')
-);
+// const AsyncBetaDialog = React.lazy(() =>
+//   import('./components/dialogs/BetaDialog')
+// );
 const AsyncTutorial = React.lazy(() =>
   import('./components/dialogs/Tutorial')
 );
@@ -44,7 +44,7 @@ const Router = () => (
           element={<AsyncFirstSnoozeDialog />}
         />
         <Route path={RATE_TS_PATH} element={<AsyncRateTSDialog />} />
-        <Route path={BETA_PATH} element={<AsyncBetaDialog />} />
+        {/* <Route path={BETA_PATH} element={<AsyncBetaDialog />} /> */}
         <Route path={TUTORIAL_PATH} element={<AsyncTutorial />} />
       </Routes>
     </Suspense>
