@@ -17,7 +17,10 @@ export default defineConfig({
   ],
   
   esbuild: {
-    target: 'chrome88'
+    target: 'chrome88',
+    loader: 'jsx',
+    include: /\.(js|jsx|ts|tsx)$/,
+    exclude: []
   },
   
   optimizeDeps: {
@@ -42,8 +45,8 @@ export default defineConfig({
   // Define globals for background scripts
   define: {
     'global': 'globalThis',
-    'process.env.NODE_ENV': import.meta.env.DEV ? '"development"' : '"production"',
-    'chrome': import.meta.env.DEV ? 'globalThis.mockChrome' : 'chrome'
+    'process.env.NODE_ENV': '"production"',
+    'chrome': 'chrome'
   },
   
   // Configure for Chrome extension development
