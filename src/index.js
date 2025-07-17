@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client'
 import App from './App';
 // import { ErrorBoundary } from './bugsnag';
 
@@ -11,10 +11,9 @@ if (!rootEl) {
   throw new Error('React root element is missing');
 }
 
-ReactDOM.render(
+const reactRoot = createRoot(rootEl);
+reactRoot.render(
   // <ErrorBoundary>
     <App />
   // </ErrorBoundary>
-  ,
-  rootEl
 );
