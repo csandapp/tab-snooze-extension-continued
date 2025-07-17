@@ -1,6 +1,6 @@
 // @flow
 import React, { Suspense } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import {
   POPUP_PATH,
@@ -36,6 +36,9 @@ const Router = () => (
   <HashRouter hashType="noslash">
     <Suspense fallback={<div style={{ padding: '10px', textAlign: 'center' }}>Loading...</div>}>
       <Routes>
+        {/* Default route - redirect to popup */}
+        <Route path="/" element={<Navigate to={POPUP_PATH} replace />} />
+        
         <Route path={POPUP_PATH} element={<SnoozePanel />} />
         <Route path={OPTIONS_PATH} element={<AsyncOptionsPage />} />
         <Route path={TODO_PATH} element={<AsyncTodoPage />} />

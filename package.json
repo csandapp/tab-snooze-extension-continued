@@ -29,12 +29,15 @@
     "sanitize-html": "^2.17.0",
     "styled-components": "^6.1.19"
   },
-  "scripts": {
+  "type": "module",
+  "scripts": {    
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "devDependencies": {
