@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",
+    "@babel/preset-flow": "7.27.1",
     "vite": "^7.0.4",
     "vite-plugin-svgr": "^4.3.0", 
     "vite-tsconfig-paths": "^5.1.4",

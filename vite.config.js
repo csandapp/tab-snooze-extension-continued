@@ -3,7 +3,14 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+      babel: {
+        presets: [
+          ['@babel/preset-flow', { all: true }]
+        ]
+      }
+    })
+  ],
   
   // Multiple entry points for Chrome extension
   build: {
