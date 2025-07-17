@@ -1,7 +1,6 @@
 // @flow
-
-import React, { Fragment } from 'react';
-import { HashRouter, Route } from 'react-router-dom';
+import React, { Fragment, Suspense } from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import {
   POPUP_PATH,
@@ -12,45 +11,43 @@ import {
   BETA_PATH,
   TUTORIAL_PATH,
 } from './paths';
-import Loadable from 'react-loadable';
 
-const AsyncComp = comp =>
-  Loadable({ loader: comp, loading: () => null });
-
-const AsyncOptionsPage = AsyncComp(() =>
+// Replace react-loadable with React.lazy
+const AsyncOptionsPage = React.lazy(() =>
   import('./components/OptionsPage')
 );
-const AsyncTodoPage = AsyncComp(() =>
+const AsyncTodoPage = React.lazy(() =>
   import('./components/TodoPage')
 );
-const AsyncFirstSnoozeDialog = AsyncComp(() =>
+const AsyncFirstSnoozeDialog = React.lazy(() =>
   import('./components/dialogs/FirstSnoozeDialog')
 );
-const AsyncRateTSDialog = AsyncComp(() =>
+const AsyncRateTSDialog = React.lazy(() =>
   import('./components/dialogs/RateTSDialog')
 );
-const AsyncBetaDialog = AsyncComp(() =>
+const AsyncBetaDialog = React.lazy(() =>
   import('./components/dialogs/BetaDialog')
 );
-const AsyncTutorial = AsyncComp(() =>
+const AsyncTutorial = React.lazy(() =>
   import('./components/dialogs/Tutorial')
 );
 
 const Router = () => (
-  // "noslash" - creates hashes like # and #sunshine/lollipops
   <HashRouter hashType="noslash">
-    <Fragment>
-      <Route path={POPUP_PATH} component={SnoozePanel} />
-      <Route path={OPTIONS_PATH} component={AsyncOptionsPage} />
-      <Route path={TODO_PATH} component={AsyncTodoPage} />
-      <Route
-        path={FIRST_SNOOZE_PATH}
-        component={AsyncFirstSnoozeDialog}
-      />
-      <Route path={RATE_TS_PATH} component={AsyncRateTSDialog} />
-      <Route path={BETA_PATH} component={AsyncBetaDialog} />
-      <Route path={TUTORIAL_PATH} component={AsyncTutorial} />
-    </Fragment>
+    <Suspense fallback={<div style={{ padding: '10px', textAlign: 'center' }}>Loading...</div>}>
+      <Routes>
+        <Route path={POPUP_PATH} element={<SnoozePanel />} />
+        <Route path={OPTIONS_PATH} element={<AsyncOptionsPage />} />
+        <Route path={TODO_PATH} element={<AsyncTodoPage />} />
+        <Route
+          path={FIRST_SNOOZE_PATH}
+          element={<AsyncFirstSnoozeDialog />}
+        />
+        <Route path={RATE_TS_PATH} element={<AsyncRateTSDialog />} />
+        <Route path={BETA_PATH} element={<AsyncBetaDialog />} />
+        <Route path={TUTORIAL_PATH} element={<AsyncTutorial />} />
+      </Routes>
+    </Suspense>
   </HashRouter>
 );
 
