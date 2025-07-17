@@ -11,10 +11,10 @@ export default defineConfig({
       input: {
         // Main popup/options page
         index: resolve(__dirname, 'index.html'),
-        // Background script
+        // Offscreen page (has corresponding HTML)
+        offscreen: resolve(__dirname, 'offscreen.html'),
+        // Background script (pure JS)
         background: resolve(__dirname, 'src/core/backgroundMain.js'),
-        // Offscreen script
-        offscreen: resolve(__dirname, 'src/core/offscreen.js'),
       },
       output: {
         // Clean output filenames (no hash)
@@ -27,11 +27,10 @@ export default defineConfig({
     },
     // Don't minimize for Chrome Web Store review process
     minify: false,
-    // Write files to disk in development
+    // Write files to disk in development (required for Chrome extensions)
     write: true,
     // Output to build directory
     outDir: 'build',
-    // Don't emit index.html for background/offscreen scripts
     emptyOutDir: true,
   },
   
