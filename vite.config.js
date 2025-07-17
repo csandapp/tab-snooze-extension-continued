@@ -1,0 +1,65 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  
+  // Multiple entry points for Chrome extension
+  build: {
+    rollupOptions: {
+      input: {
+        // Main popup/options page
+        index: resolve(__dirname, 'index.html'),
+        // Background script
+        background: resolve(__dirname, 'src/core/backgroundMain.js'),
+        // Offscreen script
+        offscreen: resolve(__dirname, 'src/core/offscreen.js'),
+      },
+      output: {
+        // Clean output filenames (no hash)
+        entryFileNames: 'static/js/[name].js',
+        chunkFileNames: 'static/js/[name].js',
+        assetFileNames: 'static/[ext]/[name].[ext]',
+        // Disable chunk splitting for Chrome extensions
+        manualChunks: undefined,
+      },
+    },
+    // Don't minimize for Chrome Web Store review process
+    minify: false,
+    // Write files to disk in development
+    write: true,
+    // Output to build directory
+    outDir: 'build',
+    // Don't emit index.html for background/offscreen scripts
+    emptyOutDir: true,
+  },
+  
+  // Define globals for background scripts
+  define: {
+    'global': 'globalThis',
+  },
+  
+  // Configure for Chrome extension development
+  server: {
+    // Write files to disk in development for Chrome extension
+    fs: {
+      // Allow serving files from one level up
+      allow: ['..'],
+    },
+  },
+  
+  // Resolve configuration
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+  
+  // Global configuration for Chrome APIs
+  esbuild: {
+    define: {
+      chrome: 'chrome',
+    },
+  },
+})
