@@ -1,10 +1,6 @@
-// src/core/chromeMock.js
-// Mock Chrome APIs for development mode
-
-console.log('Loading Chrome API mocks for development...');
-
-if (typeof chrome === 'undefined') {
-  // Mock storage data for development
+console.log('Loading src/setup.js');
+// src/setup.js
+if (import.meta.env.DEV) {
   const mockStorage = {
     snooze_settings: {
       notifications: true,
@@ -15,7 +11,8 @@ if (typeof chrome === 'undefined') {
     todos: []
   };
 
-  window.chrome = {
+  chrome = {
+    ...chrome, // Preserve existing chrome object if it exists
     runtime: {
       getManifest: () => ({
         name: "Tab Snooze - Manifest V3",
@@ -31,12 +28,24 @@ if (typeof chrome === 'undefined') {
         }
         return Promise.resolve({ success: true });
       },
+      onInstalled: {
+        addListener: (callback) => {
+          console.log('Mock chrome.runtime.onInstalled.addListener');
+          // callback({ reason: 'install', previousVersion: '0.0.0' });
+        }
+      },
       onMessage: {
         addListener: (callback) => {
           console.log('Mock chrome.runtime.onMessage.addListener');
         },
         removeListener: (callback) => {
           console.log('Mock chrome.runtime.onMessage.removeListener');
+        }
+      },
+      onStartup: {
+        addListener: (callback) => {
+          console.log('Mock chrome.runtime.onStartup.addListener');
+          // callback(); // Simulate immediate startup
         }
       }
     },
@@ -76,6 +85,14 @@ if (typeof chrome === 'undefined') {
           keysArray.forEach(key => delete mockStorage[key]);
           if (callback) callback();
           return Promise.resolve();
+        }
+      },
+      onChanged: {
+        addListener: (callback) => {
+          console.log('Mock chrome.storage.onChanged.addListener');
+        },
+        removeListener: (callback) => {
+          console.log('Mock chrome.storage.onChanged.removeListener');
         }
       }
     },
@@ -151,7 +168,16 @@ if (typeof chrome === 'undefined') {
         console.log('Mock chrome.idle.queryState:', detectionIntervalInSeconds);
         if (callback) callback('active');
         return Promise.resolve('active');
+      },
+      onStateChanged: {
+        addListener: (callback) => {
+          console.log('Mock chrome.idle.onStateChanged.addListener');
+        },
+        removeListener: (callback) => {
+          console.log('Mock chrome.idle.onStateChanged.removeListener');
+        }
       }
+        
     },
 
     // Add action API for popup-related functionality
@@ -165,6 +191,17 @@ if (typeof chrome === 'undefined') {
         console.log('Mock chrome.action.setBadgeText:', details);
         if (callback) callback();
         return Promise.resolve();
+      }
+    },
+
+    commands: {
+      onCommand: {
+        addListener: (callback) => {
+          console.log('Mock chrome.commands.onCommand.addListener');
+        },
+        removeListener: (callback) => {
+          console.log('Mock chrome.commands.onCommand.removeListener');
+        }
       }
     }
   };

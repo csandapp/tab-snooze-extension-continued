@@ -42,8 +42,8 @@ export default defineConfig({
   // Define globals for background scripts
   define: {
     'global': 'globalThis',
-    'process.env.NODE_ENV': '"production"',
-    chrome: 'chrome',
+    'process.env.NODE_ENV': import.meta.env.DEV ? '"development"' : '"production"',
+    'chrome': import.meta.env.DEV ? 'globalThis.mockChrome' : 'chrome'
   },
   
   // Configure for Chrome extension development
@@ -53,8 +53,17 @@ export default defineConfig({
     fs: {
       allow: ['..'],
     },
+    // Add middleware to handle routing for different extension pages
+    // middlewares: [
+    //   (req, res, next) => {
+    //     // Handle extension routes in development
+    //     if (req.url.includes('#popup') || req.url.includes('#options')) {
+    //       req.url = '/';
+    //     }
+    //     next();
+    //   }
+    // ]
   },
-  
   // Resolve configuration
   resolve: {
     alias: {
