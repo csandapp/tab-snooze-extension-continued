@@ -1,7 +1,7 @@
 // @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { Component, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { withStyles } from '@mui/material/styles';
 import styled from 'styled-components';
 import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';

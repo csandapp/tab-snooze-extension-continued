@@ -6,6 +6,8 @@ import { muiTheme, styledComponentsTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 import Router from './Router';
 
+import { HelmetProvider } from 'react-helmet-async';
+
 class App extends Component {
   render() {
     return (

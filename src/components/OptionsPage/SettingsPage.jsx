@@ -2,7 +2,7 @@
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@mui/material/styles';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import styled, { css } from 'styled-components';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
