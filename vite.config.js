@@ -11,32 +11,25 @@ export default defineConfig({
     }
   })],
   
-  // Completely disable esbuild for all JS/JSX files
-  esbuild: false,
+  // Keep esbuild enabled but configure it properly
+  esbuild: {
+    target: 'chrome88'
+  },
   
-  // Alternative: if you need esbuild for other things, configure it to skip Flow files
-  // esbuild: {
-  //   include: [], // Don't include any files for esbuild processing
-  // },
-  
-  // Force Vite to use Babel for all JS processing
   optimizeDeps: {
-    esbuildOptions: {
-      // Skip esbuild for dependency scanning
-      plugins: [{
-        name: 'flow-remove',
-        setup(build) {
-          // Let Babel handle all .js/.jsx files
-          build.onLoad({ filter: /\.(js|jsx)$/ }, () => {
-            return { contents: '', loader: 'js' }
-          })
-        }
-      }]
-    }
+    include: [
+      "@mui/material/styles",
+      "@mui/material",
+      "@emotion/react",
+      "@emotion/styled",
+      "react",
+      "react-dom"
+    ]
   },
   
   // Multiple entry points for Chrome extension
   build: {
+    target: 'chrome88',
     rollupOptions: {
       input: {
         // Main popup/options page
@@ -47,12 +40,16 @@ export default defineConfig({
         background: resolve(__dirname, 'src/core/backgroundMain.js'),
       },
       output: {
+        // Use IIFE format for Chrome extensions
+        format: 'iife',
         // Clean output filenames (no hash)
         entryFileNames: 'static/js/[name].js',
         chunkFileNames: 'static/js/[name].js',
         assetFileNames: 'static/[ext]/[name].[ext]',
         // Disable chunk splitting for Chrome extensions
         manualChunks: undefined,
+        // Explicitly disable inlineDynamicImports for multiple entries
+        inlineDynamicImports: false,
       },
     },
     // Don't minimize for Chrome Web Store review process
@@ -62,11 +59,16 @@ export default defineConfig({
     // Output to build directory
     outDir: 'build',
     emptyOutDir: true,
+    // Disable dynamic import inlining at build level too
+    dynamicImportVarsOptions: {
+      exclude: []
+    }
   },
   
   // Define globals for background scripts
   define: {
     'global': 'globalThis',
+    'process.env.NODE_ENV': '"production"',
     chrome: 'chrome',
   },
   
