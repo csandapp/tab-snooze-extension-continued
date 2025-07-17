@@ -41,7 +41,7 @@ import { getSettings, saveSettings } from '../../core/settings';
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
-  getUpgradeUrl,
+  // getUpgradeUrl,
   CHROME_SETTINGS_SHORTCUTS,
   CHROME_WEB_STORE_REVIEW,
   CURR_DEVELOPER_DONATE_URL,
@@ -49,13 +49,13 @@ import {
   GITHUB_REPO_URL,
   SUPPORT_EMAIL_URL
 } from '../../paths';
-import { EVENTS, track } from '../../core/analytics';
+// import { EVENTS, track } from '../../core/analytics';
 import {
   BADGE_HIDDEN,
   BADGE_TOTAL_SNOOZED,
   BADGE_DUE_TODAY,
 } from '../../core/badge';
-import ProBadge from './ProBadge';
+// import ProBadge from './ProBadge';
 import { isProUser } from '../../core/license';
 import Button from '../SnoozePanel/Button';
 
@@ -93,7 +93,7 @@ class SettingsPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    track(EVENTS.SETTINGS_VIEW);
+    // track(EVENTS.SETTINGS_VIEW);
   }
 
   componentWillUnmount() {
@@ -280,7 +280,7 @@ class SettingsPage extends Component<Props, State> {
                 <ListItemText
                   primary={
                     <Fragment>
-                      Tabs Sync & Backup <ProBadge />
+                      {/* Tabs Sync & Backup <ProBadge /> */}
                     </Fragment>
                   }
                   secondary="Disabled"
@@ -288,7 +288,7 @@ class SettingsPage extends Component<Props, State> {
                 <ListItemSecondaryAction>
                   <LogInButton
                     as="a"
-                    href={getUpgradeUrl()}
+                    // href={getUpgradeUrl()}
                     target="_blank"
                   >
                     Signup / Login
@@ -346,7 +346,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <AlarmIcon />,
               title: (
                 <Fragment>
-                  Smart wakeup <ProBadge />
+                  {/* Smart wakeup <ProBadge /> */}
                 </Fragment>
               ),
               description: 'Ask before waking up too many tabs',
@@ -362,7 +362,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <DarkIcon />,
               title: (
                 <Fragment>
-                  Dark Mode <ProBadge />
+                  {/* Dark Mode <ProBadge /> */}
                 </Fragment>
               ),
               locked: !isPro,
@@ -378,7 +378,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <LocationIcon />,
               title: (
                 <Fragment>
-                  Location Snooze <ProBadge />
+                  {/* Location Snooze <ProBadge /> */}
                 </Fragment>
               ),
               locked: !isPro,
@@ -438,7 +438,7 @@ class SettingsPage extends Component<Props, State> {
           {!isPro && (
             <Fragment>
               <Header>
-                Custom Snooze Options <ProBadge />
+                {/* Custom Snooze Options <ProBadge /> */}
               </Header>
               {['Hours', 'Days', 'Weeks'].map((period, index) =>
                 this.renderGeneralSetting({
@@ -466,7 +466,7 @@ class SettingsPage extends Component<Props, State> {
               )}
             </Fragment>
           )}
-          <Header>Keyboard Shortcuts {!isPro && <ProBadge />}</Header>
+          <Header>Keyboard Shortcuts {!isPro /* && <ProBadge />*/}</Header>
           {commands.map((command, index) =>
             this.renderShortcutSetting({
               key: '' + index,

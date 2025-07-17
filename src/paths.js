@@ -1,6 +1,6 @@
 // @flow
 
-import { addTrackingIdToUrl } from './core/analytics';
+// import { addTrackingIdToUrl } from './core/analytics';
 
 // Base app file path
 export const APP_BASE_PATH = '/index.html#';
@@ -50,6 +50,6 @@ export const SERVER_CONFIG_URL = `${TS_HOMEPAGE_URL}/serverConfig.json`;
 const UPGRADE_URL = `${TS_HOMEPAGE_URL}/pro`;
 const TRACK_UNINSTALL_URL = `${TS_HOMEPAGE_URL}/uninstalled`;
 
-export const getTrackUninstallUrl = () =>
-  addTrackingIdToUrl(TRACK_UNINSTALL_URL);
-export const getUpgradeUrl = () => addTrackingIdToUrl(UPGRADE_URL);
+// export const getTrackUninstallUrl = () =>
+//   addTrackingIdToUrl(TRACK_UNINSTALL_URL);
+// export const getUpgradeUrl = () => addTrackingIdToUrl(UPGRADE_URL);

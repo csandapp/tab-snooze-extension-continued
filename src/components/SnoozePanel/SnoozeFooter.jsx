@@ -8,7 +8,7 @@ import {
   SLEEPING_TABS_PATH,
   TODO_PATH,
   SETTINGS_PATH,
-  getUpgradeUrl,
+  // getUpgradeUrl,
   BETA_PATH,
 } from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
@@ -58,7 +58,7 @@ export default class SnoozeFooter extends Component<Props, State> {
           {!betaBadge && upgradeBadge && (
             <BadgeButton
               as="a"
-              href={getUpgradeUrl()}
+              // href={getUpgradeUrl()}
               target="_blank"
             >
               <UpgradeBadge>Upgrade</UpgradeBadge>

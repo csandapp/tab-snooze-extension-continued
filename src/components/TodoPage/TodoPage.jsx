@@ -8,7 +8,7 @@ import { TODO_PATH } from '../../paths';
 import Fade from '@mui/material/Fade';
 import Grow from '@mui/material/Grow';
 import IconButton from '@mui/material/IconButton';
-import { track, EVENTS } from '../../core/analytics';
+// import { track, EVENTS } from '../../core/analytics';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
@@ -52,7 +52,7 @@ class TodoPage extends Component<any, State> {
     if (!text) {
       this.todoTextRef.current.focus();
 
-      track(EVENTS.NEW_TODO);
+      // track(EVENTS.NEW_TODO);
     }
   }
 

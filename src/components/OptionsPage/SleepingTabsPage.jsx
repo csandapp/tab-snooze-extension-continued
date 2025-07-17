@@ -20,7 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
 import { TODO_PATH } from '../../paths';
-import { track, EVENTS } from '../../core/analytics';
+// import { track, EVENTS } from '../../core/analytics';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -83,7 +83,7 @@ class SleepingTabsPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    track(EVENTS.SLEEPING_TABS_VIEW);
+    // track(EVENTS.SLEEPING_TABS_VIEW);
   }
 
   componentWillUnmount() {
