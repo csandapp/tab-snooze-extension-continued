@@ -1,12 +1,12 @@
 // @flow
 
 import React, { Fragment } from 'react';
-import { withStyles } from '@@mui/material/styles';
-import AppBar from '@@mui/material/AppBar';
-import Button from '@@mui/material/Button';
-import IconButton from '@@mui/material/IconButton';
+import { withStyles } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import styled, { css } from 'styled-components';
-import Toolbar from '@@mui/material/Toolbar';
+import Toolbar from '@mui/material/Toolbar';
 import SettingsIcon from '@material-ui/icons/Settings';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import SleepingIcon from '@material-ui/icons/Hotel';
@@ -19,7 +19,7 @@ import {
   TS_HOMEPAGE_URL,
 } from '../../paths';
 import { Route } from 'react-router-dom';
-import Tooltip from '@@mui/material/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 const styles = theme => ({
   navIcon: { marginRight: 10 },

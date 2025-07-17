@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import Zoom from '@@mui/material/Zoom';
+import Zoom from '@mui/material/Zoom';
 
 type Props = {
   children: any,

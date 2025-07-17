@@ -1,14 +1,14 @@
 // @flow
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@@mui/material/styles';
+import { withStyles } from '@mui/material/styles';
 import { Helmet } from 'react-helmet';
 import styled, { css } from 'styled-components';
-import List from '@@mui/material/List';
-import ListItem from '@@mui/material/ListItem';
-import ListItemText from '@@mui/material/ListItemText';
-import ListSubheader from '@@mui/material/ListSubheader';
-import ListItemSecondaryAction from '@@mui/material/ListItemSecondaryAction';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import AudioIcon from '@material-ui/icons/Audiotrack';
 import SunIcon from '@material-ui/icons/WbSunny';
 import WeekendIcon from '@material-ui/icons/Weekend';
@@ -32,8 +32,8 @@ import DarkIcon from '@material-ui/icons/InvertColors';
 import LocationIcon from '@material-ui/icons/LocationOn';
 import CafeIcon from '@material-ui/icons/LocalCafe';
 import NotificationIcon from '@material-ui/icons/Notifications';
-import ListItemIcon from '@@mui/material/ListItemIcon';
-import Switch from '@@mui/material/Switch';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Switch from '@mui/material/Switch';
 import Select from '../SnoozePanel/Select';
 import { getSettings, saveSettings } from '../../core/settings';
 

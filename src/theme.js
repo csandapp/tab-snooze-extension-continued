@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@@mui/material/styles';
+import { createMuiTheme } from '@mui/material/styles';
 
 // Styled Components theme (passed via context to prop.theme)
 // export const styledComponentsTheme = {

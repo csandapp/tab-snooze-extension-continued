@@ -16,10 +16,10 @@ import SchoolIcon from '@material-ui/icons/School';
 import StarIcon from '@material-ui/icons/Star';
 import TextIcon from '@material-ui/icons/Textsms';
 import ChangelogIcon from '@material-ui/icons/ImportContacts';
-import List from '@@mui/material/List';
-import ListItem from '@@mui/material/ListItem';
-import ListItemText from '@@mui/material/ListItemText';
-import ListItemIcon from '@@mui/material/ListItemIcon';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import { Helmet } from 'react-helmet';
 
 export default class BetaDialog extends Component<{}> {

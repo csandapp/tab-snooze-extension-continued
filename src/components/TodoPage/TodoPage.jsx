@@ -5,12 +5,12 @@ import styled, { css } from 'styled-components';
 import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_PATH } from '../../paths';
-import Fade from '@@mui/material/Fade';
-import Grow from '@@mui/material/Grow';
-import IconButton from '@@mui/material/IconButton';
+import Fade from '@mui/material/Fade';
+import Grow from '@mui/material/Grow';
+import IconButton from '@mui/material/IconButton';
 import { track, EVENTS } from '../../core/analytics';
-import Paper from '@@mui/material/Paper';
-import Popper from '@@mui/material/Popper';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
 import sanitizeHtml from 'sanitize-html';
 

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { muiTheme, styledComponentsTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 import { ThemeProvider } from 'styled-components';
-import MuiThemeProvider from '@@mui/material/styles/MuiThemeProvider';
+import MuiThemeProvider from '@mui/material/styles/MuiThemeProvider';
 import Router from './Router';
 
 class App extends Component {

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import NativeSelect from '@@mui/material/NativeSelect';
-import { withStyles } from '@@mui/material/styles';
+import NativeSelect from '@mui/material/NativeSelect';
+import { withStyles } from '@mui/material/styles';
 
 const styles = theme => ({
   root: {
