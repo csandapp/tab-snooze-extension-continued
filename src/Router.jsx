@@ -1,5 +1,5 @@
 // @flow
-import React, { Fragment, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import {
@@ -8,7 +8,7 @@ import {
   TODO_PATH,
   FIRST_SNOOZE_PATH,
   RATE_TS_PATH,
-  BETA_PATH,
+  // BETA_PATH,
   TUTORIAL_PATH,
 } from './paths';
 

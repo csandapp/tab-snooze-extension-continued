@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { muiTheme, styledComponentsTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 import Router from './Router';
-
-import { HelmetProvider } from 'react-helmet-async';
 
 class App extends Component {
   render() {
