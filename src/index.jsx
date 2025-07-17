@@ -15,8 +15,10 @@ if (!rootEl) {
 const reactRoot = createRoot(rootEl);
 reactRoot.render(
   // <ErrorBoundary>
-  <HelmetProvider>
-    <App />
-  </HelmetProvider>
+  <React.StrictMode>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  </React.StrictMode>
   // </ErrorBoundary>
 );
