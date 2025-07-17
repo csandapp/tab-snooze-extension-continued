@@ -31,7 +31,7 @@ import {
   createTab,
   getActiveTab,
 } from '../../core/utils';
-import { getUpgradeUrl } from '../../paths';
+// import { getUpgradeUrl } from '../../paths';
 import Loadable from 'react-loadable';
 
 
@@ -214,7 +214,7 @@ class SnoozePanel extends Component<Props, State> {
     const { selectedSnoozeOptionId, isProUser } = this.state;
 
     if (!isProUser) {
-      createTab(getUpgradeUrl());
+      // createTab(getUpgradeUrl());
       return;
     }
 

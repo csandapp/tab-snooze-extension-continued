@@ -5,33 +5,38 @@ import styled, { css } from 'styled-components';
 import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_PATH } from '../../paths';
-import Fade from '@material-ui/core/Fade';
-import Grow from '@material-ui/core/Grow';
-import IconButton from '@material-ui/core/IconButton';
-import { track, EVENTS } from '../../core/analytics';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
+import Fade from '@mui/material/Fade';
+import Grow from '@mui/material/Grow';
+import IconButton from '@mui/material/IconButton';
+// import { track, EVENTS } from '../../core/analytics';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
 import sanitizeHtml from 'sanitize-html';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-type Props = {
-  location: any, // from react-router-dom
-  history: any, // from react-router-dom
-};
 type State = {
   text: string,
   colorIndex: number,
   snoozePanelOpen: boolean,
 };
 
-export default class TodoPage extends Component<Props, State> {
+// Create a wrapper component to use hooks
+function TodoPageWrapper(props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  return <TodoPage {...props} navigate={navigate} location={location} />;
+}
+
+class TodoPage extends Component<any, State> {
   todoTextRef: any = React.createRef();
   arrowRef: any = React.createRef();
   bodyRef: any = React.createRef();
   snoozeBtnEl: any = null;
   updateUrlTimer: ?TimeoutID;
 
-  constructor(props: Props) {
+  constructor(props: any) {
     super(props);
 
     // init state with color & text from url
@@ -47,7 +52,7 @@ export default class TodoPage extends Component<Props, State> {
     if (!text) {
       this.todoTextRef.current.focus();
 
-      track(EVENTS.NEW_TODO);
+      // track(EVENTS.NEW_TODO);
     }
   }
 
@@ -55,12 +60,9 @@ export default class TodoPage extends Component<Props, State> {
     // replace '_' with spaces because they are encoded nicely
     // in the address bar
     text = text.replace(/ /g, '_');
-    // .replace(/&nbsp;/g, '_')
-    // .replace(/<div>/g, '_')
-    // .replace(/<\/div>/g, '')
-    // .replace(/<br>/g, '');
 
-    this.props.history.replace({
+    // Use navigate instead of history.replace
+    this.props.navigate({
       pathname: TODO_PATH,
       search:
         '?' +
@@ -68,7 +70,7 @@ export default class TodoPage extends Component<Props, State> {
           color: colorIndex,
           text: text,
         }),
-    });
+    }, { replace: true });
   }
 
   getTextAndColorFromUrl() {
@@ -220,12 +222,6 @@ export default class TodoPage extends Component<Props, State> {
                 placement="top-start"
                 anchorEl={this.snoozeBtnEl}
                 transition
-                // modifiers={{
-                //   arrow: {
-                //     enabled: true,
-                //     element: this.arrowRef.current,
-                //   },
-                // }}
               >
                 {({ TransitionProps }) => (
                   <Grow
@@ -336,3 +332,5 @@ const Buttons = styled.div`
   bottom: 20px;
   left: 20px;
 `;
+
+export default TodoPageWrapper;

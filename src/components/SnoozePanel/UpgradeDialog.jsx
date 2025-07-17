@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import styled, { keyframes } from 'styled-components';
 import SnoozeModal from './SnoozeModal';
 import Button from './Button';
-import { getUpgradeUrl } from '../../paths';
-import ProBadge from '../OptionsPage/ProBadge';
+// import { getUpgradeUrl } from '../../paths';
+// import ProBadge from '../OptionsPage/ProBadge';
 import { FREE_WEEKLY_SNOOZE_COUNT } from '../../core/license';
 
 type Props = {
@@ -37,7 +37,7 @@ export default class UpgradeDialog extends Component<Props, State> {
         <Root>
           <Star src={require('./images/super_star.svg')} />
           <Title>
-            Become a Tab Snooze <ProBadge big /> !
+            {/* Become a Tab Snooze <ProBadge big /> ! */}
           </Title>
           <Subtitle>
             Help us support this extension development and enjoy
@@ -51,7 +51,7 @@ export default class UpgradeDialog extends Component<Props, State> {
           <BuyButton
             raised
             as="a"
-            href={getUpgradeUrl()}
+            // href={getUpgradeUrl()}
             target="_blank"
           >
             Choose a Plan

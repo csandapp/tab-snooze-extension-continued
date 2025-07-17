@@ -13,7 +13,7 @@ import {
   TODO_PATH,
   SLEEPING_TABS_PATH,
   CHANGELOG_URL,
-  getTrackUninstallUrl,
+  // getTrackUninstallUrl,
   TUTORIAL_PATH,
 } from '../paths';
 import {
@@ -22,7 +22,7 @@ import {
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
 import { createTab, IS_BETA, APP_VERSION } from './utils';
-import { track, EVENTS } from './analytics';
+// import { track, EVENTS } from './analytics';
 
 import {
   updateBadge,
@@ -62,10 +62,10 @@ export function runBackgroundScript() {
     // [2] Make the main function run on Extension install/update
     await extensionMain();
 
-    chrome.runtime.setUninstallURL(getTrackUninstallUrl());
+    // chrome.runtime.setUninstallURL(getTrackUninstallUrl());
 
     if (reason === 'install') {
-      track(EVENTS.EXT_INSTALLED);
+      // track(EVENTS.EXT_INSTALLED);
 
       // Save install date for new users.
       // Old users will have a 0 install date
@@ -77,7 +77,7 @@ export function runBackgroundScript() {
     }
 
     if (reason === 'update') {
-      track(EVENTS.EXT_UPDATED);
+      // track(EVENTS.EXT_UPDATED);
 
       // Open the changelog every version update for beta testers
       if (IS_BETA) {

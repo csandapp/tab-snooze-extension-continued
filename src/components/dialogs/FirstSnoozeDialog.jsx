@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { SLEEPING_TABS_PATH } from '../../paths';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
-import HotelIcon from '@material-ui/icons/Hotel';
+import HotelIcon from '@mui/icons-material/Hotel';
 import { Link } from 'react-router-dom';
 
 export default class FirstSnoozeDialog extends Component<{}> {

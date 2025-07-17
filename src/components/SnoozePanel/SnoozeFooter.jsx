@@ -1,19 +1,19 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CheckboxIcon from '@material-ui/icons/CheckBoxRounded';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CheckboxIcon from '@mui/icons-material/CheckBoxRounded';
 import { Link } from 'react-router-dom';
 import {
   SLEEPING_TABS_PATH,
   TODO_PATH,
   SETTINGS_PATH,
-  getUpgradeUrl,
+  // getUpgradeUrl,
   BETA_PATH,
 } from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
 import { createTab } from '../../core/utils';
-// import Tooltip from '@material-ui/core/Tooltip';
+// import Tooltip from '@mui/material/Tooltip';
 
 type Props = {
   tooltip: {
@@ -58,7 +58,7 @@ export default class SnoozeFooter extends Component<Props, State> {
           {!betaBadge && upgradeBadge && (
             <BadgeButton
               as="a"
-              href={getUpgradeUrl()}
+              // href={getUpgradeUrl()}
               target="_blank"
             >
               <UpgradeBadge>Upgrade</UpgradeBadge>

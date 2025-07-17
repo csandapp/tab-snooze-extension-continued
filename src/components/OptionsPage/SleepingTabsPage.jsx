@@ -1,26 +1,26 @@
 // @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { Component, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
-import { withStyles } from '@material-ui/core/styles';
+import { Helmet } from 'react-helmet-async';
+import { withStyles } from '@mui/material/styles';
 import styled from 'styled-components';
 import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import IconButton from '@material-ui/core/IconButton';
-import HotelIcon from '@material-ui/icons/Hotel';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Zoom from '@material-ui/core/Zoom';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import IconButton from '@mui/material/IconButton';
+import HotelIcon from '@mui/icons-material/Hotel';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Zoom from '@mui/material/Zoom';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
 import { TODO_PATH } from '../../paths';
-import { track, EVENTS } from '../../core/analytics';
+// import { track, EVENTS } from '../../core/analytics';
 
 // Adding chrome manually to global scope, for ESLint
 const chrome = window.chrome;
@@ -83,7 +83,7 @@ class SleepingTabsPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    track(EVENTS.SLEEPING_TABS_VIEW);
+    // track(EVENTS.SLEEPING_TABS_VIEW);
   }
 
   componentWillUnmount() {

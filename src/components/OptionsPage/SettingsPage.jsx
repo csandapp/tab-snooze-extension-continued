@@ -1,39 +1,39 @@
 // @flow
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { Helmet } from 'react-helmet';
+import { withStyles } from '@mui/material/styles';
+import { Helmet } from 'react-helmet-async';
 import styled, { css } from 'styled-components';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import AudioIcon from '@material-ui/icons/Audiotrack';
-import SunIcon from '@material-ui/icons/WbSunny';
-import WeekendIcon from '@material-ui/icons/Weekend';
-import WorkIcon from '@material-ui/icons/Work';
-import SomedayIcon from '@material-ui/icons/BeachAccess';
-import EditIcon from '@material-ui/icons/Edit';
-import KeyboardIcon from '@material-ui/icons/Keyboard';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import AudioIcon from '@mui/icons-material/Audiotrack';
+import SunIcon from '@mui/icons-material/WbSunny';
+import WeekendIcon from '@mui/icons-material/Weekend';
+import WorkIcon from '@mui/icons-material/Work';
+import SomedayIcon from '@mui/icons-material/BeachAccess';
+import EditIcon from '@mui/icons-material/Edit';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
 
-import StarIcon from '@material-ui/icons/Star';
-import GiftCardIcon from '@material-ui/icons/CardGiftcard';
-import LoveIcon from '@material-ui/icons/Favorite';
-import CodeIcon from '@material-ui/icons/Code';
-import MailIcon from '@material-ui/icons/Mail';
+import StarIcon from '@mui/icons-material/Star';
+import GiftCardIcon from '@mui/icons-material/CardGiftcard';
+import LoveIcon from '@mui/icons-material/Favorite';
+import CodeIcon from '@mui/icons-material/Code';
+import MailIcon from '@mui/icons-material/Mail';
 
-import MoonIcon from '@material-ui/icons/Brightness2';
-// import UserIcon from '@material-ui/icons/AccountCircle';
-import CloudIcon from '@material-ui/icons/Cloud';
-import BadgeIcon from '@material-ui/icons/Looks5';
-import AlarmIcon from '@material-ui/icons/Alarm';
-import DarkIcon from '@material-ui/icons/InvertColors';
-import LocationIcon from '@material-ui/icons/LocationOn';
-import CafeIcon from '@material-ui/icons/LocalCafe';
-import NotificationIcon from '@material-ui/icons/Notifications';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Switch from '@material-ui/core/Switch';
+import MoonIcon from '@mui/icons-material/Brightness2';
+// import UserIcon from '@mui/icons-material/AccountCircle';
+import CloudIcon from '@mui/icons-material/Cloud';
+import BadgeIcon from '@mui/icons-material/Looks5';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import DarkIcon from '@mui/icons-material/InvertColors';
+import LocationIcon from '@mui/icons-material/LocationOn';
+import CafeIcon from '@mui/icons-material/LocalCafe';
+import NotificationIcon from '@mui/icons-material/Notifications';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Switch from '@mui/material/Switch';
 import Select from '../SnoozePanel/Select';
 import { getSettings, saveSettings } from '../../core/settings';
 
@@ -41,7 +41,7 @@ import { getSettings, saveSettings } from '../../core/settings';
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
-  getUpgradeUrl,
+  // getUpgradeUrl,
   CHROME_SETTINGS_SHORTCUTS,
   CHROME_WEB_STORE_REVIEW,
   CURR_DEVELOPER_DONATE_URL,
@@ -49,13 +49,13 @@ import {
   GITHUB_REPO_URL,
   SUPPORT_EMAIL_URL
 } from '../../paths';
-import { EVENTS, track } from '../../core/analytics';
+// import { EVENTS, track } from '../../core/analytics';
 import {
   BADGE_HIDDEN,
   BADGE_TOTAL_SNOOZED,
   BADGE_DUE_TODAY,
 } from '../../core/badge';
-import ProBadge from './ProBadge';
+// import ProBadge from './ProBadge';
 import { isProUser } from '../../core/license';
 import Button from '../SnoozePanel/Button';
 
@@ -93,7 +93,7 @@ class SettingsPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    track(EVENTS.SETTINGS_VIEW);
+    // track(EVENTS.SETTINGS_VIEW);
   }
 
   componentWillUnmount() {
@@ -280,7 +280,7 @@ class SettingsPage extends Component<Props, State> {
                 <ListItemText
                   primary={
                     <Fragment>
-                      Tabs Sync & Backup <ProBadge />
+                      {/* Tabs Sync & Backup <ProBadge /> */}
                     </Fragment>
                   }
                   secondary="Disabled"
@@ -288,7 +288,7 @@ class SettingsPage extends Component<Props, State> {
                 <ListItemSecondaryAction>
                   <LogInButton
                     as="a"
-                    href={getUpgradeUrl()}
+                    // href={getUpgradeUrl()}
                     target="_blank"
                   >
                     Signup / Login
@@ -346,7 +346,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <AlarmIcon />,
               title: (
                 <Fragment>
-                  Smart wakeup <ProBadge />
+                  {/* Smart wakeup <ProBadge /> */}
                 </Fragment>
               ),
               description: 'Ask before waking up too many tabs',
@@ -362,7 +362,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <DarkIcon />,
               title: (
                 <Fragment>
-                  Dark Mode <ProBadge />
+                  {/* Dark Mode <ProBadge /> */}
                 </Fragment>
               ),
               locked: !isPro,
@@ -378,7 +378,7 @@ class SettingsPage extends Component<Props, State> {
               icon: <LocationIcon />,
               title: (
                 <Fragment>
-                  Location Snooze <ProBadge />
+                  {/* Location Snooze <ProBadge /> */}
                 </Fragment>
               ),
               locked: !isPro,
@@ -438,7 +438,7 @@ class SettingsPage extends Component<Props, State> {
           {!isPro && (
             <Fragment>
               <Header>
-                Custom Snooze Options <ProBadge />
+                {/* Custom Snooze Options <ProBadge /> */}
               </Header>
               {['Hours', 'Days', 'Weeks'].map((period, index) =>
                 this.renderGeneralSetting({
@@ -466,7 +466,7 @@ class SettingsPage extends Component<Props, State> {
               )}
             </Fragment>
           )}
-          <Header>Keyboard Shortcuts {!isPro && <ProBadge />}</Header>
+          <Header>Keyboard Shortcuts {!isPro /* && <ProBadge />*/}</Header>
           {commands.map((command, index) =>
             this.renderShortcutSetting({
               key: '' + index,

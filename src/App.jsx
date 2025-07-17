@@ -1,22 +1,21 @@
-import 'sanitize.css';
 import React, { Component } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { muiTheme, styledComponentsTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
-import { ThemeProvider } from 'styled-components';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Router from './Router';
 
 class App extends Component {
   render() {
     return (
-      <MuiThemeProvider theme={muiTheme}>
-        <ThemeProvider theme={styledComponentsTheme}>
-          <React.Fragment>
-            <GlobalStyles />
-            <Router />
-          </React.Fragment>
-        </ThemeProvider>
-      </MuiThemeProvider>
+      <ThemeProvider theme={muiTheme}>
+        <StyledThemeProvider theme={styledComponentsTheme}>
+          <CssBaseline /> {/* use MUI's CSS baseline instead of sanitize.css for CSS normalization */}
+          <GlobalStyles />
+          <Router />
+        </StyledThemeProvider>
+      </ThemeProvider>
     );
   }
 }

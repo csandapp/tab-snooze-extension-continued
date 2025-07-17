@@ -3,8 +3,8 @@
 import type { Node } from 'react';
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
-import { Helmet } from 'react-helmet';
-import Fade from '@material-ui/core/Fade';
+import { Helmet } from 'react-helmet-async';
+import Fade from '@mui/material/Fade';
 import Button from '../SnoozePanel/Button';
 
 export default class TSDialog extends Component<{
