@@ -1,6 +1,5 @@
 // @flow
-
-import React, { Fragment } from 'react';
+import React from 'react';
 import { withStyles } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -35,9 +34,9 @@ const styles = theme => ({
 function OptionsPage(props) {
   const { classes } = props;
   const location = useLocation();
-
+  
   return (
-    <Fragment>
+    <>
       <AppBar position="fixed">
         <Toolbar>
           <a
@@ -79,7 +78,7 @@ function OptionsPage(props) {
           </Routes>
         </Main>
       </Root>
-    </Fragment>
+    </>
   );
 }
 
@@ -103,7 +102,6 @@ const Spacer = styled.div`
 const Main = styled.div`
   /* min-width: 600px; */
   min-height: 500px;
-
   /* For wide screen */
   width: 600px;
 `;
@@ -113,7 +111,6 @@ const NavButton = styled(Button).attrs({
   replace: true,
 })`
   margin-left: 10px !important;
-
   &.linkIsActive {
     background-color: #0000001f !important;
   }
