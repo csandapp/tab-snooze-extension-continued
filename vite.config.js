@@ -4,13 +4,36 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react({
-      babel: {
-        presets: [
-          ['@babel/preset-flow', { all: true }]
-        ]
-      }
-    })
-  ],
+    babel: {
+      presets: [
+        ['@babel/preset-flow', { all: true }]
+      ]
+    }
+  })],
+  
+  // Completely disable esbuild for all JS/JSX files
+  esbuild: false,
+  
+  // Alternative: if you need esbuild for other things, configure it to skip Flow files
+  // esbuild: {
+  //   include: [], // Don't include any files for esbuild processing
+  // },
+  
+  // Force Vite to use Babel for all JS processing
+  optimizeDeps: {
+    esbuildOptions: {
+      // Skip esbuild for dependency scanning
+      plugins: [{
+        name: 'flow-remove',
+        setup(build) {
+          // Let Babel handle all .js/.jsx files
+          build.onLoad({ filter: /\.(js|jsx)$/ }, () => {
+            return { contents: '', loader: 'js' }
+          })
+        }
+      }]
+    }
+  },
   
   // Multiple entry points for Chrome extension
   build: {
@@ -44,6 +67,7 @@ export default defineConfig({
   // Define globals for background scripts
   define: {
     'global': 'globalThis',
+    chrome: 'chrome',
   },
   
   // Configure for Chrome extension development
@@ -59,13 +83,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-    },
-  },
-  
-  // Global configuration for Chrome APIs
-  esbuild: {
-    define: {
-      chrome: 'chrome',
     },
   },
 })
