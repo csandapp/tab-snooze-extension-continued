@@ -35,6 +35,8 @@ declare module '@mui/material/IconButton'{
 declare module '@mui/material/Toolbar'{
   declare export default any;
 }
+
+// flowlint-next-line libdef-override:off
 declare module '@mui/icons-material/Settings'{
   declare export default any;
 }
