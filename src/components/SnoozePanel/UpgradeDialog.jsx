@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import SnoozeModal from './SnoozeModal';
 import Button from './Button';
@@ -13,66 +13,62 @@ type Props = {
   visible: boolean,
   onDismiss: void => void,
 };
-type State = {
-  canContinue: boolean,
-};
 
 // Delay the user 7 seconds until they can continue without paying
 const CONTINUE_DELAY = 6000;
 
-export default class UpgradeDialog extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { canContinue: false };
+const UpgradeDialog = (props: Props): React.Node => {
+  const { visible, onDismiss } = props;
+  const [canContinue, setCanContinue] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanContinue(true);
+    }, CONTINUE_DELAY + 600); // Adding 600ms to ensure the animation completes
 
-    setTimeout(() => {
-      this.setState({ canContinue: true });
-    }, CONTINUE_DELAY + 600);
-  }
+    return () => clearTimeout(timer); // Cleanup on unmount
+  }, []);
 
-  render() {
-    const { visible, onDismiss } = this.props;
-    const { canContinue } = this.state;
+  return (
+    <SnoozeModal visible={visible}>
+      <Root>
+        <Star src={starImage} />
+        <Title>
+          {/* Become a Tab Snooze <ProBadge big /> ! */}
+        </Title>
+        <Subtitle>
+          Help us support this extension development and enjoy
+          unlimited tab snoozing!
+          <br />
+          <br />
+          You have used your {FREE_WEEKLY_SNOOZE_COUNT} free weekly
+          snoozes.
+        </Subtitle>
 
-    return (
-      <SnoozeModal visible={visible}>
-        <Root>
-          <Star src={starImage} />
-          <Title>
-            {/* Become a Tab Snooze <ProBadge big /> ! */}
-          </Title>
-          <Subtitle>
-            Help us support this extension development and enjoy
-            unlimited tab snoozing!
-            <br />
-            <br />
-            You have used your {FREE_WEEKLY_SNOOZE_COUNT} free weekly
-            snoozes.
-          </Subtitle>
-
-          <BuyButton
-            raised
-            as="a"
-            // href={getUpgradeUrl()}
-            target="_blank"
-          >
-            Choose a Plan
-          </BuyButton>
-          <NoThanksButton
-            raised
-            onClick={onDismiss}
-            disabled={!canContinue}
-          >
-            Let me use one more time for free
-            <ProgressBar>
-              <Progress />
-            </ProgressBar>
-          </NoThanksButton>
-        </Root>
-      </SnoozeModal>
-    );
-  }
+        <BuyButton
+          raised
+          as="a"
+          // href={getUpgradeUrl()}
+          target="_blank"
+        >
+          Choose a Plan
+        </BuyButton>
+        <NoThanksButton
+          raised
+          onClick={onDismiss}
+          disabled={!canContinue}
+        >
+          Let me use one more time for free
+          <ProgressBar>
+            <Progress />
+          </ProgressBar>
+        </NoThanksButton>
+      </Root>
+    </SnoozeModal>
+  );
 }
+
+export default UpgradeDialog;
 
 const Root = styled.div`
   height: 100%;

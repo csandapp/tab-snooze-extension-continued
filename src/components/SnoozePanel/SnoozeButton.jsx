@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+import React from 'react';
 import type { ComponentType } from 'react';
 import styled, { css, withTheme } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
