@@ -31,7 +31,13 @@ export default defineConfig({
       "@emotion/styled",
       "react",
       "react-dom"
-    ]
+    ],
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+        '.jsx': 'jsx'
+      }
+    }
   },
   
   build: {

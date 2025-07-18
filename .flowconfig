@@ -1,14 +1,16 @@
 [ignore]
-; <PROJECT_ROOT>/node_modules/.*
+<PROJECT_ROOT>/node_modules/.*
 
 [include]
 
 [libs]
-./src/custom-flow-defenitions
+node_modules/flow-interfaces-chrome/interfaces
 
 [lints]
 
 [options]
 ; esproposal.decorators=ignore
+module.system.node.resolve_dirname=node_modules
+module.name_mapper='^@mui/\(.*\)$' -> '<PROJECT_ROOT>/node_modules/@mui/\1'
 
 [strict]
