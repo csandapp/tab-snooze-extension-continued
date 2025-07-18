@@ -12,6 +12,7 @@
 [libs]
 flow-typed/
 src/custom-flow-defenitions
+node_modules/flow-interfaces-chrome/interfaces
 
 [lints]
 ; From npx flow init
