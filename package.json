@@ -38,7 +38,12 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    
+    "flow": "flow",
+    "flow:init": "flow init",
+    "flow:check": "flow check"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
