@@ -1,6 +1,6 @@
 // @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
-import React, { Component, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
@@ -22,9 +22,6 @@ import { Link } from 'react-router-dom';
 import { TODO_PATH } from '../../paths';
 // import { track, EVENTS } from '../../core/analytics';
 
-// Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
-
 // A tab group represents a collection of tabs that are in the same
 // wakeup time range
 type TabGroup = {
@@ -32,10 +29,6 @@ type TabGroup = {
   tabs: Array<SnoozedTab>,
 };
 type Props = {};
-type State = {
-  visibleTabGroups: ?Array<TabGroup>,
-  hidePeriodic: boolean,
-};
 
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
@@ -67,48 +60,40 @@ const StyledFab = muiStyled(Fab)(({ theme }) => ({
   right: theme.spacing(3),
 }));
 
-class SleepingTabsPage extends Component<Props, State> {
-  state = { visibleTabGroups: null, hidePeriodic: false };
-  storageListener: any;
+const SleepingTabsPage = (props: Props) => {
+  const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState(null);
+  const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
+  
+  const refreshSnoozedTabs = useCallback(async () => {
+    const groups = await getSleepingTabByWakeupGroups(hidePeriodicState);
+    setVisibleTabGroupsState(groups);
+  }, [hidePeriodicState]);
 
-  constructor(props: Props) {
-    super(props);
-
-    this.storageListener = this.refreshSnoozedTabs.bind(this);
-
-    // init
-    this.refreshSnoozedTabs();
+  useEffect(() => {
+    refreshSnoozedTabs();
+    
+    const storageListener = refreshSnoozedTabs;
 
     // listen to storage changes
-    chrome.storage.onChanged.addListener(this.storageListener);
-  }
+    chrome.storage.onChanged.addListener(storageListener);
+  
+    return () => {
+      chrome.storage.onChanged.removeListener(storageListener);
+    }
+  }, [refreshSnoozedTabs]);
 
-  componentDidMount() {
-    // track(EVENTS.SLEEPING_TABS_VIEW);
-  }
+  // componentDidMount() {
+  //   // track(EVENTS.SLEEPING_TABS_VIEW);
+  // }
 
-  componentWillUnmount() {
-    chrome.storage.onChanged.removeListener(this.storageListener);
-  }
-
-  async refreshSnoozedTabs() {
-    const { hidePeriodic } = this.state;
-
-    const visibleTabGroups = await getSleepingTabByWakeupGroups(
-      hidePeriodic
-    );
-
-    this.setState({ visibleTabGroups });
-  }
-
-  deleteTab(tab: SnoozedTab, event: any) {
+  const deleteTab = (tab: SnoozedTab, event: any) => {
     // so that openTab() won't be called
     event.stopPropagation();
 
     setTimeout(() => deleteSnoozedTabs([tab]), 150);
   }
 
-  wakeupTab(tab: SnoozedTab, event: any) {
+  const wakeupTab = (tab: SnoozedTab, event: any) => {
     // animate tab out
 
     const makeTabActive = !(
@@ -121,7 +106,7 @@ class SleepingTabsPage extends Component<Props, State> {
     setTimeout(() => wakeupTabs([tab], makeTabActive), 300);
   }
 
-  renderTabGroup(tabGroup: TabGroup, index: number) {
+  const renderTabGroup = (tabGroup: TabGroup, index: number) =>{
     return (
       <Fragment key={index}>
         <StyledListSubheader disableSticky>
@@ -132,7 +117,7 @@ class SleepingTabsPage extends Component<Props, State> {
             key={index2}
             button
             onClick={event => {
-              this.wakeupTab(tab, event);
+              wakeupTab(tab, event);
             }}
           >
             <Icon src={tab.favicon} alt="" />
@@ -149,7 +134,7 @@ class SleepingTabsPage extends Component<Props, State> {
             <ListItemSecondaryAction>
               <StyledDeleteButton
                 className="delete-btn"
-                onClick={event => this.deleteTab(tab, event)}
+                onClick={event => deleteTab(tab, event)}
                 aria-label="Delete"
               >
                 <DeleteIcon />
@@ -161,32 +146,29 @@ class SleepingTabsPage extends Component<Props, State> {
     );
   }
 
-  render() {
-    const { visibleTabGroups } = this.state;
-
-    if (!visibleTabGroups) {
+  
+  if (!visibleTabGroupsState) {
       // avoid showing placeholder while loading, because
       // it causes placeholder to flicker before the list renders on screen
       return null;
-    }
-
-    return (
-      <Root>
-        <Helmet>
-          <title>Sleeping Tabs - Tab Snooze</title>
-        </Helmet>
-        {visibleTabGroups.length > 0 ? (
-          <StyledList>
-            {visibleTabGroups.map(this.renderTabGroup.bind(this))}
-          </StyledList>
-        ) : (
-          <NoTabsPlaceholder />
-        )}
-
-        <NewTodoBtn />
-      </Root>
-    );
   }
+
+  return (
+    <Root>
+      <Helmet>
+        <title>Sleeping Tabs - Tab Snooze</title>
+      </Helmet>
+      {visibleTabGroupsState.length > 0 ? (
+        <StyledList>
+          {visibleTabGroupsState.map(renderTabGroup)}
+        </StyledList>
+      ) : (
+        <NoTabsPlaceholder />
+      )}
+
+      <NewTodoBtn />
+    </Root>
+  );
 }
 
 const NewTodoBtn = () => (
