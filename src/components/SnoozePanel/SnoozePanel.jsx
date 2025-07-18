@@ -2,7 +2,7 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 // import bugsnag from '../../bugsnag';
 import calcSnoozeOptions, {
@@ -55,18 +55,11 @@ type Props = {
   onTooltipAreaMouseEnter: string => void,
   onTooltipAreaMouseLeave: () => void,
 };
-type State = {
-  selectedSnoozeOptionId: ?string,
-  focusedButtonIndex: number,
-  snoozeOptions: Array<SnoozeOption>,
-  isProUser: boolean,
-  // We delay date/period selection dialogs openining
-  // to give time for click animation to finish gracefuly
-  selectorDialogOpen: boolean,
-  isOverFreePlanLimit: boolean,
-};
+
 
 export default function SnoozePanel(props: Props) {
+  const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
+
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
@@ -74,62 +67,57 @@ export default function SnoozePanel(props: Props) {
   const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
   const [isOverFreePlanLimit, setIsOverFreePlanLimit] = useState(false);
 
-useEffect(() => {
-  let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-  const loadData = async () => {
-    try {
-      const [settings, isInPaywallTest] = await Promise.all([
-        getSettings(), 
-        isInPaywallTest()
-      ]);
-      
-      if (!cancelled) {
-        setSnoozeOptions(calcSnoozeOptions(settings));
-        setIsProUser(!isInPaywallTest);
-      }
-
-      const timeoutId = setTimeout(async () => {
-        const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
+    const loadData = async () => {
+      try {
+        const [settings, isInPaywallTest] = await Promise.all([
+          getSettings(), 
+          isInPaywallTest()
+        ]);
+        
         if (!cancelled) {
-          setIsOverFreePlanLimit(isOverFreePlanLimit);
+          setSnoozeOptions(calcSnoozeOptions(settings));
+          setIsProUser(!isInPaywallTest);
         }
-      }, 300);
 
-      return timeoutId;
-    } catch (error) {
-      console.error('Failed to load data:', error);
+        const timeoutId = setTimeout(async () => {
+          const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
+          if (!cancelled) {
+            setIsOverFreePlanLimit(isOverFreePlanLimit);
+          }
+        }, 300);
+
+        return timeoutId;
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      }
+    };
+
+    const timeoutId = loadData();
+    getSnoozeAudio();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
+
+  const onKeyPress = useCallback((event: KeyboardEvent) => {
+    if (isOverFreePlanLimit) {
+      // ignore shortcuts when Upgrade dialog is visible
+      return;
     }
-  };
 
-  const timeoutId = loadData();
-  getSnoozeAudio();
-
-  return () => {
-    cancelled = true;
-    if (timeoutId) clearTimeout(timeoutId);
-  };
-}, []);
-
-  const onKeyPress = (event: Event) => {
-    const {
-      focusedButtonIndex,
-      snoozeOptions,
-      isOverFreePlanLimit,
-    } = state;
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event);
     const mappedOptionIndex =
       key && SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
     const numpadKey = parseInt(key);
 
-    if (isOverFreePlanLimit) {
-      // ignore shortcuts when Upgrade dialog is visible
-      return;
-    }
-
     if (mappedOptionIndex != null) {
-      this.onSnoozeButtonClicked(
+      onSnoozeButtonClicked(
         event,
         snoozeOptions[mappedOptionIndex]
       );
@@ -141,14 +129,14 @@ useEffect(() => {
       }
 
       const focusedSnoozeOption = snoozeOptions[nextFocusedIndex];
-      this.onSnoozeButtonClicked(event, focusedSnoozeOption);
+      onSnoozeButtonClicked(event, focusedSnoozeOption);
       nextFocusedIndex = -1;
     } else if (
       Number.isInteger(numpadKey) &&
       1 <= numpadKey &&
       numpadKey <= 9
     ) {
-      this.onSnoozeButtonClicked(event, snoozeOptions[numpadKey - 1]);
+      onSnoozeButtonClicked(event, snoozeOptions[numpadKey - 1]);
       nextFocusedIndex = -1;
     } else if (focusedButtonIndex === -1) {
       nextFocusedIndex = 0;
@@ -165,23 +153,16 @@ useEffect(() => {
         (nextFocusedIndex + 1) % snoozeOptions.length;
     }
 
-    this.setState({
-      focusedButtonIndex: nextFocusedIndex,
-    });
-  }
+    setFocusedButtonIndex( nextFocusedIndex);
+  }, [focusedButtonIndex, snoozeOptions, isOverFreePlanLimit, onSnoozeButtonClicked]);
 
-  onSnoozeButtonClicked(event: Event, snoozeOption: SnoozeOption) {
-    const { selectedSnoozeOptionId } = this.state;
-    const { preventTooltip } = this.props;
-
+  const onSnoozeButtonClicked = useCallback((event: Event, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
       return;
     }
 
-    this.setState({
-      selectedSnoozeOptionId: snoozeOption.id,
-    });
+    setSelectedSnoozeOptionId(snoozeOption.id)
 
     // Avoid showing tooltip after user already selected, its distructing
     preventTooltip();
@@ -197,29 +178,19 @@ useEffect(() => {
       });
     } else {
       // either period or date selector opens as dialog
-      setTimeout(
-        () =>
-          this.setState({
-            selectorDialogOpen: true,
-          }),
-        400
-      );
+      setTimeout(() => setSelectorDialogOpen(true), 400);
     }
-  }
+  }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
-  onSnoozeSpecificDateSelected(date: Date) {
-    const { selectedSnoozeOptionId } = this.state;
-
+  const onSnoozeSpecificDateSelected = useCallback((date: Date) {
     delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       wakeupTime: date.getTime(),
       closeTab: true,
     });
-  }
+  }, [selectedSnoozeOptionId]);
 
-  onSnoozePeriodSelected(period: SnoozePeriod) {
-    const { selectedSnoozeOptionId, isProUser } = this.state;
-
+  const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) {
     if (!isProUser) {
       // createTab(getUpgradeUrl());
       return;
@@ -230,100 +201,74 @@ useEffect(() => {
       period,
       closeTab: true,
     });
-  }
+  }, [selectedSnoozeOptionId, isProUser]);
 
-  getSnoozeButtons(snoozeOptions: Array<SnoozeOption>) {
-    const {
-      selectedSnoozeOptionId,
-      isProUser,
-      focusedButtonIndex,
-    } = this.state;
-    const {
-      onTooltipAreaMouseEnter,
-      onTooltipAreaMouseLeave,
-    } = this.props;
-
+  // decide whether or not to use callback here...
+  const getSnoozeButtons = () => {
     return snoozeOptions.map<SnoozeButtonProps>(
       (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
-        // remove pro badge for PRO users
         proBadge: !isProUser && snoozeOpt.isProFeature,
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: Event) =>
-          this.onSnoozeButtonClicked(ev, snoozeOpt),
-        onMouseEnter: () =>
-          onTooltipAreaMouseEnter(snoozeOpt.tooltip),
+        onClick: (ev: Event) => onSnoozeButtonClicked(ev, snoozeOpt),
+        onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
         onMouseLeave: () => onTooltipAreaMouseLeave(),
       })
     );
+  };
+
+  // if snooze options haven't loaded yet, show nothing
+  if (!snoozeOptions) {
+    return null;
   }
 
+  const snoozeButtons = getSnoozeButtons();
   return (
-    const {
-      selectedSnoozeOptionId,
-      snoozeOptions,
-      isProUser,
-      selectorDialogOpen,
-      isOverFreePlanLimit,
-    } = this.state;
-    const { tooltipText, tooltipVisible, hideFooter } = this.props;
-
-    // if snooze options haven't loaded yet, show nothing
-    if (!snoozeOptions) {
-      return null;
-    }
-
-    const snoozeButtons = this.getSnoozeButtons(snoozeOptions);
-
-    return (
-      <Root
-        onKeyDown={this.onKeyPress.bind(this)}
-        tabIndex="0"
-        ref={ref => {
-          // autofocus Root so we get key press events
-          if (ref) ref.focus();
+    <Root
+      onKeyDown={onKeyPress}
+      tabIndex="0"
+      ref={ref => {
+        // autofocus Root so we get key press events
+        if (ref) ref.focus();
+      }}
+    >
+      <SnoozeButtonsGrid buttons={snoozeButtons} />
+      <SnoozeFooter
+        tooltip={{
+          visible: tooltipVisible || hideFooter,
+          text: tooltipText,
         }}
-      >
-        <SnoozeButtonsGrid buttons={snoozeButtons} />
-        <SnoozeFooter
-          tooltip={{
-            visible: tooltipVisible || hideFooter,
-            text: tooltipText,
-          }}
-          upgradeBadge={!isProUser}
-          betaBadge={IS_BETA}
-        />
-        {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
-          <AsyncPeriodSelector
-            onPeriodSelected={this.onSnoozePeriodSelected.bind(this)}
-            visible={
-              selectorDialogOpen &&
-              selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
-            }
-          />
-        )}
-        {selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE && (
-          <AsyncDateSelector
-            onDateSelected={this.onSnoozeSpecificDateSelected.bind(
-              this
-            )}
-            visible={
-              selectorDialogOpen &&
-              selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
-            }
-          />
-        )}
-        <UpgradeDialog
-          onDismiss={() =>
-            this.setState({ isOverFreePlanLimit: false })
+        upgradeBadge={!isProUser}
+        betaBadge={IS_BETA}
+      />
+      {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
+        <AsyncPeriodSelector
+          onPeriodSelected={onSnoozePeriodSelected}
+          visible={
+            selectorDialogOpen &&
+            selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
           }
-          visible={isOverFreePlanLimit}
         />
-      </Root>
-    );
-  }
-)
+      )}
+      {selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE && (
+        <AsyncDateSelector
+          onDateSelected={onSnoozeSpecificDateSelected}
+          visible={
+            selectorDialogOpen &&
+            selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
+          }
+        />
+      )}
+      <UpgradeDialog
+        onDismiss={() =>
+          setIsOverFreePlanLimit(false)
+        }
+        visible={isOverFreePlanLimit}
+      />
+    </Root>
+  );
+}
 
 const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   L: 0,
