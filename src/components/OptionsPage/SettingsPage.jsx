@@ -71,8 +71,8 @@ const StyledList = muiStyled(List)(({ theme }) => ({
 }));
 
 const SettingsPage = (props: Props): Node => {
-  const [settingsState, setSettingsState] = useState(DEFAULT_SETTINGS);
-  const [commandsState, setCommandsState] = useState([]);
+  const [settingsState, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS);
+  const [commandsState, setCommandsState] = useState<Array<ChromeCommand>>([]);
   const isPro: boolean = true; // useState(true);
 
   useEffect(() => {
@@ -89,15 +89,17 @@ const SettingsPage = (props: Props): Node => {
   const loadSettings = async () => {
     const settings = await getSettings();
     // shortcut settings are loaded from chrome api
+    // TODO $FlowFixMe
+    // $FlowFixMe
     const commands = await chrome.commands.getAll();
     const isPro = true; // await isProUser();
 
     setSettingsState(settings);
-    setCommandsState(commands);
+    setCommandsState(commands || []);
     // setIsPro(isProValue);  // make everyone a pro user for now
   };
 
-  const bindSettings = (stateKey, valueProp = 'value') => {
+  const bindSettings = (stateKey: string, valueProp: string = 'value') => {
     const currentSettings = settingsState;
     const value = currentSettings[stateKey];
 

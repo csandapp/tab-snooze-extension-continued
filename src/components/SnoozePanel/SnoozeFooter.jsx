@@ -23,7 +23,7 @@ type Props = {
   betaBadge: boolean;
 };
 
-export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: Props) {
+export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: SnoozeFooterProps) : React.Node {
   const [sleepingTabsCount, setSleepingTabsCount] = useState(0);
 
   useEffect(() => {

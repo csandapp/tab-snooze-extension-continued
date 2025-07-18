@@ -108,6 +108,8 @@ const Subheader = styled.div`
 
 const NoThanksButton = styled(Button).attrs(props => ({
   color: '#fff',
+  // TODO $FlowFixMe
+  // $FlowFixMe
   onClick: () => window.close(),
 }))`
   margin-top: 20px;

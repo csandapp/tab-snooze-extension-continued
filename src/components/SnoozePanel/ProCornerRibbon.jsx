@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default (props: { white: boolean }) => (
+export default (props: { white?: string }): React.Node => (
   <Ribbon white={props.white}>PRO</Ribbon>
 );
 

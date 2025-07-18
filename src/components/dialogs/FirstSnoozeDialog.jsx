@@ -34,6 +34,8 @@ export default function FirstSnoozeDialog(): React.Node {
             color="#4A90E2"
             to={SLEEPING_TABS_PATH}
             target="_blank"
+            // TODO $FlowFixMe
+            // $FlowFixMe
             onClick={() => window.close()}
           >
             <HotelIcon /> Sleeping Tabs

@@ -8,7 +8,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 export function formatWakeupDescription(
   timeRange: WakeupTimeRange,
   tab: SnoozedTab
-) {
+): React.Node {
   const wakeupDateText = formatWakeupTime(timeRange, tab);
 
   return tab.period ? (
