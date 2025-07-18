@@ -9,11 +9,8 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import { Link } from 'react-router-dom';
 import congratsImage from './images/congrats.png';
 
-export default class FirstSnoozeDialog extends Component<{}> {
-  render() {
-    // const shareText = `Snooze browser tabs for later with Tab Snooze Chrome Extension: \n${CHROME_WEB_STORE_INSTALL_SHARE_LINK}`;
-
-    return (
+export default function FirstSnoozeDialog(): React$Node {
+  return (
       <TSDialog
         // title="Congrats!"
         image={congratsImage}
@@ -61,8 +58,7 @@ export default class FirstSnoozeDialog extends Component<{}> {
           </Button> */}
         </Root>
       </TSDialog>
-    );
-  }
+  );
 }
 
 const Root = styled.div``;
