@@ -13,7 +13,7 @@ export default class SnoozeModal extends Component<Props> {
   render() {
     const { visible, noAnimation, children } = this.props;
     return (
-      <Overlay active={visible}>
+      <Overlay active={visible ? "true" : undefined}>
         {/* mountOnEnter so to render fast and open the popup fast */}
         <Zoom
           in={visible}
