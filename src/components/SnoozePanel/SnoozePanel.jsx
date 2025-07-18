@@ -67,39 +67,49 @@ type State = {
 };
 
 export default function SnoozePanel(props: Props) {
-  const [state, setState] = useState({
-    selectedSnoozeOptionId: null,
-    focusedButtonIndex: -1,
-    snoozeOptions: calcSnoozeOptions(DEFAULT_SETTINGS),
-    isProUser: false,
-    selectorDialogOpen: false,
-    isOverFreePlanLimit: false,
-  });
+  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
+  const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
+  const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
+  const [isProUser, setIsProUser] = useState(false);
+  const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
+  const [isOverFreePlanLimit, setIsOverFreePlanLimit] = useState(false);
 
-  useEffect(() => {
-    // Load settings and check if user is in paywall test
-    Promise.all([getSettings(), isInPaywallTest()]).then(
-      ([settings, isInPaywallTest]) =>
-        setState(prevState => ({
-          ...prevState,
-          snoozeOptions: calcSnoozeOptions(settings),
-          isProUser: !isInPaywallTest,
-        }))
-    );
+useEffect(() => {
+  let cancelled = false;
 
-    // Check if user is over free plan limit
-    setTimeout(() => {
-      isOverFreeWeeklyQuota().then(isOverFreePlanLimit =>
-        setState(prevState => ({
-          ...prevState,
-          isOverFreePlanLimit,
-        }))
-      );
-    }, 300);
+  const loadData = async () => {
+    try {
+      const [settings, isInPaywallTest] = await Promise.all([
+        getSettings(), 
+        isInPaywallTest()
+      ]);
+      
+      if (!cancelled) {
+        setSnoozeOptions(calcSnoozeOptions(settings));
+        setIsProUser(!isInPaywallTest);
+      }
 
-    // Load the next snooze sound to play
-    getSnoozeAudio();
-  }, []);
+      const timeoutId = setTimeout(async () => {
+        const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
+        if (!cancelled) {
+          setIsOverFreePlanLimit(isOverFreePlanLimit);
+        }
+      }, 300);
+
+      return timeoutId;
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    }
+  };
+
+  const timeoutId = loadData();
+  getSnoozeAudio();
+
+  return () => {
+    cancelled = true;
+    if (timeoutId) clearTimeout(timeoutId);
+  };
+}, []);
 
   const onKeyPress = (event: Event) => {
     const {
