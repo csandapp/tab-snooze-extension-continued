@@ -1,6 +1,6 @@
 // @flow
 import type { Node } from 'react';
-import React, { Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { styled as muiStyled } from '@mui/material/styles';
 import { Helmet } from 'react-helmet-async';
 import styled, { css } from 'styled-components';
@@ -35,7 +35,7 @@ import NotificationIcon from '@mui/icons-material/Notifications';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Switch from '@mui/material/Switch';
 import Select from '../SnoozePanel/Select';
-import { getSettings, saveSettings } from '../../core/settings';
+import { getSettings, saveSettings, DEFAULT_SETTINGS } from '../../core/settings';
 
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
@@ -76,29 +76,25 @@ const StyledList = muiStyled(List)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
+const SettingsPage = (props: Props) => Node {
+  const [ settingsState, setSettingsState ] : Settings = useState(DEFAULT_SETTINGS);
+  const [ commandsState , setCommandsState ]: Array<ChromeCommand> = useState([]);
+  const isPro: boolean = true; // useState(true);
 
+  useEffect(() => {
+    loadSettings();
 
-class SettingsPage extends Component<Props, State> {
-  state = {};
-
-  constructor(props: Props) {
-    super(props);
-
-    // init cache of settings in state
-    this.loadSettings();
-
-    // when user comes back from Shortcuts screen,
-    // we want the shortcuts to show fresh values
-    window.onfocus = this.loadSettings.bind(this);
-  }
-
-  componentDidMount() {
-    // track(EVENTS.SETTINGS_VIEW);
-  }
-
-  componentWillUnmount() {
-    window.onfocus = undefined;
-  }
+    window.onfocus = loadSettings;
+  
+    return () => {
+      window.onfocus = undefined;
+    }
+  }, [])
+  
+  
+    // componentDidMount() {
+    //   // track(EVENTS.SETTINGS_VIEW);
+    // }
 
   async loadSettings() {
     const settings = await getSettings();
@@ -106,13 +102,15 @@ class SettingsPage extends Component<Props, State> {
     // shortcut settings are loaded from chrome api
     const commands = await chrome.commands.getAll();
 
-    const isPro = await isProUser();
+    const isPro = true; // await isProUser();
 
-    this.setState({ settings, commands, isPro });
+    setSettingsState(settings);
+    setCommandsState(commands);
+    // setIsProUser(isPro);
   }
 
   bindSettings(stateKey, valueProp = 'value') {
-    const currentSettings = this.state.settings;
+    const currentSettings = settingsState
     const value = currentSettings[stateKey];
 
     if (value === undefined) {
@@ -133,9 +131,7 @@ class SettingsPage extends Component<Props, State> {
 
         saveSettings(nextSettings);
 
-        this.setState({
-          settings: nextSettings,
-        });
+        setSettingsState(nextSettings);
       },
     };
   }
@@ -170,7 +166,6 @@ class SettingsPage extends Component<Props, State> {
         </ListItemSecondaryAction>
       </ListItem>
     );
-  }
 
   renderCheckboxSetting(options: {
     icon: Node,
@@ -178,10 +173,10 @@ class SettingsPage extends Component<Props, State> {
     description?: string,
     stateKey: string,
   }) {
-    return this.renderGeneralSetting({
+    return renderGeneralSetting({
       ...options,
       component: (
-        <Switch {...this.bindSettings(options.stateKey, 'checked')} />
+        <Switch {...bindSettings(options.stateKey, 'checked')} />
       ),
     });
   }
@@ -193,12 +188,12 @@ class SettingsPage extends Component<Props, State> {
     stateKey: string,
     options: Array<{ label: string, value: any }>,
   }) {
-    return this.renderGeneralSetting({
+    return renderGeneralSetting({
       ...options,
       component: (
         <SettingsSelect
           options={options.options}
-          {...this.bindSettings(options.stateKey)}
+          {...bindSettings(options.stateKey)}
         />
       ),
     });
@@ -210,7 +205,7 @@ class SettingsPage extends Component<Props, State> {
     description?: string,
     shortcut: string,
   }) {
-    return this.renderGeneralSetting({
+    return renderGeneralSetting({
       ...options,
       key: options.key,
       component: (
@@ -230,16 +225,14 @@ class SettingsPage extends Component<Props, State> {
     description?: string,
     href: string,
   }) {
-    return this.renderGeneralSetting({
+    return renderGeneralSetting({
       ...options,
       component: <div />,
     });
   }
 
   render() {
-    const { settings, commands, isPro } = this.state;
-
-    if (!settings) {
+    if (!settingsState) {
       return null;
     }
 
@@ -300,26 +293,26 @@ class SettingsPage extends Component<Props, State> {
           )}
 
           <Header>General</Header>
-          {this.renderCheckboxSetting({
+          {renderCheckboxSetting({
             icon: <AudioIcon />,
             title: 'Sound effects',
             description: 'Play sounds with app interactions',
             stateKey: 'playSoundEffects',
           })}
-          {this.renderCheckboxSetting({
+          {renderCheckboxSetting({
             icon: <AudioIcon />,
             title: 'Wake up sound',
             description: 'Play a sound when tabs wake up',
             stateKey: 'playNotificationSound',
           })}
-          {this.renderCheckboxSetting({
+          {renderCheckboxSetting({
             icon: <NotificationIcon />,
             title: 'Wake up notification',
             description:
               'Show a desktop notification (top-right corner) when tabs wake up',
             stateKey: 'showNotifications',
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <BadgeIcon />,
             title: 'Toolbar badge',
             description:
@@ -341,7 +334,7 @@ class SettingsPage extends Component<Props, State> {
             ],
           })}
           {!isPro &&
-            this.renderDropdownSetting({
+            renderDropdownSetting({
               icon: <AlarmIcon />,
               title: (
                 <Fragment>
@@ -357,7 +350,7 @@ class SettingsPage extends Component<Props, State> {
               })),
             })}
           {!isPro &&
-            this.renderGeneralSetting({
+            renderGeneralSetting({
               icon: <DarkIcon />,
               title: (
                 <Fragment>
@@ -373,7 +366,7 @@ class SettingsPage extends Component<Props, State> {
           <Header>Preset Snooze Options</Header>
 
           {!isPro &&
-            this.renderGeneralSetting({
+            renderGeneralSetting({
               icon: <LocationIcon />,
               title: (
                 <Fragment>
@@ -385,7 +378,7 @@ class SettingsPage extends Component<Props, State> {
                 'Snooze tabs to open when you get on your Home/Work device',
               component: <Switch checked={false} />,
             })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <SunIcon />,
             title: 'Tomorrow starts at',
             stateKey: 'workdayStart',
@@ -394,7 +387,7 @@ class SettingsPage extends Component<Props, State> {
               value: hour,
             })),
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <MoonIcon />,
             title: 'Evening starts at',
             stateKey: 'workdayEnd',
@@ -403,19 +396,19 @@ class SettingsPage extends Component<Props, State> {
               value: hour,
             })),
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <WorkIcon />,
             title: 'Week starts on',
             stateKey: 'weekStartDay',
             options: weekdayOptions,
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <WeekendIcon />,
             title: 'Weekend starts on',
             stateKey: 'weekEndDay',
             options: weekdayOptions,
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <CafeIcon />,
             title: 'Later Today is',
             stateKey: 'laterTodayHoursDelta',
@@ -424,7 +417,7 @@ class SettingsPage extends Component<Props, State> {
               value: hours,
             })),
           })}
-          {this.renderDropdownSetting({
+          {renderDropdownSetting({
             icon: <SomedayIcon />,
             title: 'Someday is',
             stateKey: 'somedayMonthsDelta',
@@ -440,7 +433,7 @@ class SettingsPage extends Component<Props, State> {
                 {/* Custom Snooze Options <ProBadge /> */}
               </Header>
               {['Hours', 'Days', 'Weeks'].map((period, index) =>
-                this.renderGeneralSetting({
+                renderGeneralSetting({
                   key: String(index),
                   icon: <EditIcon />,
                   title: `Custom Snooze Option ${index + 1}`,
@@ -452,12 +445,12 @@ class SettingsPage extends Component<Props, State> {
                       <SettingsSelect
                         small="true"
                         options={[{ value: 2, label: '2' }]}
-                        // {...this.bindSettings(options.stateKey)}
+                        // {...bindSettings(options.stateKey)}
                       />
                       <SettingsSelect
                         small="true"
                         options={[{ value: 'days', label: period }]}
-                        // {...this.bindSettings(options.stateKey)}
+                        // {...bindSettings(options.stateKey)}
                       />
                     </Fragment>
                   ),
@@ -467,7 +460,7 @@ class SettingsPage extends Component<Props, State> {
           )}
           <Header>Keyboard Shortcuts {!isPro /* && <ProBadge />*/}</Header>
           {commands.map((command, index) =>
-            this.renderShortcutSetting({
+            renderShortcutSetting({
               key: '' + index,
               icon: <KeyboardIcon />,
               // Hack! for some reason the main command (open popup)
@@ -480,31 +473,31 @@ class SettingsPage extends Component<Props, State> {
           <EditShortcutsInstructions />
 
           <Header>Miscellaneous</Header>
-          {this.renderButtonSetting({
+          {renderButtonSetting({
             icon: <StarIcon />,
             title: 'Loving Tab Snooze?',
             description: 'Rate Tab Snooze the Chrome Web Store!',
             href: CHROME_WEB_STORE_REVIEW,
           })}
-          {this.renderButtonSetting({
+          {renderButtonSetting({
             icon: <GiftCardIcon />,
             title: 'Donate to support further development',
             description: 'Support the person who continued Tab Snooze',
             href: CURR_DEVELOPER_DONATE_URL,
           })}
-          {this.renderButtonSetting({
+          {renderButtonSetting({
             icon: <LoveIcon />,
             title: 'Donate to support the original developer',
             description: 'Support the person who started Tab Snooze',
             href: ORIGINAL_DEVLOPER_DONATE_URL,
           })}
-          {this.renderButtonSetting({
+          {renderButtonSetting({
             icon: <CodeIcon />,
             title: 'Open Source Code',
             description: 'Share ideas or contribute to the Tab Snooze code base',
             href: GITHUB_REPO_URL,
           })}
-          {this.renderButtonSetting({
+          {renderButtonSetting({
             icon: <MailIcon />,
             title: 'Support',
             description:
