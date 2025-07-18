@@ -15,8 +15,7 @@ import TooltipHelper from './TooltipHelper';
 import UpgradeDialog from './UpgradeDialog';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import {
-  isOverFreeWeeklyQuota,
-  isInPaywallTest,
+  isOverFreeWeeklyQuota
 } from '../../core/license';
 import SnoozeFooter from './SnoozeFooter';
 import {
@@ -57,13 +56,13 @@ type Props = {
 };
 
 
-export function SnoozePanel(props: Props) {
+export function SnoozePanel(props: Props): React$Node {
   const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
 
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
-  const [isProUser, setIsProUser] = useState(false);
+  const [isProUser, setIsProUser] = useState(true);
   const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
   const [isOverFreePlanLimit, setIsOverFreePlanLimit] = useState(false);
 
@@ -73,14 +72,11 @@ export function SnoozePanel(props: Props) {
 
     const loadData = async () => {
       try {
-        const [settings, isInPaywallTest] = await Promise.all([
-          getSettings(), 
-          isInPaywallTest()
-        ]);
+        const settings = await getSettings()
         
         if (!cancelled) {
           setSnoozeOptions(calcSnoozeOptions(settings));
-          setIsProUser(!isInPaywallTest);
+          setIsProUser(true);
         }
 
         timeoutId = setTimeout(async () => {
@@ -102,6 +98,31 @@ export function SnoozePanel(props: Props) {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
+  const onSnoozeButtonClicked = useCallback((event: Event, snoozeOption: SnoozeOption) => {
+    if (selectedSnoozeOptionId != null) {
+      // ignore additional selections after first one
+      return;
+    }
+
+    setSelectedSnoozeOptionId(snoozeOption.id)
+
+    // Avoid showing tooltip after user already selected, its distructing
+    preventTooltip();
+
+    if (snoozeOption.when != null) {
+      // Perform snooze
+      const wakeupTime = snoozeOption.when.getTime();
+
+      delayedSnoozeActiveTab({
+        type: snoozeOption.id,
+        wakeupTime,
+        closeTab: !(event: any).altKey,
+      });
+    } else {
+      // either period or date selector opens as dialog
+      setTimeout(() => setSelectorDialogOpen(true), 400);
+    }
+  }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
   const onKeyPress = useCallback((event: KeyboardEvent) => {
     if (isOverFreePlanLimit) {
@@ -155,31 +176,6 @@ export function SnoozePanel(props: Props) {
     setFocusedButtonIndex( nextFocusedIndex);
   }, [focusedButtonIndex, snoozeOptions, isOverFreePlanLimit, onSnoozeButtonClicked]);
 
-  const onSnoozeButtonClicked = useCallback((event: Event, snoozeOption: SnoozeOption) => {
-    if (selectedSnoozeOptionId != null) {
-      // ignore additional selections after first one
-      return;
-    }
-
-    setSelectedSnoozeOptionId(snoozeOption.id)
-
-    // Avoid showing tooltip after user already selected, its distructing
-    preventTooltip();
-
-    if (snoozeOption.when != null) {
-      // Perform snooze
-      const wakeupTime = snoozeOption.when.getTime();
-
-      delayedSnoozeActiveTab({
-        type: snoozeOption.id,
-        wakeupTime,
-        closeTab: !(event: any).altKey,
-      });
-    } else {
-      // either period or date selector opens as dialog
-      setTimeout(() => setSelectorDialogOpen(true), 400);
-    }
-  }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
     delayedSnoozeActiveTab({
@@ -203,11 +199,11 @@ export function SnoozePanel(props: Props) {
   }, [selectedSnoozeOptionId, isProUser]);
 
   // decide whether or not to use callback here...
-  const getSnoozeButtons = () => {
-    return snoozeOptions.map<SnoozeButtonProps>(
+  const getSnoozeButtons = (): Array<SnoozeButtonProps> => {
+    return snoozeOptions.map(
       (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
-        proBadge: !isProUser && snoozeOpt.isProFeature,
+        proBadge: !isProUser && Boolean(snoozeOpt.isProFeature),
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
         onClick: (ev: Event) => onSnoozeButtonClicked(ev, snoozeOpt),
@@ -236,7 +232,7 @@ export function SnoozePanel(props: Props) {
       <SnoozeFooter
         tooltip={{
           visible: tooltipVisible || hideFooter,
-          text: tooltipText,
+          text: tooltipText ?? "",
         }}
         upgradeBadge={!isProUser}
         betaBadge={IS_BETA}
