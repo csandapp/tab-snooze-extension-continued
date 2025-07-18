@@ -57,7 +57,7 @@ type Props = {
 };
 
 
-export default function SnoozePanel(props: Props) {
+export function SnoozePanel(props: Props) {
   const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
 
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
@@ -69,6 +69,7 @@ export default function SnoozePanel(props: Props) {
 
   useEffect(() => {
     let cancelled = false;
+    let timeoutId;
 
     const loadData = async () => {
       try {
@@ -82,20 +83,18 @@ export default function SnoozePanel(props: Props) {
           setIsProUser(!isInPaywallTest);
         }
 
-        const timeoutId = setTimeout(async () => {
+        timeoutId = setTimeout(async () => {
           const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
           if (!cancelled) {
             setIsOverFreePlanLimit(isOverFreePlanLimit);
           }
         }, 300);
-
-        return timeoutId;
       } catch (error) {
         console.error('Failed to load data:', error);
       }
     };
 
-    const timeoutId = loadData();
+    loadData();
     getSnoozeAudio();
 
     return () => {
@@ -182,7 +181,7 @@ export default function SnoozePanel(props: Props) {
     }
   }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
-  const onSnoozeSpecificDateSelected = useCallback((date: Date) {
+  const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
     delayedSnoozeActiveTab({
       type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
       wakeupTime: date.getTime(),
@@ -190,7 +189,7 @@ export default function SnoozePanel(props: Props) {
     });
   }, [selectedSnoozeOptionId]);
 
-  const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) {
+  const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) => {
     if (!isProUser) {
       // createTab(getUpgradeUrl());
       return;
