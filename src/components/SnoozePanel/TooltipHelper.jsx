@@ -1,83 +1,74 @@
 // @flow
-import React, { Component } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 type Props = {};
-type State = {
-  tooltipVisible: boolean,
-  tooltipText: ?string,
-};
 
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
 export default (WrappedComponent: any) => {
-  class TooltipHelper extends Component<Props, State> {
+  const TooltipHelper = (props: Props) => {
     // counts down until tooltip appears/hides
-    tooltipShowTimeout: ?TimeoutID = null;
-    tooltipHideTimeout: ?TimeoutID = null;
+    const tooltipShowTimeout = useRef(null);
+    const tooltipHideTimeout = useRef(null);
+  
+    const [ tooltipVisibleState, setTooltipVisibleState ] = useState(false);
+    const [ tooltipTextState, setTooltipTextState ] = useState(null);
 
-    state = {
-      tooltipVisible: false,
-      tooltipText: null,
-    };
+    // Cleanup function to clear timeouts when component unmounts
+    // This prevents memory leaks and ensures no state updates after unmount
+    useEffect(() => {
+      return () => {
+        if (tooltipShowTimeout.current) clearTimeout(tooltipShowTimeout.current);
+        if (tooltipHideTimeout.current) clearTimeout(tooltipHideTimeout.current);
+      };
+    }, []);
 
-    onTooltipAreaMouseEnter(tooltipText: string) {
-      const { tooltipVisible } = this.state;
+    const onTooltipAreaMouseEnter = (tooltipText: string) => {
+      setTooltipTextState(tooltipText);
 
-      this.setState({
-        tooltipText,
-      });
-
-      if (this.tooltipHideTimeout) {
-        clearTimeout(this.tooltipHideTimeout);
+      if (tooltipHideTimeout.current) {
+        clearTimeout(tooltipHideTimeout.current);
       }
 
       // if tooltip already visible
-      if (!tooltipVisible && !this.tooltipShowTimeout) {
-        this.tooltipShowTimeout = setTimeout(() => {
-          this.tooltipShowTimeout = null;
-          this.setState({ tooltipVisible: true });
+      if (!tooltipVisibleState && !tooltipShowTimeout.current) {
+        tooltipShowTimeout.current = setTimeout(() => {
+          tooltipShowTimeout.current = null;
+          setTooltipVisibleState(true);
         }, TOOLTIP_SHOW_TIMEOUT);
       }
     }
 
-    onTooltipAreaMouseLeave() {
-      if (this.tooltipShowTimeout) {
-        clearTimeout(this.tooltipShowTimeout);
-        this.tooltipShowTimeout = null;
-        this.setState({ tooltipVisible: false });
+    const onTooltipAreaMouseLeave = () => {
+      if (tooltipShowTimeout.current) {
+        clearTimeout(tooltipShowTimeout.current);
+        tooltipShowTimeout.current = null;
+        setTooltipVisibleState(false);
       }
 
-      this.tooltipHideTimeout = setTimeout(() => {
-        this.setState({ tooltipVisible: false });
+      tooltipHideTimeout.current = setTimeout(() => {
+        setTooltipVisibleState(false);
       }, TOOLTIP_HIDE_TIMEOUT);
     }
 
-    preventTooltip() {
+    const preventTooltip  = () => {
       // Avoid showing tooltip after user already selected, its distructing
-      if (this.tooltipShowTimeout) {
-        clearTimeout(this.tooltipShowTimeout);
+      if (tooltipShowTimeout.current) {
+        clearTimeout(tooltipShowTimeout.current);
       }
     }
 
-    render() {
-      const { tooltipText, tooltipVisible } = this.state;
-
-      return (
-        <WrappedComponent
-          tooltipVisible={tooltipVisible}
-          tooltipText={tooltipText}
-          preventTooltip={this.preventTooltip.bind(this)}
-          onTooltipAreaMouseEnter={this.onTooltipAreaMouseEnter.bind(
-            this
-          )}
-          onTooltipAreaMouseLeave={this.onTooltipAreaMouseLeave.bind(
-            this
-          )}
-          {...this.props}
-        />
-      );
-    }
+  return (
+      <WrappedComponent
+        tooltipVisible={tooltipVisibleState}
+        tooltipText={tooltipTextState}
+        preventTooltip={preventTooltip}
+        onTooltipAreaMouseEnter={onTooltipAreaMouseEnter}
+        onTooltipAreaMouseLeave={onTooltipAreaMouseLeave}
+        {...props}
+      />
+    );
   }
 
   return TooltipHelper;
