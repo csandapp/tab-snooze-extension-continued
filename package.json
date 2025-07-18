@@ -38,9 +38,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    
     "flow": "flow",
     "flow:init": "flow init",
     "flow:check": "flow check"
@@ -57,6 +55,7 @@
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "flow-bin": "^0.275.0",
+    "flow-typed": "^4.1.1",
     "jsdom": "^26.1.0",
     "vite": "^7.0.4",
     "vite-plugin-svgr": "^4.3.0",

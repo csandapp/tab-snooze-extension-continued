@@ -25,9 +25,9 @@ deprecated-type-bool=error
 module.system=node
 module.file_ext=.js
 module.file_ext=.jsx
-jsx=react
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe
+; jsx=react
+; esproposal.optional_chaining=enable
+; esproposal.nullish_coalescing=enable
+; suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe
 
 [strict]
