@@ -121,7 +121,7 @@ const NavButton = styled(Button).attrs({
   &.linkIsActive {
     background-color: #0000001f !important;
   }
-  ${props =>
+  ${(props : {active?: boolean}) =>
     props.active &&
     css`
       background-color: #0000001f !important;

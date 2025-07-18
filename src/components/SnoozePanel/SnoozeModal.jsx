@@ -9,6 +9,15 @@ type Props = {
   noAnimation?: boolean,
 };
 
+type StyledProps = {
+  active?: boolean,
+  theme: {
+    snoozePanel: {
+      bgColor: string,
+    }
+  }
+};
+
 export default function SnoozeModal(props: Props): React.Node {
   const { visible, noAnimation, children } = props;
 
@@ -33,16 +42,16 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  pointer-events: ${props => (props.active ? 'auto' : 'none')};
+  pointer-events: ${(props: StyledProps) => (props.active ? 'auto' : 'none')};
   background-color: rgba(0, 0, 0, 0.2);
 
   padding: 10px;
   transition: opacity 300ms;
-  opacity: ${props => (props.active ? 1 : 0)};
+  opacity: ${(props: StyledProps) => (props.active ? 1 : 0)};
 `;
 
 const Modal = styled.div`
-  background-color: ${props => props.theme.snoozePanel.bgColor};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
   border-radius: 5px;
   padding: 10px;
   /* margin: 10px; */

@@ -9,6 +9,10 @@ import Button from '../SnoozePanel/Button';
 
 import logoImage from './images/logo.svg';
 
+type StyledProps = {
+  noPadding?: boolean,
+};
+
 export default function TSDialog({
   image,
   title,
@@ -69,7 +73,7 @@ const Root = styled.div`
 `;
 
 const Content = styled.div`
-  padding: ${props => (props.noPadding ? 0 : PADDING)}px;
+  padding: ${(props: StyledProps) => (props.noPadding ? 0 : PADDING)}px;
   padding-top: 60px;
 
   display: flex;

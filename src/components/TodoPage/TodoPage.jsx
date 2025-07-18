@@ -28,6 +28,11 @@ type State = {
   snoozePanelOpen: boolean,
 };
 
+type StyledProps = {
+  color: string,
+  isplaceholder?: string
+};
+
 // Create a wrapper component to use hooks
 function TodoPageWrapper(props) {
   const navigate = useNavigate();
@@ -293,7 +298,7 @@ const Root = styled.div`
 
   transition: all 1s !important;
 
-  background-color: ${props => props.color};
+  background-color: ${(props: StyledProps) => props.color};
 `;
 
 const TodoText = styled(ContentEditable)`
@@ -322,7 +327,7 @@ const TodoText = styled(ContentEditable)`
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  ${props =>
+  ${(props: StyledProps) =>
     props.isplaceholder === 'true' &&
     css`
       :after {

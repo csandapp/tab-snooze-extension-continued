@@ -8,6 +8,14 @@ type Props = {
   buttons: Array<SnoozeButtonProps>,
 };
 
+type StyledProps = {
+  theme: {
+    snoozePanel: {
+      border: string,
+    },
+  },
+};
+
 export default class SnoozeButtonsGrid extends Component<Props> {
   render() {
     const { buttons } = this.props;
@@ -29,5 +37,5 @@ const ButtonsGrid = styled.div`
   align-items: stretch;
   justify-content: stretch;
   grid-gap: 1px;
-  background-color: ${props => props.theme.snoozePanel.border};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.border};
 `;
