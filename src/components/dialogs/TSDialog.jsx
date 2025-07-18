@@ -25,7 +25,7 @@ export default function TSDialog({
   closeBtnText?: ?string,
   children: Node,
   noPadding?: boolean
-}): React$Node {
+}): React.Node {
   return (
     <Fragment>
       <Helmet>

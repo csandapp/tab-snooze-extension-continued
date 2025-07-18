@@ -9,7 +9,7 @@ import Button from '../SnoozePanel/Button';
 import loveImage from './images/love.png';
 import chromeWebStoreImage from './images/chrome_web_store.png';
 
-export default function RateTSDialog(): React$Node {
+export default function RateTSDialog(): React.Node {
   return (
     <TSDialog
       title="Lovin' Tab Snooze?"

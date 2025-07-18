@@ -56,7 +56,7 @@ type Props = {
 };
 
 
-export function SnoozePanel(props: Props): React$Node {
+export function SnoozePanel(props: Props): React.Node {
   const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
 
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);

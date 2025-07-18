@@ -7,7 +7,7 @@ import tutorialNavImage from './images/tutorial_article_nav.svg';
 import tutorialArticleImage from './images/tutorial_article.svg';
 import tutorialBubbleImage from './images/tutorial_bubble.png';
 
-export default function Tutorial(): React$Node  {
+export default function Tutorial(): React.Node  {
   const [ isChatBubbleOpen, setIsChatBubbleOpen ] = useState(false);
   
   useEffect(() => {
