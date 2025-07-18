@@ -1,18 +1,19 @@
 [ignore]
-<PROJECT_ROOT>/node_modules/.*
 
 [include]
 
 [libs]
-node_modules/flow-interfaces-chrome/interfaces
 
 [lints]
+; From npx flow init
+untyped-type-import=error
+internal-type=error
+unsafe-object-assign=error
+nested-component=error
+nested-hook=error
+libdef-override=error
+deprecated-type-bool=error
 
 [options]
-; esproposal.decorators=ignore
-module.system=node
-module.system.node.resolve_dirname=node_modules
-module.system.node.main_field=main,module
-suppress_type=cannot-resolve-module
 
 [strict]
