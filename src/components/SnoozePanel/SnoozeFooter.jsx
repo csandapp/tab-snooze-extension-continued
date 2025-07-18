@@ -90,7 +90,7 @@ export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: Props
         </IconBtn>
       </Buttons>
       
-      <SnoozeTooltip $visible={tooltip.visible}>
+      <SnoozeTooltip visible={tooltip.visible}>
         {tooltip.text}
       </SnoozeTooltip>
     </Footer>
@@ -107,7 +107,7 @@ const Footer = styled.div`
   position: relative;
 `;
 
-const SnoozeTooltip = styled.div<{ $visible: boolean }>`
+const SnoozeTooltip = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -115,7 +115,7 @@ const SnoozeTooltip = styled.div<{ $visible: boolean }>`
   bottom: 0;
   pointer-events: none;
   transition: opacity 0.5s;
-  opacity: ${props => (props.$visible ? 1 : 0)};
+  opacity: ${props => (props.visible ? 1 : 0)};
   display: flex;
   align-items: center;
   justify-content: center;
