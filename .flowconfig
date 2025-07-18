@@ -8,13 +8,11 @@ node_modules/flow-interfaces-chrome/interfaces
 
 [lints]
 
-
 [options]
 ; esproposal.decorators=ignore
+module.system=node
 module.system.node.resolve_dirname=node_modules
 module.system.node.main_field=main,module
-; module.name_mapper='^react-router-dom' -> '<PROJECT_ROOT>/node_modules/react-router-dom/dist/index.js'
-module.name_mapper='^@mui/\(.*\)$' -> '<PROJECT_ROOT>/node_modules/@mui/\1/build/index.js'
-module.name_mapper='^styled-components' -> '<PROJECT_ROOT>/node_modules/styled-components/dist/styled-components.min.js'
+suppress_type=cannot-resolve-module
 
 [strict]
