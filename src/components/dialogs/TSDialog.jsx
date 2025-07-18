@@ -1,7 +1,7 @@
 // @flow
 
 import type { Node } from 'react';
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { Helmet } from 'react-helmet-async';
 import Fade from '@mui/material/Fade';
@@ -9,53 +9,49 @@ import Button from '../SnoozePanel/Button';
 
 import logoImage from './images/logo.svg';
 
-export default class TSDialog extends Component<{
+export default function TSDialog({
+  image,
+  title,
+  headline,
+  subheader,
+  closeBtnText,
+  children,
+  noPadding
+}: {
   image: string,
   title?: string,
   headline: string | Node,
   subheader: string | Node,
   closeBtnText?: ?string,
   children: Node,
-  noPadding?: boolean,
-}> {
-  render() {
-    const {
-      image,
-      title,
-      headline,
-      subheader,
-      children,
-      closeBtnText,
-      noPadding,
-    } = this.props;
-
-    return (
-      <Fragment>
-        <Helmet>
-          <title>{title}</title>
-        </Helmet>
-        <Fade in timeout={700}>
-          <Root>
-            <Logo />
-            <Content noPadding={noPadding}>
-              <picture>
-                <source srcSet={`${image} 2x`} />
-                <img src={image} alt="" />
-              </picture>
-              <Headline>{headline}</Headline>
-              <Subheader>{subheader}</Subheader>
-              {children}
-              {closeBtnText !== null && (
-                <NoThanksButton>
-                  {closeBtnText || 'No thanks'}
-                </NoThanksButton>
-              )}
-            </Content>
-          </Root>
-        </Fade>
-      </Fragment>
-    );
-  }
+  noPadding?: boolean
+}): React$Node {
+  return (
+    <Fragment>
+      <Helmet>
+        <title>{title}</title>
+      </Helmet>
+      <Fade in timeout={700}>
+        <Root>
+          <Logo />
+          <Content noPadding={noPadding}>
+            <picture>
+              <source srcSet={`${image} 2x`} />
+              <img src={image} alt="" />
+            </picture>
+            <Headline>{headline}</Headline>
+            <Subheader>{subheader}</Subheader>
+            {children}
+            {closeBtnText !== null && (
+              <NoThanksButton>
+                {closeBtnText || 'No thanks'}
+              </NoThanksButton>
+            )}
+          </Content>
+        </Root>
+      </Fade>
+    </Fragment>
+  );
 }
 
 const PADDING = 18;

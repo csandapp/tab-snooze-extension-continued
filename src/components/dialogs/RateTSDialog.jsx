@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { CHROME_WEB_STORE_REVIEW } from '../../paths';
 import TSDialog from './TSDialog';
@@ -9,37 +9,35 @@ import Button from '../SnoozePanel/Button';
 import loveImage from './images/love.png';
 import chromeWebStoreImage from './images/chrome_web_store.png';
 
-export default class RateTSDialog extends Component<{}> {
-  render() {
-    return (
-      <TSDialog
-        title="Lovin' Tab Snooze?"
-        image={loveImage}
-        headline="Lovin' Tab Snooze?"
-        subheader={
-          <Fragment>
-            Would you mind taking a moment to give us a review? Thank
-            you for your support!
-          </Fragment>
-        }
+export default function RateTSDialog(): React$Node {
+  return (
+    <TSDialog
+      title="Lovin' Tab Snooze?"
+      image={loveImage}
+      headline="Lovin' Tab Snooze?"
+      subheader={
+        <Fragment>
+          Would you mind taking a moment to give us a review? Thank
+          you for your support!
+        </Fragment>
+      }
+    >
+      <RateUsButton
+        raised
+        as="a"
+        color="#4A90E2"
+        href={CHROME_WEB_STORE_REVIEW}
+        target="_blank"
+        onClick={() => window.close()}
       >
-        <RateUsButton
-          raised
-          as="a"
-          color="#4A90E2"
-          href={CHROME_WEB_STORE_REVIEW}
-          target="_blank"
-          onClick={() => window.close()}
-        >
-          <CWSLogo />
-          <ButtonText>
-            <Primary>Rate Tab Snooze</Primary>
-            <Secondary>Chrome Web Store</Secondary>
-          </ButtonText>
-        </RateUsButton>
-      </TSDialog>
-    );
-  }
+        <CWSLogo />
+        <ButtonText>
+          <Primary>Rate Tab Snooze</Primary>
+          <Secondary>Chrome Web Store</Secondary>
+        </ButtonText>
+      </RateUsButton>
+    </TSDialog>
+  );
 }
 
 const RateUsButton = styled(Button)`

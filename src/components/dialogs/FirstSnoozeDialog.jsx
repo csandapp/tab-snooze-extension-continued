@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { SLEEPING_TABS_PATH } from '../../paths';
 import TSDialog from './TSDialog';
