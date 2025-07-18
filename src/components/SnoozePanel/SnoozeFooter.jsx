@@ -90,7 +90,7 @@ export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: Props
         </IconBtn>
       </Buttons>
       
-      <SnoozeTooltip visible={tooltip.visible}>
+      <SnoozeTooltip visible={tooltip.visible ? "true" : undefined}>
         {tooltip.text}
       </SnoozeTooltip>
     </Footer>
