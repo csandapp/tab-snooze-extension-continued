@@ -1,8 +1,12 @@
 [ignore]
+.*/node_modules/.*
+.*/build/.*
+.*/dist/.*
 
 [include]
 
 [libs]
+flow-typed/
 
 [lints]
 ; From npx flow init
@@ -15,5 +19,8 @@ libdef-override=error
 deprecated-type-bool=error
 
 [options]
+module.system=node
+esproposal.optional_chaining=enable
+esproposal.nullish_coalescing=enable
 
 [strict]
