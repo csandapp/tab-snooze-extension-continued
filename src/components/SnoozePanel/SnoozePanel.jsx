@@ -2,7 +2,7 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 // import bugsnag from '../../bugsnag';
 import calcSnoozeOptions, {
@@ -66,50 +66,47 @@ type State = {
   isOverFreePlanLimit: boolean,
 };
 
-class SnoozePanel extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export default function SnoozePanel(props: Props) {
+  const [state, setState] = useState({
+    selectedSnoozeOptionId: null,
+    focusedButtonIndex: -1,
+    snoozeOptions: calcSnoozeOptions(DEFAULT_SETTINGS),
+    isProUser: false,
+    selectorDialogOpen: false,
+    isOverFreePlanLimit: false,
+  });
 
-    this.state = {
-      selectedSnoozeOptionId: null,
-      focusedButtonIndex: -1,
-      // show snooze options based on default settings, until
-      // user settings load, just show screen won't be blank and
-      // cause a flicker in rendering
-      snoozeOptions: calcSnoozeOptions(DEFAULT_SETTINGS),
-      // cache of license info
-      isProUser: false,
-
-      selectorDialogOpen: false,
-      isOverFreePlanLimit: false,
-    };
-
+  useEffect(() => {
+    // Load settings and check if user is in paywall test
     Promise.all([getSettings(), isInPaywallTest()]).then(
       ([settings, isInPaywallTest]) =>
-        this.setState({
+        setState(prevState => ({
+          ...prevState,
           snoozeOptions: calcSnoozeOptions(settings),
           isProUser: !isInPaywallTest,
-        })
+        }))
     );
 
+    // Check if user is over free plan limit
     setTimeout(() => {
       isOverFreeWeeklyQuota().then(isOverFreePlanLimit =>
-        this.setState({
+        setState(prevState => ({
+          ...prevState,
           isOverFreePlanLimit,
-        })
+        }))
       );
     }, 300);
 
-    // load the next snooze sound to play
+    // Load the next snooze sound to play
     getSnoozeAudio();
-  }
+  }, []);
 
-  onKeyPress(event: Event) {
+  const onKeyPress = (event: Event) => {
     const {
       focusedButtonIndex,
       snoozeOptions,
       isOverFreePlanLimit,
-    } = this.state;
+    } = state;
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event);
     const mappedOptionIndex =
@@ -252,7 +249,7 @@ class SnoozePanel extends Component<Props, State> {
     );
   }
 
-  render() {
+  return (
     const {
       selectedSnoozeOptionId,
       snoozeOptions,
@@ -316,7 +313,7 @@ class SnoozePanel extends Component<Props, State> {
       </Root>
     );
   }
-}
+)
 
 const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
   L: 0,
