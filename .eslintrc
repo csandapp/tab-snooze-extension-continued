@@ -1,6 +1,6 @@
 {
   "extends": ["react-app", "prettier"],
-  "plugins": ["import"],
+  "plugins": ["import", "react-hooks"],
   "globals": {
     "chrome": "readonly"
   },
@@ -9,6 +9,8 @@
     "import/named": 2,
     "import/namespace": 2,
     "import/default": 2,
-    "import/export": 2
+    "import/export": 2,
+	"react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   }
 }
