@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import type { ComponentType } from 'react';
 import styled, { css, withTheme } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
 import Collapse from '@mui/material/Collapse';
@@ -39,50 +40,43 @@ export type Props = {
 
 const SNOOZE_CLICK_EFFECT_TIME = 400;
 
-class SnoozeButton extends Component<Props> {
-  defaultProps: {
-    theme: {},
-  };
+const SnoozeButton: ComponentType<Props> = (props: Props): React.Node => {  // Destructure props for easier access
+  const {
+    title,
+    icon,
+    activeIcon,
+    focused,
+    pressed,
+    proBadge,
+    onClick,
+    onMouseLeave,
+    onMouseEnter,
+    theme,
+  } = props;
 
-  render() {
-    const {
-      title,
-      icon,
-      activeIcon,
-      focused,
-      pressed,
-      proBadge,
-      onClick,
-      onMouseLeave,
-      onMouseEnter,
-      theme,
-    } = this.props;
-
-    return (
-      <Button
-        pressed={pressed ? "true" : undefined}
-        focused={focused ? "true" : undefined}
-        onMouseDown={onClick}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-      >
-        <IconWrapper>
-          <Icon src={activeIcon} />
-          {theme && !theme.snoozePanel.whiteIcons && (
-            <OverlayIcon src={icon} hide={pressed ? "true" : undefined} />
-          )}
-        </IconWrapper>
-        <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
-          <Title pressed={pressed ? "true" : undefined}>{title}</Title>
-        </Collapse>
-        {proBadge && <ProCornerRibbon white={pressed ? true : undefined} />}
-      </Button>
-    );
-  }
+  return (
+    <Button
+      pressed={pressed ? "true" : undefined}
+      focused={focused ? "true" : undefined}
+      onMouseDown={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <IconWrapper>
+        <Icon src={activeIcon} />
+        {theme && !theme.snoozePanel.whiteIcons && (
+          <OverlayIcon src={icon} hide={pressed ? "true" : undefined} />
+        )}
+      </IconWrapper>
+      <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
+        <Title pressed={pressed ? "true" : undefined}>{title}</Title>
+      </Collapse>
+      {proBadge && <ProCornerRibbon white={pressed ? true : undefined} />}
+    </Button>
+  );
 }
 
-export default withTheme(SnoozeButton);
-
+export default (withTheme(SnoozeButton): ComponentType<Props>);
 const Button = styled.button`
   display: flex;
   flex-direction: column;
