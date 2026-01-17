@@ -2,7 +2,7 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import styled from 'styled-components';
 // import bugsnag from '../../bugsnag';
 import calcSnoozeOptions, {
@@ -31,19 +31,10 @@ import {
   getActiveTab,
 } from '../../core/utils';
 // import { getUpgradeUrl } from '../../paths';
-import Loadable from 'react-loadable';
-
-
-const AsyncComp = props =>
-  Loadable({ ...props, loading: () => null });
 
 // code splitting these big components
-const AsyncPeriodSelector = AsyncComp({
-  loader: () => import('./PeriodSelector'),
-});
-const AsyncDateSelector = AsyncComp({
-  loader: () => import('./DateSelector'),
-});
+const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
+const AsyncDateSelector = lazy(() => import('./DateSelector'));
 
 type Props = {
   hideFooter: boolean,
@@ -238,22 +229,26 @@ export function SnoozePanel(props: Props): React.Node {
         betaBadge={IS_BETA}
       />
       {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
-        <AsyncPeriodSelector
-          onPeriodSelected={onSnoozePeriodSelected}
-          visible={
-            selectorDialogOpen &&
-            selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
-          }
-        />
+        <Suspense fallback={null}>
+          <AsyncPeriodSelector
+            onPeriodSelected={onSnoozePeriodSelected}
+            visible={
+              selectorDialogOpen &&
+              selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED
+            }
+          />
+        </Suspense>
       )}
       {selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE && (
-        <AsyncDateSelector
-          onDateSelected={onSnoozeSpecificDateSelected}
-          visible={
-            selectorDialogOpen &&
-            selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
-          }
-        />
+        <Suspense fallback={null}>
+          <AsyncDateSelector
+            onDateSelected={onSnoozeSpecificDateSelected}
+            visible={
+              selectorDialogOpen &&
+              selectedSnoozeOptionId === SNOOZE_TYPE_SPECIFIC_DATE
+            }
+          />
+        </Suspense>
       )}
       <UpgradeDialog
         onDismiss={() =>
