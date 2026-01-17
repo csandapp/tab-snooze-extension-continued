@@ -106,7 +106,7 @@ const SettingsPage = (props: Props): Node => {
 
   const bindSettings = (stateKey: $Keys<Settings>, valueProp: string = 'value') => {
     const currentSettings: Settings = settingsState;
-    const value = currentSettings[stateKey as $Keys<Settings>];
+    const value = currentSettings[stateKey];
 
     if (value === undefined) {
       throw new Error(
