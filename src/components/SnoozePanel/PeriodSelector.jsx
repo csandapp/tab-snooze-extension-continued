@@ -1,5 +1,5 @@
 // @flow
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
@@ -91,47 +91,25 @@ const PeriodSelector = (props: Props): React.Node => {
     onPeriodSelected(snoozePeriod);
   }
 
-  useEffect(() => {
-    // I'm trying to translate the original bindField
-    
-    // const bindField = stateKey => ({
-    //   value: this.state[stateKey],
-    //   onChange: eventOrValue =>
-    //     this.setState({
-    //       [stateKey]: eventOrValue.target
-    //         ? eventOrValue.target.value
-    //         : eventOrValue,
-    //     }),
-    // });
-
-    setPeriodType(periodType);
-    setSelectedHour(selectedHour);
-    setSelectedMonth(selectedMonth);
-    setSelectedDay(selectedDay);
-    setSelectedWeekdays(selectedWeekdays);
-    return () => {
-    }
-  }, [periodType, selectedHour, selectedMonth, selectedDay, selectedWeekdays]);
-  
 
 
   return (
     <SnoozeModal visible={visible}>
       <Root>
         <Title>Wake up this tab</Title>
-        <PeriodOptions {periodType} />
+        <PeriodOptions value={periodType} onChange={setPeriodType} />
 
         <Collapse in={periodType === 'weekly'}>
           <Fragment>
             <Title>on these days</Title>
-            <WeekdayOptions {selectedWeekdays} />
+            <WeekdayOptions value={selectedWeekdays} onChange={setSelectedWeekdays} />
           </Fragment>
         </Collapse>
 
         <Collapse in={periodType === 'monthly'}>
           <Fragment>
             <Title>on this day</Title>
-            <DayOptions {...bindField('selectedDay')} />
+            <DayOptions value={selectedDay} onChange={setSelectedDay} />
           </Fragment>
         </Collapse>
 
@@ -154,7 +132,7 @@ const PeriodSelector = (props: Props): React.Node => {
         </Collapse>
 
         <Title>at this hour</Title>
-        <HourOptions {...bindField('selectedHour')} />
+        <HourOptions value={selectedHour} onChange={setSelectedHour} />
 
         <Spacer />
         <SaveButton onMouseDown={onSnoozeClicked}>
