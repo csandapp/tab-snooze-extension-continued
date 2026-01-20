@@ -71,4 +71,4 @@ export default styled.button.attrs(
       props: StyledProps,
     ) => Color(props.color).darken(0.3).hex()};
   }
-` as any;
+`;

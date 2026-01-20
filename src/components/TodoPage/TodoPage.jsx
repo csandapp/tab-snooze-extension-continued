@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import styled, { css } from 'styled-components';
 import ContentEditable from 'react-contenteditable';
 import queryString from 'query-string';
@@ -8,7 +8,6 @@ import { TODO_PATH } from '../../paths';
 import Fade from '@mui/material/Fade';
 import Grow from '@mui/material/Grow';
 import IconButton from '@mui/material/IconButton';
-// import { track, EVENTS } from '../../core/analytics';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
@@ -22,239 +21,208 @@ import todoFavicon1 from './images/todo_favicon_1.png';
 import todoFavicon2 from './images/todo_favicon_2.png';
 import todoFavicon3 from './images/todo_favicon_3.png';
 
-type State = {
-  text: string,
-  colorIndex: number,
-  snoozePanelOpen: boolean,
-};
-
 type StyledProps = {
   color: string,
   isplaceholder?: string
 };
 
-// Create a wrapper component to use hooks
-function TodoPageWrapper(props) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  
-  return <TodoPage {...props} navigate={navigate} location={location} />;
+export const TODO_COLORS = [
+  { favicon: todoFavicon0, hex: '#F2B32A' },
+  { favicon: todoFavicon1, hex: '#4688F1' },
+  { favicon: todoFavicon2, hex: '#1D9C5A' },
+  { favicon: todoFavicon3, hex: '#EB2249' },
+];
+
+function randomColorIndex() {
+  return Math.floor(Math.random() * TODO_COLORS.length);
 }
 
-class TodoPage extends Component<any, State> {
-  todoTextRef: any = React.createRef();
-  arrowRef: any = React.createRef();
-  bodyRef: any = React.createRef();
-  snoozeBtnEl: any = null;
-  updateUrlTimer: ?TimeoutID;
+function TodoPage(): React.Node {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  constructor(props: any) {
-    super(props);
+  const todoTextRef = useRef<any>(null);
+  const bodyRef = useRef<any>(null);
+  const snoozeBtnEl = useRef<any>(null);
+  const updateUrlTimer = useRef<?TimeoutID>(null);
 
-    // init state with color & text from url
-    this.state = {
-      ...this.getTextAndColorFromUrl(),
-      snoozePanelOpen: false,
-    };
-  }
+  // Parse initial state from URL (lazy initializer to avoid re-computation)
+  const [text, setText] = useState<string>(() => {
+    const { text } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    return text ? text.replace(/_/g, ' ') : '';
+  });
 
-  componentDidMount() {
-    const { text } = this.state;
+  const [colorIndex, setColorIndex] = useState<number>(() => {
+    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    return colorIndexStr ? parseInt(colorIndexStr) : randomColorIndex();
+  });
 
-    if (!text) {
-      this.todoTextRef.current.focus();
+  const [snoozePanelOpen, setSnoozePanelOpen] = useState<boolean>(false);
 
-      // track(EVENTS.NEW_TODO);
-    }
-  }
+  const updateAddressBar = useCallback((text: string, colorIndex: number) => {
+    // replace ' ' with '_' because they are encoded nicely in the address bar
+    const encodedText = text.replace(/ /g, '_');
 
-  updateAddressBar(text: string, colorIndex: number) {
-    // replace '_' with spaces because they are encoded nicely
-    // in the address bar
-    text = text.replace(/ /g, '_');
-
-    // Use navigate instead of history.replace
-    this.props.navigate({
+    navigate({
       pathname: TODO_PATH,
       search:
         '?' +
         queryString.stringify({
           color: colorIndex,
-          text: text,
+          text: encodedText,
         }),
     }, { replace: true });
-  }
+  }, [navigate]);
 
-  getTextAndColorFromUrl() {
-    const { location } = this.props;
-
-    let { text, color: colorIndexStr } = queryString.parse(
-      location.search,
-      {
-        ignoreQueryPrefix: true,
-      }
-    );
-
-    let colorIndex;
-
+  // Sync initial color to URL if it wasn't in the URL
+  useEffect(() => {
+    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
     if (!colorIndexStr) {
-      // random a new color
-      colorIndex = randomColorIndex();
-
-      this.updateAddressBar(text || '', colorIndex);
-    } else {
-      colorIndex = parseInt(colorIndexStr);
+      updateAddressBar(text, colorIndex);
     }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (!text) {
-      text = '';
-    }
-
-    // replace '_' with spaces
-    text = text.replace(/_/g, ' ');
-
-    return { text, colorIndex };
-  }
-
-  changeColor() {
-    const { text, colorIndex } = this.state;
-    this.setTextAndColor(text, (colorIndex + 1) % TODO_COLORS.length);
-  }
-
-  toggleSnoozePanel(event: any) {
-    this.snoozeBtnEl = event.currentTarget;
-    this.setState({ snoozePanelOpen: !this.state.snoozePanelOpen });
-  }
-
-  setTextAndColor(text: string, colorIndex: number) {
+  const setTextAndColor = useCallback((newText: string, newColorIndex: number) => {
     // remove styling and <br>/<div> from contenteditable
-    text = sanitizeHtml(text, { allowedTags: [] });
+    const sanitizedText = sanitizeHtml(newText, { allowedTags: [] });
 
-    this.setState({ text, colorIndex });
+    setText(sanitizedText);
+    setColorIndex(newColorIndex);
 
-    if (this.updateUrlTimer) {
-      clearTimeout(this.updateUrlTimer);
+    if (updateUrlTimer.current) {
+      clearTimeout(updateUrlTimer.current);
     }
 
-    this.updateUrlTimer = setTimeout(() => {
-      this.updateUrlTimer = null;
-      this.updateAddressBar(text, colorIndex);
+    updateUrlTimer.current = setTimeout(() => {
+      updateUrlTimer.current = null;
+      updateAddressBar(sanitizedText, newColorIndex);
     }, 700);
-  }
+  }, [updateAddressBar]);
 
-  onKeyDown(event: any) {
+  const changeColor = useCallback(() => {
+    setTextAndColor(text, (colorIndex + 1) % TODO_COLORS.length);
+  }, [text, colorIndex, setTextAndColor]);
+
+  const toggleSnoozePanel = useCallback((event: any) => {
+    snoozeBtnEl.current = event.currentTarget;
+    setSnoozePanelOpen(prev => !prev);
+  }, []);
+
+  const onKeyDown = useCallback((event: any) => {
     const ESC = event.keyCode === 27;
     const TAB = event.keyCode === 9;
     const RETURN = event.keyCode === 13;
 
     if (TAB) {
       event.preventDefault();
-      this.changeColor();
+      changeColor();
     }
 
-    const todoTextRef = this.todoTextRef.current;
-    const isTextBoxFocused = document.activeElement === todoTextRef;
+    const todoTextElement = todoTextRef.current;
+    const isTextBoxFocused = document.activeElement === todoTextElement;
 
     if (RETURN) {
       if (isTextBoxFocused) {
         if (!event.ctrlKey && !event.altKey && !event.metaKey) {
           event.preventDefault();
-          todoTextRef.blur();
+          todoTextElement.blur();
         }
       } else {
         event.preventDefault();
-        todoTextRef.focus();
+        todoTextElement.focus();
         document.execCommand('selectAll', false, null);
       }
     }
 
     if (ESC && isTextBoxFocused) {
-      todoTextRef.blur();
+      todoTextElement.blur();
     }
-  }
+  }, [changeColor]);
 
-  onPageClick(event: any) {
+  const onPageClick = useCallback((event: any) => {
     // close panel only if click was directly on Root element or text element.
     // ignore clicks on buttons, and the panel itself
     if (
-      event.target === this.bodyRef.current ||
-      event.target === this.todoTextRef.current
+      event.target === bodyRef.current ||
+      event.target === todoTextRef.current
     ) {
-      this.setState({ snoozePanelOpen: false });
+      setSnoozePanelOpen(false);
     }
-  }
+  }, []);
 
-  renderDocumentHead(text: string, favicon: string) {
+  const renderDocumentHead = useCallback((text: string, favicon: string) => {
     document.title = text.replace(/&nbsp;/g, ' ') || 'New Todo';
     const faviconEl = document.getElementById('faviconEl');
 
     if (faviconEl) {
       faviconEl.setAttribute('href', favicon);
     }
-  }
+  }, []);
 
-  render() {
-    const { text, colorIndex, snoozePanelOpen } = this.state;
-    const { hex: colorHex, favicon } = TODO_COLORS[colorIndex];
+  // componentDidMount equivalent
+  useEffect(() => {
+    if (!text) {
+      todoTextRef.current?.focus();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    this.renderDocumentHead(text, favicon);
+  // Update document head when text or color changes
+  const { hex: colorHex, favicon } = TODO_COLORS[colorIndex];
+  renderDocumentHead(text, favicon);
 
-    return (
-      <Fragment>
-        <Fade in timeout={1000}>
-          <Root
-            color={colorHex}
-            onKeyDown={this.onKeyDown.bind(this)}
-            onClick={this.onPageClick.bind(this)}
-            ref={this.bodyRef}
-          >
-            <TodoText
-              innerRef={this.todoTextRef}
-              dir="auto"
-              html={text}
-              onChange={event =>
-                this.setTextAndColor(event.target.value, colorIndex)
-              }
-              // goes to dom, so is written as string
-              isplaceholder={text === '' ? 'true' : 'false'}
+  return (
+    <Fragment>
+      <Fade in timeout={1000}>
+        <Root
+          color={colorHex}
+          onKeyDown={onKeyDown}
+          onClick={onPageClick}
+          ref={bodyRef}
+        >
+          <TodoText
+            innerRef={todoTextRef}
+            dir="auto"
+            html={text}
+            onChange={event => setTextAndColor(event.target.value, colorIndex)}
+            // goes to dom, so is written as string
+            isplaceholder={text === '' ? 'true' : 'false'}
+          />
+
+          <Buttons>
+            <BigIconButton
+              icon={changeColorIcon}
+              onClick={changeColor}
             />
-
-            <Buttons>
-              <BigIconButton
-                icon={changeColorIcon}
-                onClick={this.changeColor.bind(this)}
-              />
-              <BigIconButton
-                icon={snoozeIcon}
-                onClick={this.toggleSnoozePanel.bind(this)}
-              />
-              <Popper
-                id={snoozePanelOpen ? 'simple-popper' : null}
-                open={snoozePanelOpen}
-                placement="top-start"
-                anchorEl={this.snoozeBtnEl}
-                transition
-              >
-                {({ TransitionProps }) => (
-                  <Grow
-                    {...TransitionProps}
-                    timeout={250}
-                    style={{ transformOrigin: '0 100% 0' }}
+            <BigIconButton
+              icon={snoozeIcon}
+              onClick={toggleSnoozePanel}
+            />
+            <Popper
+              id={snoozePanelOpen ? 'simple-popper' : null}
+              open={snoozePanelOpen}
+              placement="top-start"
+              anchorEl={snoozeBtnEl.current}
+              transition
+            >
+              {({ TransitionProps }) => (
+                <Grow
+                  {...TransitionProps}
+                  timeout={250}
+                  style={{ transformOrigin: '0 100% 0' }}
+                >
+                  <Paper
+                    style={{ borderRadius: 5, overflow: 'hidden' }}
                   >
-                    <Paper
-                      style={{ borderRadius: 5, overflow: 'hidden' }}
-                    >
-                      <SnoozePanel hideFooter />
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </Buttons>
-          </Root>
-        </Fade>
-      </Fragment>
-    );
-  }
+                    <SnoozePanel hideFooter />
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </Buttons>
+        </Root>
+      </Fade>
+    </Fragment>
+  );
 }
 
 const BigIconButton = (props: {
@@ -270,17 +238,6 @@ const BigIconButton = (props: {
     <img src={props.icon} alt="_" />
   </IconButton>
 );
-
-export const TODO_COLORS = [
-  { favicon: todoFavicon0, hex: '#F2B32A' },
-  { favicon: todoFavicon1, hex: '#4688F1' },
-  { favicon: todoFavicon2, hex: '#1D9C5A' },
-  { favicon: todoFavicon3, hex: '#EB2249' },
-];
-
-function randomColorIndex() {
-  return Math.floor(Math.random() * TODO_COLORS.length);
-}
 
 const Root = styled.div`
   position: fixed;
@@ -345,4 +302,4 @@ const Buttons = styled.div`
   left: 20px;
 `;
 
-export default TodoPageWrapper;
+export default TodoPage;
