@@ -1,42 +1,38 @@
 // @flow
-
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Zoom from '@mui/material/Zoom';
 
-export default class Tutorial extends Component<
-  {},
-  { isChatBubbleOpen: boolean } 
-> {
-  constructor(props: {}) {
-    super(props);
+import tutorialNavImage from './images/tutorial_article_nav.svg';
+import tutorialArticleImage from './images/tutorial_article.svg';
+import tutorialBubbleImage from './images/tutorial_bubble.png';
 
-    this.state = {
-      isChatBubbleOpen: false,
-    };
+export default function Tutorial(): React$Node  {
+  const [ isChatBubbleOpen, setIsChatBubbleOpen ] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setIsChatBubbleOpen(true), 1200);
+  
+    return () => clearTimeout(timer);
+  }, []);
 
-    setTimeout(() => this.setState({ isChatBubbleOpen: true }), 1200);
-  }
-  render() {
-    const { isChatBubbleOpen } = this.state;
-    return (
-      <Root>
-        <FakeNav>
-          <img
-            src={require('./images/tutorial_article_nav.svg')}
-            alt=""
-          />
-        </FakeNav>
-        <div style={{ position: 'relative' }}>
-          <Article src={require('./images/tutorial_article.svg')} />
-          <Zoom in={isChatBubbleOpen}>
-            <Bubble src={require('./images/tutorial_bubble.png')} />
-          </Zoom>
-        </div>
-        <Spacer />
-      </Root>
-    );
-  }
+  return (
+    <Root>
+      <FakeNav>
+        <img
+          src={tutorialNavImage}
+          alt=""
+        />
+      </FakeNav>
+      <div style={{ position: 'relative' }}>
+        <Article src={tutorialArticleImage} />
+        <Zoom in={isChatBubbleOpen}>
+          <Bubble src={tutorialBubbleImage} />
+        </Zoom>
+      </div>
+      <Spacer />
+    </Root>
+  );
 }
 
 const Root = styled.div`

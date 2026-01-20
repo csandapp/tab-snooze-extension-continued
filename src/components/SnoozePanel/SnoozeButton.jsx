@@ -43,8 +43,8 @@ class SnoozeButton extends Component<Props> {
 
     return (
       <Button
-        pressed={pressed}
-        focused={focused}
+        pressed={pressed ? "true" : undefined}
+        focused={focused ? "true" : undefined}
         onMouseDown={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -52,13 +52,13 @@ class SnoozeButton extends Component<Props> {
         <IconWrapper>
           <Icon src={activeIcon} />
           {theme && !theme.snoozePanel.whiteIcons && (
-            <OverlayIcon src={icon} hide={pressed} />
+            <OverlayIcon src={icon} hide={pressed ? "true" : undefined} />
           )}
         </IconWrapper>
         <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
-          <Title pressed={pressed}>{title}</Title>
+          <Title pressed={pressed ? "true" : undefined}>{title}</Title>
         </Collapse>
-        {proBadge && <ProCornerRibbon white={pressed} />}
+        {proBadge && <ProCornerRibbon white={pressed ? "true" : undefined} />}
       </Button>
     );
   }

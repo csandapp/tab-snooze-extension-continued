@@ -2,6 +2,26 @@
 // import type { Moment } from 'moment';
 import moment from 'moment';
 
+// Import all the icons at the top
+import coffeeIcon from './icons/coffee.svg';
+import coffeeWhiteIcon from './icons/coffee_white.svg';
+import moonIcon from './icons/moon.svg';
+import moonWhiteIcon from './icons/moon_white.svg';
+import sunIcon from './icons/sun.svg';
+import sunWhiteIcon from './icons/sun_white.svg';
+import soffaIcon from './icons/soffa.svg';
+import soffaWhiteIcon from './icons/soffa_white.svg';
+import briefcaseIcon from './icons/breifcase.svg';
+import briefcaseWhiteIcon from './icons/breifcase_white.svg';
+import mailboxIcon from './icons/mailbox.svg';
+import mailboxWhiteIcon from './icons/mailbox_white.svg';
+import pineIcon from './icons/pine.svg';
+import pineWhiteIcon from './icons/pine_white.svg';
+import refreshIcon from './icons/refresh.svg';
+import refreshWhiteIcon from './icons/refresh_white.svg';
+import calendarIcon from './icons/calendar.svg';
+import calendarWhiteIcon from './icons/calendar_white.svg';
+
 export const SNOOZE_TYPE_REPEATED = 'periodically';
 export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
 
@@ -68,56 +88,56 @@ export default function calcSnoozeOptions(
     {
       id: 'later',
       title: 'Later Today',
-      icon: require('./icons/coffee.svg'),
-      activeIcon: require('./icons/coffee_white.svg'),
+      icon: coffeeIcon,
+      activeIcon: coffeeWhiteIcon,
       tooltip: `${laterTodayTime.calendar()} (${laterTodayHoursDelta} hours from now)`,
       when: laterTodayTime.toDate(),
     },
     {
       id: 'evening',
       title: isNightTime ? 'Tomorrow Eve' : 'This Evening',
-      icon: require('./icons/moon.svg'),
-      activeIcon: require('./icons/moon_white.svg'),
+      icon: moonIcon,
+      activeIcon: moonWhiteIcon,
       tooltip: thisEveningTime.calendar(),
       when: thisEveningTime.toDate(),
     },
     {
       id: 'tomorrow',
       title: 'Tomorrow',
-      icon: require('./icons/sun.svg'),
-      activeIcon: require('./icons/sun_white.svg'),
+      icon: sunIcon,
+      activeIcon: sunWhiteIcon,
       tooltip: tomorrowTime.calendar(),
       when: tomorrowTime.toDate(),
     },
     {
       id: 'weekend',
       title: isWeekend ? 'Next Weekend' : 'This Weekend',
-      icon: require('./icons/soffa.svg'),
-      activeIcon: require('./icons/soffa_white.svg'),
+      icon: soffaIcon,
+      activeIcon: soffaWhiteIcon,
       tooltip: weekendTime.calendar(),
       when: weekendTime.toDate(),
     },
     {
       id: 'next_week',
       title: 'Next Week',
-      icon: require('./icons/breifcase.svg'),
-      activeIcon: require('./icons/breifcase_white.svg'),
+      icon: briefcaseIcon,
+      activeIcon: briefcaseWhiteIcon,
       tooltip: nextWeekTime.calendar(),
       when: nextWeekTime.toDate(),
     },
     {
       id: 'in_a_month',
       title: 'In a Month',
-      icon: require('./icons/mailbox.svg'),
-      activeIcon: require('./icons/mailbox_white.svg'),
+      icon: mailboxIcon,
+      activeIcon: mailboxWhiteIcon,
       tooltip: inAMonthTime.format('LL'),
       when: inAMonthTime.toDate(),
     },
     {
       id: 'someday',
       title: 'Someday',
-      icon: require('./icons/pine.svg'),
-      activeIcon: require('./icons/pine_white.svg'),
+      icon: pineIcon,
+      activeIcon: pineWhiteIcon,
       tooltip: `${somedayTime.format(
         'LL'
       )} (${somedayMonthsDelta} months from now)`,
@@ -126,16 +146,16 @@ export default function calcSnoozeOptions(
     {
       id: SNOOZE_TYPE_REPEATED,
       title: 'Repeatedly',
-      icon: require('./icons/refresh.svg'),
-      activeIcon: require('./icons/refresh_white.svg'),
+      icon: refreshIcon,
+      activeIcon: refreshWhiteIcon,
       tooltip: 'Open this tab on a periodic basis',
       isProFeature: true,
     },
     {
       id: SNOOZE_TYPE_SPECIFIC_DATE,
       title: 'Pick a Date',
-      icon: require('./icons/calendar.svg'),
-      activeIcon: require('./icons/calendar_white.svg'),
+      icon: calendarIcon,
+      activeIcon: calendarWhiteIcon,
       tooltip: 'Select a specific date & time',
     },
   ];

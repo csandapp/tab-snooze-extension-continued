@@ -15,6 +15,13 @@ import SnoozePanel from '../SnoozePanel';
 import sanitizeHtml from 'sanitize-html';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import changeColorIcon from './images/change_color.svg';
+import snoozeIcon from './images/snooze.svg';
+import todoFavicon0 from './images/todo_favicon_0.png';
+import todoFavicon1 from './images/todo_favicon_1.png';
+import todoFavicon2 from './images/todo_favicon_2.png';
+import todoFavicon3 from './images/todo_favicon_3.png';
+
 type State = {
   text: string,
   colorIndex: number,
@@ -209,11 +216,11 @@ class TodoPage extends Component<any, State> {
 
             <Buttons>
               <BigIconButton
-                icon={require('./images/change_color.svg')}
+                icon={changeColorIcon}
                 onClick={this.changeColor.bind(this)}
               />
               <BigIconButton
-                icon={require('./images/snooze.svg')}
+                icon={snoozeIcon}
                 onClick={this.toggleSnoozePanel.bind(this)}
               />
               <Popper
@@ -260,10 +267,10 @@ const BigIconButton = (props: {
 );
 
 export const TODO_COLORS = [
-  { favicon: require('./images/todo_favicon_0.png'), hex: '#F2B32A' },
-  { favicon: require('./images/todo_favicon_1.png'), hex: '#4688F1' },
-  { favicon: require('./images/todo_favicon_2.png'), hex: '#1D9C5A' },
-  { favicon: require('./images/todo_favicon_3.png'), hex: '#EB2249' },
+  { favicon: todoFavicon0, hex: '#F2B32A' },
+  { favicon: todoFavicon1, hex: '#4688F1' },
+  { favicon: todoFavicon2, hex: '#1D9C5A' },
+  { favicon: todoFavicon3, hex: '#EB2249' },
 ];
 
 function randomColorIndex() {

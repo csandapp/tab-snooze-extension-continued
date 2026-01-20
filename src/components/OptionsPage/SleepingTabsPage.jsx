@@ -1,8 +1,8 @@
 // @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
-import React, { Component, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { withStyles } from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
@@ -22,92 +22,78 @@ import { Link } from 'react-router-dom';
 import { TODO_PATH } from '../../paths';
 // import { track, EVENTS } from '../../core/analytics';
 
-// Adding chrome manually to global scope, for ESLint
-const chrome = window.chrome;
-
 // A tab group represents a collection of tabs that are in the same
 // wakeup time range
 type TabGroup = {
   timeRange: WakeupTimeRange,
   tabs: Array<SnoozedTab>,
 };
-type Props = { classes: Object };
-type State = {
-  visibleTabGroups: ?Array<TabGroup>,
-  hidePeriodic: boolean,
-};
+type Props = {};
 
-const styles = theme => ({
-  list: {
-    marginBottom: theme.spacing.unit * 2,
-  },
-  subHeader: {
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: theme.spacing.unit * 3,
-  },
-  listItemRoot: {
-    paddingLeft: theme.spacing.unit * 3,
-  },
-  listItemContainer: {
-    '&:hover $deleteBtn': {
-      opacity: 1,
-    },
-  },
-  deleteBtn: {
-    transition: 'opacity 0.2s',
-    opacity: 0,
-    marginRight: theme.spacing.unit * 2,
-  },
-  fabButton: {
-    zIndex: 100,
-    position: 'fixed',
-    bottom: theme.spacing.unit * 3,
-    right: theme.spacing.unit * 3,
-  },
-});
+// MUI v5 styled components
+const StyledList = muiStyled(List)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
 
-class SleepingTabsPage extends Component<Props, State> {
-  state = { visibleTabGroups: null, hidePeriodic: false };
-  storageListener: any;
+const StyledListSubheader = muiStyled(ListSubheader)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  paddingLeft: theme.spacing(3),
+}));
 
-  constructor(props: Props) {
-    super(props);
+const StyledListItem = muiStyled(ListItem)(({ theme }) => ({
+  paddingLeft: theme.spacing(3),
+  '&:hover .delete-btn': {
+    opacity: 1,
+  },
+}));
 
-    this.storageListener = this.refreshSnoozedTabs.bind(this);
+const StyledDeleteButton = muiStyled(IconButton)(({ theme }) => ({
+  transition: 'opacity 0.2s',
+  opacity: 0,
+  marginRight: theme.spacing(2),
+}));
 
-    // init
-    this.refreshSnoozedTabs();
+const StyledFab = muiStyled(Fab)(({ theme }) => ({
+  zIndex: 100,
+  position: 'fixed',
+  bottom: theme.spacing(3),
+  right: theme.spacing(3),
+}));
+
+const SleepingTabsPage = (props: Props) => {
+  const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState(null);
+  const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
+  
+  const refreshSnoozedTabs = useCallback(async () => {
+    const groups = await getSleepingTabByWakeupGroups(hidePeriodicState);
+    setVisibleTabGroupsState(groups);
+  }, [hidePeriodicState]);
+
+  useEffect(() => {
+    refreshSnoozedTabs();
+    
+    const storageListener = refreshSnoozedTabs;
 
     // listen to storage changes
-    chrome.storage.onChanged.addListener(this.storageListener);
-  }
+    chrome.storage.onChanged.addListener(storageListener);
+  
+    return () => {
+      chrome.storage.onChanged.removeListener(storageListener);
+    }
+  }, [refreshSnoozedTabs]);
 
-  componentDidMount() {
-    // track(EVENTS.SLEEPING_TABS_VIEW);
-  }
+  // componentDidMount() {
+  //   // track(EVENTS.SLEEPING_TABS_VIEW);
+  // }
 
-  componentWillUnmount() {
-    chrome.storage.onChanged.removeListener(this.storageListener);
-  }
-
-  async refreshSnoozedTabs() {
-    const { hidePeriodic } = this.state;
-
-    const visibleTabGroups = await getSleepingTabByWakeupGroups(
-      hidePeriodic
-    );
-
-    this.setState({ visibleTabGroups });
-  }
-
-  deleteTab(tab: SnoozedTab, event: any) {
+  const deleteTab = (tab: SnoozedTab, event: any) => {
     // so that openTab() won't be called
     event.stopPropagation();
 
     setTimeout(() => deleteSnoozedTabs([tab]), 150);
   }
 
-  wakeupTab(tab: SnoozedTab, event: any) {
+  const wakeupTab = (tab: SnoozedTab, event: any) => {
     // animate tab out
 
     const makeTabActive = !(
@@ -120,24 +106,18 @@ class SleepingTabsPage extends Component<Props, State> {
     setTimeout(() => wakeupTabs([tab], makeTabActive), 300);
   }
 
-  renderTabGroup(tabGroup: TabGroup, index: number) {
-    const { classes } = this.props;
-
+  const renderTabGroup = (tabGroup: TabGroup, index: number) =>{
     return (
       <Fragment key={index}>
-        <ListSubheader disableSticky className={classes.subHeader}>
+        <StyledListSubheader disableSticky>
           {tabGroup.timeRange.title}
-        </ListSubheader>
+        </StyledListSubheader>
         {tabGroup.tabs.map((tab, index2) => (
-          <ListItem
+          <StyledListItem
             key={index2}
             button
-            classes={{
-              root: classes.listItemRoot,
-              container: classes.listItemContainer,
-            }}
             onClick={event => {
-              this.wakeupTab(tab, event);
+              wakeupTab(tab, event);
             }}
           >
             <Icon src={tab.favicon} alt="" />
@@ -151,68 +131,64 @@ class SleepingTabsPage extends Component<Props, State> {
                 style: { lineHeight: 1.5, marginBottom: 3 },
               }}
             />
-            <ListItemSecondaryAction className={classes.deleteBtn}>
-              <IconButton
-                onClick={event => this.deleteTab(tab, event)}
+            <ListItemSecondaryAction>
+              <StyledDeleteButton
+                className="delete-btn"
+                onClick={event => deleteTab(tab, event)}
                 aria-label="Delete"
               >
                 <DeleteIcon />
-              </IconButton>
+              </StyledDeleteButton>
             </ListItemSecondaryAction>
-          </ListItem>
+          </StyledListItem>
         ))}
       </Fragment>
     );
   }
 
-  render() {
-    const { visibleTabGroups } = this.state;
-    const { classes } = this.props;
-
-    if (!visibleTabGroups) {
+  
+  if (!visibleTabGroupsState) {
       // avoid showing placeholder while loading, because
       // it causes placeholder to flicker before the list renders on screen
       return null;
-    }
-
-    return (
-      <Root>
-        <Helmet>
-          <title>Sleeping Tabs - Tab Snooze</title>
-        </Helmet>
-        {visibleTabGroups.length > 0 ? (
-          <List className={classes.list}>
-            {visibleTabGroups.map(this.renderTabGroup.bind(this))}
-          </List>
-        ) : (
-          <NoTabsPlaceholder />
-        )}
-
-        <NewTodoBtn />
-      </Root>
-    );
   }
+
+  return (
+    <Root>
+      <Helmet>
+        <title>Sleeping Tabs - Tab Snooze</title>
+      </Helmet>
+      {visibleTabGroupsState.length > 0 ? (
+        <StyledList>
+          {visibleTabGroupsState.map(renderTabGroup)}
+        </StyledList>
+      ) : (
+        <NoTabsPlaceholder />
+      )}
+
+      <NewTodoBtn />
+    </Root>
+  );
 }
 
-const NewTodoBtn = withStyles(styles)(({ classes }) => (
+const NewTodoBtn = () => (
   <Zoom
     in
     style={{
       transitionDelay: `500ms`,
     }}
   >
-    <Fab
+    <StyledFab
       component={Link}
       to={TODO_PATH}
       target="_blank"
       color="secondary"
       aria-label="Add"
-      className={classes.fabButton}
     >
       <AddIcon />
-    </Fab>
+    </StyledFab>
   </Zoom>
-));
+);
 
 const NoTabsPlaceholder = () => (
   <Placeholder>
@@ -253,4 +229,4 @@ const Icon = styled.img`
   border-radius: 3px;
 `;
 
-export default withStyles(styles)(SleepingTabsPage);
+export default SleepingTabsPage;

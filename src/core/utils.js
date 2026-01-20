@@ -1,3 +1,4 @@
+console.log('Loading src/core/utils.js');
 // @flow
 
 import moment from 'moment';
