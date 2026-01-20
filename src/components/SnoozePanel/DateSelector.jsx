@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from "react";
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
@@ -14,32 +14,31 @@ import leftIcon from './icons/left.svg';
 import rightIcon from './icons/right.svg';
 
 type Props = { visible: boolean, onDateSelected: Date => void };
-type State = {
-  selectedDate: any,
-  selectedHour: number,
-};
 
-export default class DateSelector extends Component<Props, State> {
-  state = {
-    selectedDate: new Date(),
-    selectedHour: 9,
-  };
 
-  datePicker: any;
 
-  constructor(props: Props) {
-    super(props);
-    this.datePicker = React.createRef();
+const DateSelector = (props: Props): React.Node => {
+  const { visible, onDateSelected } = props;
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedHour, setSelectedHour] = useState(9);
+  const datePicker = useRef(null);
+  
+  useEffect(() => {
+    let cancelled = false; // Flag to track if component is still mounted
+    
+    // Load settings and set initial selected hour
+    getSettings().then((settings) => {
+      if (!cancelled) {
+        setSelectedHour(settings.workdayStart);
+      }
+    });
+  
+    return () => {
+      cancelled = true; // Cleanup on unmount
+    }
+  }, []);
 
-    getSettings().then(settings =>
-      this.setState({ selectedHour: settings.workdayStart })
-    );
-  }
-
-  onSnoozeClicked() {
-    const { onDateSelected } = this.props;
-    const { selectedDate, selectedHour } = this.state;
-
+  const onSnoozeClicked = () => {
     // combine date + time, and handle minutes (e.g. 9.5 => 09:30)
     const selectedDateTime = moment(selectedDate)
       .hour(selectedHour)
@@ -48,50 +47,55 @@ export default class DateSelector extends Component<Props, State> {
     onDateSelected(selectedDateTime);
   }
 
-  render() {
-    const { visible } = this.props;
-    const { selectedDate, selectedHour } = this.state;
+  return (
+    <SnoozeModal visible={visible}>
+      <Root>
+        <MyDayPicker
+          selectedDays={selectedDate}
+          onDayClick={ date => setSelectedDate(date) }
+          // Don't allow going to past months
+          fromMonth={new Date()}
+          // Disable selection of past days
+          disabledDays={date =>
+            moment(date).diff(moment().startOf('day')) < 0
+          }
+          showOutsideDays
+          fixedWeeks
+          // Disable caption element
+          captionElement={<Fragment />}
+          navbarElement={props => (
+            <Navbar
+              {...props}
+              hour={selectedHour}
+              onHourChange={ hour => setSelectedHour(hour)}
+              gotoToday={() => {
+                const today = new Date();
+                setSelectedDate(today);
+                datePicker.current.showMonth(today);
+              }}
+            />
+          )}
+          ref={datePicker}
+        />
+        <SaveButton onMouseDown={onSnoozeClicked}>
+          SNOOZE
+        </SaveButton>
+      </Root>
+    </SnoozeModal>
+  );
+};
 
-    return (
-      <SnoozeModal visible={visible}>
-        <Root>
-          <MyDayPicker
-            selectedDays={selectedDate}
-            onDayClick={date => this.setState({ selectedDate: date })}
-            // Don't allow going to past months
-            fromMonth={new Date()}
-            // Disable selection of past days
-            disabledDays={date =>
-              moment(date).diff(moment().startOf('day')) < 0
-            }
-            showOutsideDays
-            fixedWeeks
-            // Disable caption element
-            captionElement={<Fragment />}
-            navbarElement={props => (
-              <Navbar
-                {...props}
-                hour={selectedHour}
-                onHourChange={hour =>
-                  this.setState({ selectedHour: hour })
-                }
-                gotoToday={() => {
-                  const today = new Date();
-                  this.setState({ selectedDate: today });
-                  this.datePicker.current.showMonth(today);
-                }}
-              />
-            )}
-            ref={this.datePicker}
-          />
-          <SaveButton onMouseDown={this.onSnoozeClicked.bind(this)}>
-            SNOOZE
-          </SaveButton>
-        </Root>
-      </SnoozeModal>
-    );
-  }
-}
+export default DateSelector;
+
+
+type NavbarProps = {
+  hour: number,
+  onHourChange: (hour: number) => void,
+  gotoToday: () => void,
+  month: Date,
+  onNextClick: () => void,
+  onPreviousClick: () => void,
+};
 
 const Navbar = ({
   hour,
@@ -100,7 +104,7 @@ const Navbar = ({
   month,
   onNextClick,
   onPreviousClick,
-}) => (
+}: NavbarProps) => (
   <NavbarDiv>
     <NavButton onClick={() => onPreviousClick()}>
       <img src={leftIcon} alt="Previous Month" />

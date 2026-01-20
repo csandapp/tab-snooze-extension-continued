@@ -1,4 +1,5 @@
 // @flow
+// TODO I don't think this thing pops up
 
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
@@ -9,7 +10,7 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import { Link } from 'react-router-dom';
 import congratsImage from './images/congrats.png';
 
-export default function FirstSnoozeDialog(): React$Node {
+export default function FirstSnoozeDialog(): React.Node {
   return (
       <TSDialog
         // title="Congrats!"
@@ -33,6 +34,8 @@ export default function FirstSnoozeDialog(): React$Node {
             color="#4A90E2"
             to={SLEEPING_TABS_PATH}
             target="_blank"
+            // TODO $FlowFixMe
+            // $FlowFixMe
             onClick={() => window.close()}
           >
             <HotelIcon /> Sleeping Tabs

@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';
@@ -17,50 +17,31 @@ type Props = {
   visible: boolean,
   onPeriodSelected: SnoozePeriod => void,
 };
+
+type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 type State = {
-  periodType: 'daily' | 'weekly' | 'monthly' | 'yearly',
+  periodType: PeriodType,
   selectedHour: number,
   selectedMonth: number,
   selectedDay: number,
   selectedWeekdays: Array<boolean>,
 };
 
-export default class PeriodSelector extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
 
-    // init with some values
 
-    this.state = {
-      // init with some values
-      periodType: 'weekly',
-      selectedHour: 9, // TODO: change this
-      selectedMonth: moment().month(),
-      selectedDay: moment().date() - 1, // date() counts from 1, 2 ...
-      selectedWeekdays: [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ],
-    };
+const PeriodSelector = (props: Props): React.Node => {
+  const { visible, onPeriodSelected } = props;
+  
+  const [ periodType, setPeriodType ] = useState<PeriodType>('weekly');
+  const [ selectedHour, setSelectedHour ] = useState(9); // Default to 9 AM
+  const [ selectedMonth, setSelectedMonth ] = useState(moment().month());
+  const [ selectedDay, setSelectedDay ] = useState(moment().date() - 1); // date() counts from 1, so subtract 1
+  const [ selectedWeekdays, setSelectedWeekdays ] = useState(
+    Array(7).fill(false).map((_, i) => i === moment().weekday()) // auto select current day in the week
+  );
 
-    // auto select current day in the week
-    this.state.selectedWeekdays[moment().weekday()] = true;
-  }
-
-  onSnoozeClicked() {
-    const {
-      periodType,
-      selectedHour,
-      selectedDay,
-      selectedMonth,
-      selectedWeekdays,
-    } = this.state;
-
+  const onSnoozeClicked = () => {
     let snoozePeriod: ?SnoozePeriod;
 
     if (periodType === 'daily') {
@@ -107,73 +88,84 @@ export default class PeriodSelector extends Component<Props, State> {
       throw new Error('unrecognized periodType');
     }
 
-    this.props.onPeriodSelected(snoozePeriod);
+    onPeriodSelected(snoozePeriod);
   }
 
-  render() {
-    const { visible } = this.props;
-    const { periodType } = this.state;
+  useEffect(() => {
+    // I'm trying to translate the original bindField
+    
+    // const bindField = stateKey => ({
+    //   value: this.state[stateKey],
+    //   onChange: eventOrValue =>
+    //     this.setState({
+    //       [stateKey]: eventOrValue.target
+    //         ? eventOrValue.target.value
+    //         : eventOrValue,
+    //     }),
+    // });
 
-    const bindField = stateKey => ({
-      value: this.state[stateKey],
-      onChange: eventOrValue =>
-        this.setState({
-          [stateKey]: eventOrValue.target
-            ? eventOrValue.target.value
-            : eventOrValue,
-        }),
-    });
+    setPeriodType(periodType);
+    setSelectedHour(selectedHour);
+    setSelectedMonth(selectedMonth);
+    setSelectedDay(selectedDay);
+    setSelectedWeekdays(selectedWeekdays);
+    return () => {
+    }
+  }, [periodType, selectedHour, selectedMonth, selectedDay, selectedWeekdays]);
+  
 
-    return (
-      <SnoozeModal visible={visible}>
-        <Root>
-          <Title>Wake up this tab</Title>
-          <PeriodOptions {...bindField('periodType')} />
 
-          <Collapse in={periodType === 'weekly'}>
-            <Fragment>
-              <Title>on these days</Title>
-              <WeekdayOptions {...bindField('selectedWeekdays')} />
-            </Fragment>
-          </Collapse>
+  return (
+    <SnoozeModal visible={visible}>
+      <Root>
+        <Title>Wake up this tab</Title>
+        <PeriodOptions {periodType} />
 
-          <Collapse in={periodType === 'monthly'}>
-            <Fragment>
-              <Title>on this day</Title>
-              <DayOptions {...bindField('selectedDay')} />
-            </Fragment>
-          </Collapse>
+        <Collapse in={periodType === 'weekly'}>
+          <Fragment>
+            <Title>on these days</Title>
+            <WeekdayOptions {selectedWeekdays} />
+          </Fragment>
+        </Collapse>
 
-          <Collapse in={periodType === 'yearly'}>
-            <Fragment>
-              <Title>on this date</Title>
-              <DateOptions
-                value={{
-                  day: this.state.selectedDay,
-                  month: this.state.selectedMonth,
-                }}
-                onChange={({ day, month }) =>
-                  this.setState({
-                    selectedDay: day,
-                    selectedMonth: month,
-                  })
+        <Collapse in={periodType === 'monthly'}>
+          <Fragment>
+            <Title>on this day</Title>
+            <DayOptions {...bindField('selectedDay')} />
+          </Fragment>
+        </Collapse>
+
+        <Collapse in={periodType === 'yearly'}>
+          <Fragment>
+            <Title>on this date</Title>
+            <DateOptions
+              value={{
+                day: selectedDay,
+                month: selectedMonth,
+              }}
+              onChange={({ day, month }) =>
+                {
+                  setSelectedDay(day);
+                  setSelectedMonth(month);
                 }
-              />
-            </Fragment>
-          </Collapse>
+              }
+            />
+          </Fragment>
+        </Collapse>
 
-          <Title>at this hour</Title>
-          <HourOptions {...bindField('selectedHour')} />
+        <Title>at this hour</Title>
+        <HourOptions {...bindField('selectedHour')} />
 
-          <Spacer />
-          <SaveButton onMouseDown={this.onSnoozeClicked.bind(this)}>
-            SNOOZE
-          </SaveButton>
-        </Root>
-      </SnoozeModal>
-    );
-  }
+        <Spacer />
+        <SaveButton onMouseDown={onSnoozeClicked}>
+          SNOOZE
+        </SaveButton>
+      </Root>
+    </SnoozeModal>
+  );
 }
+
+export default PeriodSelector;
 
 function getSelectedWeekdaysIndexes(
   selectedWeekdays: Array<boolean>

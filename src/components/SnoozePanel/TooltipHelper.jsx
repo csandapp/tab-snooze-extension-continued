@@ -13,7 +13,7 @@ export default (WrappedComponent: any) => {
     const tooltipHideTimeout = useRef(null);
   
     const [ tooltipVisibleState, setTooltipVisibleState ] = useState(false);
-    const [ tooltipTextState, setTooltipTextState ] = useState(null);
+    const [ tooltipTextState, setTooltipTextState ] = useState("");
 
     // Cleanup function to clear timeouts when component unmounts
     // This prevents memory leaks and ensures no state updates after unmount

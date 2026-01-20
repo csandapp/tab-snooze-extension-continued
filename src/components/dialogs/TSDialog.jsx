@@ -9,6 +9,10 @@ import Button from '../SnoozePanel/Button';
 
 import logoImage from './images/logo.svg';
 
+type StyledProps = {
+  noPadding?: boolean,
+};
+
 export default function TSDialog({
   image,
   title,
@@ -25,7 +29,7 @@ export default function TSDialog({
   closeBtnText?: ?string,
   children: Node,
   noPadding?: boolean
-}): React$Node {
+}): React.Node {
   return (
     <Fragment>
       <Helmet>
@@ -69,7 +73,7 @@ const Root = styled.div`
 `;
 
 const Content = styled.div`
-  padding: ${props => (props.noPadding ? 0 : PADDING)}px;
+  padding: ${(props: StyledProps) => (props.noPadding ? 0 : PADDING)}px;
   padding-top: 60px;
 
   display: flex;
@@ -108,6 +112,8 @@ const Subheader = styled.div`
 
 const NoThanksButton = styled(Button).attrs(props => ({
   color: '#fff',
+  // TODO $FlowFixMe
+  // $FlowFixMe
   onClick: () => window.close(),
 }))`
   margin-top: 20px;

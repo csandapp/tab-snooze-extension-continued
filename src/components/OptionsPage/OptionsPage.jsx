@@ -25,6 +25,8 @@ const StyledIconButton = muiStyled(IconButton)(({ theme }) => ({
   color: '#fff',
   display: 'none',
   marginRight: -10,
+  // TODO $FlowFixMe
+  // $FlowFixMe
   [theme.breakpoints.down(650)]: {
     display: 'block',
   },
@@ -38,7 +40,7 @@ const StyledSettingsIcon = muiStyled(SettingsIcon)({
   marginRight: 10,
 });
 
-function OptionsPage(props) {
+function OptionsPage(props: {}): React.Node {
   const location = useLocation();
   
   return (
@@ -119,7 +121,7 @@ const NavButton = styled(Button).attrs({
   &.linkIsActive {
     background-color: #0000001f !important;
   }
-  ${props =>
+  ${(props : {active?: boolean}) =>
     props.active &&
     css`
       background-color: #0000001f !important;

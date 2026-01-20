@@ -9,7 +9,9 @@ import Button from '../SnoozePanel/Button';
 import loveImage from './images/love.png';
 import chromeWebStoreImage from './images/chrome_web_store.png';
 
-export default function RateTSDialog(): React$Node {
+// TODO figure out if this even opens
+
+export default function RateTSDialog(): React.Node {
   return (
     <TSDialog
       title="Lovin' Tab Snooze?"
@@ -28,6 +30,8 @@ export default function RateTSDialog(): React$Node {
         color="#4A90E2"
         href={CHROME_WEB_STORE_REVIEW}
         target="_blank"
+        // TODO $FlowFixMe
+        // $FlowFixMe
         onClick={() => window.close()}
       >
         <CWSLogo />

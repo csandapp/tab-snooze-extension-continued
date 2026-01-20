@@ -65,14 +65,19 @@ type ChromeCommand = {
 
 type Props = {};
 
+type StyledProps = {
+  locked?: boolean,
+  small?: boolean,
+};
+
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
 const SettingsPage = (props: Props): Node => {
-  const [settingsState, setSettingsState] = useState(DEFAULT_SETTINGS);
-  const [commandsState, setCommandsState] = useState([]);
+  const [settingsState, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS);
+  const [commandsState, setCommandsState] = useState<Array<ChromeCommand>>([]);
   const isPro: boolean = true; // useState(true);
 
   useEffect(() => {
@@ -87,19 +92,21 @@ const SettingsPage = (props: Props): Node => {
   }, []);
 
   const loadSettings = async () => {
-    const settings = await getSettings();
+    const settings: Settings = await getSettings();
     // shortcut settings are loaded from chrome api
+    // TODO $FlowFixMe
+    // $FlowFixMe
     const commands = await chrome.commands.getAll();
     const isPro = true; // await isProUser();
 
     setSettingsState(settings);
-    setCommandsState(commands);
+    setCommandsState(commands || []);
     // setIsPro(isProValue);  // make everyone a pro user for now
   };
 
-  const bindSettings = (stateKey, valueProp = 'value') => {
-    const currentSettings = settingsState;
-    const value = currentSettings[stateKey];
+  const bindSettings = (stateKey: $Keys<Settings>, valueProp: string = 'value') => {
+    const currentSettings: Settings = settingsState;
+    const value = currentSettings[stateKey as $Keys<Settings>];
 
     if (value === undefined) {
       throw new Error(
@@ -109,13 +116,13 @@ const SettingsPage = (props: Props): Node => {
 
     return {
       [valueProp]: value,
-      onChange: eventOrValue => {
-        const nextSettings = {
-          ...currentSettings,
-          [stateKey]: eventOrValue.target
-            ? eventOrValue.target[valueProp]
-            : eventOrValue,
-        };
+      onChange: (eventOrValue: Event | any) => {
+        const nextSettings = { ...currentSettings };
+        nextSettings[stateKey] = eventOrValue.target
+          //$FlowFixMe
+          ? eventOrValue.target[valueProp]
+          // $FlowFixMe
+          : eventOrValue;
 
         saveSettings(nextSettings);
         setSettingsState(nextSettings);
@@ -161,11 +168,10 @@ const SettingsPage = (props: Props): Node => {
     description?: string,
     stateKey: string,
   }) => {
+    const { stateKey, ...renderProps } = options;
     return renderGeneralSetting({
-      ...options,
-      component: (
-        <Switch {...bindSettings(options.stateKey, 'checked')} />
-      ),
+      ...renderProps,
+      component: <Switch {...bindSettings(stateKey, 'checked')} />
     });
   };
 
@@ -543,7 +549,7 @@ const LogInButton = styled(Button).attrs({
 `;
 
 const LockedContent = styled.div`
-  ${props =>
+  ${(props: StyledProps) =>
     props.locked &&
     css`
       pointer-events: none;
@@ -565,7 +571,7 @@ const SettingsSelect = styled(Select).attrs({
   line-height: inherit;
   outline: none;
   padding-left: 5px;
-  width: ${props => (props.small ? 94 : 200)}px;
+  width: ${(props: StyledProps) => (props.small ? 94 : 200)}px;
   height: 40px;
   margin-right: 12px;
   :hover {

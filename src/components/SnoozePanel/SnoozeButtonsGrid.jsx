@@ -1,6 +1,6 @@
 // @flow
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import SnoozeButton from './SnoozeButton';
 
@@ -8,17 +8,23 @@ type Props = {
   buttons: Array<SnoozeButtonProps>,
 };
 
-export default class SnoozeButtonsGrid extends Component<Props> {
-  render() {
-    const { buttons } = this.props;
-    return (
-      <ButtonsGrid>
-        {buttons.map(button => (
-          <SnoozeButton key={button.id} {...button} />
-        ))}
-      </ButtonsGrid>
-    );
-  }
+type StyledProps = {
+  theme: {
+    snoozePanel: {
+      border: string,
+    },
+  },
+};
+
+const SnoozeButtonsGrid = (props: Props): React.Node => {
+  const { buttons } = props;
+  return (
+    <ButtonsGrid>
+      {buttons.map(button => (
+        <SnoozeButton key={button.id} {...button} />
+      ))}
+    </ButtonsGrid>
+  );
 }
 
 const ButtonsGrid = styled.div`
@@ -29,5 +35,7 @@ const ButtonsGrid = styled.div`
   align-items: stretch;
   justify-content: stretch;
   grid-gap: 1px;
-  background-color: ${props => props.theme.snoozePanel.border};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.border};
 `;
+
+export default SnoozeButtonsGrid;

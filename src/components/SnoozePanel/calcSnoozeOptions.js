@@ -1,5 +1,4 @@
 // @flow
-// import type { Moment } from 'moment';
 import moment from 'moment';
 
 // Import all the icons at the top
@@ -55,13 +54,13 @@ export default function calcSnoozeOptions(
     moment().day() === weekEndDay ||
     moment().day() === (weekEndDay + 1) % 7;
 
-  const roundDate = momentDate =>
+  const roundDate = (momentDate: moment) =>
     momentDate
       .minutes(0)
       .seconds(0)
       .millisecond(0);
 
-  const dayStart = momentDate =>
+  const dayStart = (momentDate: moment) =>
     roundDate(momentDate.hour(workdayStart));
 
   const laterTodayTime = moment().add(laterTodayHoursDelta, 'hours');

@@ -60,19 +60,22 @@ const StyledFab = muiStyled(Fab)(({ theme }) => ({
   right: theme.spacing(3),
 }));
 
-const SleepingTabsPage = (props: Props) => {
-  const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState(null);
+const SleepingTabsPage = (props: Props): React.Node => {
+  const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
   const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
   
   const refreshSnoozedTabs = useCallback(async () => {
-    const groups = await getSleepingTabByWakeupGroups(hidePeriodicState);
+    const groups: Array<TabGroup> = await getSleepingTabByWakeupGroups(hidePeriodicState);
     setVisibleTabGroupsState(groups);
   }, [hidePeriodicState]);
 
   useEffect(() => {
     refreshSnoozedTabs();
     
-    const storageListener = refreshSnoozedTabs;
+    // Satisfy Flow that Promise is incompatible with undefined in the return value
+    const storageListener = () => {
+      refreshSnoozedTabs();
+    };
 
     // listen to storage changes
     chrome.storage.onChanged.addListener(storageListener);

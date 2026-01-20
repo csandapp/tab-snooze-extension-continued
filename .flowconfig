@@ -1,18 +1,36 @@
 [ignore]
-<PROJECT_ROOT>/node_modules/.*
+.*/node_modules/.*
+.*/build/.*
+.*/dist/.*
+; .*/flow-typed/npm/.*; doesn't work
+
 
 [include]
+./src
+./public
 
 [libs]
+flow-typed/
+src/custom-flow-defenitions
 node_modules/flow-interfaces-chrome/interfaces
 
 [lints]
+; From npx flow init
+untyped-type-import=error
+internal-type=error
+unsafe-object-assign=error
+nested-component=error
+nested-hook=error
+libdef-override=error
+deprecated-type-bool=error
 
 [options]
-; esproposal.decorators=ignore
 module.system=node
-module.system.node.resolve_dirname=node_modules
-module.system.node.main_field=main,module
-suppress_type=cannot-resolve-module
+module.file_ext=.js
+module.file_ext=.jsx
+; jsx=react
+; esproposal.optional_chaining=enable
+; esproposal.nullish_coalescing=enable
+; suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe
 
 [strict]

@@ -14,7 +14,27 @@ import {
 import { getSnoozedTabs } from '../../core/storage';
 import { createTab } from '../../core/utils';
 
-type Props = {
+// Theme type definition
+type Theme = {
+  primary: string,
+  beta: string,
+  dark: string,
+  black: string,
+  snoozePanel: {
+    bgColor: string,
+    border: string,
+    footerTextColor: string,
+    hoverColor: string,
+    countBadgeColor: string,
+  },
+};
+
+type StyledProps = {
+  theme: Theme,
+  visible?: boolean,
+};
+
+type SnoozeFooterProps = {
   tooltip: {
     visible: boolean;
     text: string | null;
@@ -23,7 +43,7 @@ type Props = {
   betaBadge: boolean;
 };
 
-export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: Props) {
+export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: SnoozeFooterProps) : React.Node {
   const [sleepingTabsCount, setSleepingTabsCount] = useState(0);
 
   useEffect(() => {
@@ -103,7 +123,7 @@ const Footer = styled.div`
   justify-content: stretch;
   align-items: stretch;
   height: 56px;
-  border-top: 1px solid ${props => props.theme.snoozePanel.border};
+  border-top: 1px solid ${(props: StyledProps) => props.theme.snoozePanel.border};
   position: relative;
 `;
 
@@ -115,12 +135,12 @@ const SnoozeTooltip = styled.div`
   bottom: 0;
   pointer-events: none;
   transition: opacity 0.5s;
-  opacity: ${props => (props.visible ? 1 : 0)};
+  opacity: ${(props: StyledProps) => (props.visible ? 1 : 0)};
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.snoozePanel.bgColor};
-  color: ${props => props.theme.snoozePanel.footerTextColor};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
+  color: ${(props: StyledProps) => props.theme.snoozePanel.footerTextColor};
   /* font-weight: 500; */
   font-size: 17px;
 `;
@@ -134,26 +154,26 @@ const Buttons = styled.div`
 const FooterBtn = styled.button`
   border: none;
   cursor: pointer;
-  background-color: ${props => props.theme.snoozePanel.bgColor};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
   align-items: center;
 
   &:hover {
-    background-color: ${props => props.theme.snoozePanel.hoverColor};
+    background-color: ${(props: StyledProps) => props.theme.snoozePanel.hoverColor};
   }
   
   &:active {
-    background-color: ${props => props.theme.dark ? props.theme.black : '#d7e3e3'};
+    background-color: ${(props: StyledProps) => props.theme.dark ? props.theme.black : '#d7e3e3'};
   }
 `;
 
 const SleepingCountBadge = styled.div`
-  background-color: ${props => props.theme.snoozePanel.countBadgeColor};
+  background-color: ${(props: StyledProps) => props.theme.snoozePanel.countBadgeColor};
   padding: 2px 8px;
   border-radius: 5px;
-  color: ${props => props.theme.snoozePanel.bgColor};
+  color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
   font-weight: 700;
   font-size: 15px;
   margin-right: 11px;
@@ -163,7 +183,7 @@ const SleepingTabsBtn = styled(FooterBtn)`
   display: flex;
   align-items: center;
   padding-left: 16px;
-  color: ${props => props.theme.snoozePanel.footerTextColor};
+  color: ${(props: StyledProps) => props.theme.snoozePanel.footerTextColor};
   /* color: #929292; */
   font-weight: 500;
   font-size: 17px;
@@ -175,17 +195,17 @@ const BadgeButton = styled(FooterBtn)`
 `;
 
 const UpgradeBadge = styled.div`
-  background-color: ${props => props.theme.primary};
+  background-color: ${(props: StyledProps) => props.theme.primary};
   padding: 8px 10px;
   border-radius: 5px;
   color: #fff;
-  /* color: ${props => props.theme.snoozePanel.bgColor}; */
+  /* color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor}; */
   font-weight: 700;
   font-size: 16px;
 `;
 
 const BetaBadge = styled(UpgradeBadge)`
-  background-color: ${props => props.theme.beta};
+  background-color: ${(props: StyledProps) => props.theme.beta};
   padding-right: 15px;
   padding-left: 15px;
 `;
@@ -195,5 +215,5 @@ const IconBtn = styled(FooterBtn)`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.theme.snoozePanel.countBadgeColor};
+  color: ${(props: StyledProps) => props.theme.snoozePanel.countBadgeColor};
 `;
