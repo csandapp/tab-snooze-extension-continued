@@ -40,10 +40,11 @@ export default function FirstSnoozeDialog(): React.Node {
           >
             <HotelIcon /> Sleeping Tabs
           </Button>
-          {/* <Button
+          {/*
+          <Button
             raised
             as="a"
-            icon={require('./images/facebook.svg')}
+            icon="./images/facebook.svg"
             color="#4460AE"
             href={`https://www.facebook.com/sharer/sharer.php?u=${CHROME_WEB_STORE_INSTALL_SHARE_LINK}`}
             style={{ marginRight: 12 }}
@@ -53,12 +54,13 @@ export default function FirstSnoozeDialog(): React.Node {
           <Button
             raised
             as="a"
-            icon={require('./images/twitter.svg')}
+            icon="./images/twitter.svg"
             color="#00ACEE"
             href={`https://twitter.com/home?status=${shareText}`}
           >
             Share on Twitter
-          </Button> */}
+          </Button>
+          */}
         </Root>
       </TSDialog>
   );

@@ -68,7 +68,7 @@ const Root = styled.div`
 
   height: 100%;
 
-  /* background: #fff url(${require('./images/bg_decoration.svg')})
+  /* background: #fff url('./images/bg_decoration.svg')
     no-repeat bottom right; */
 `;
 
