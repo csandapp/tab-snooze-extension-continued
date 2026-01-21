@@ -57,7 +57,7 @@ export function runBackgroundScript() {
   registerBadgeEventListeners();
 
   // Show CHANGELOG doc when extension updates
-  chrome.runtime.onInstalled.addListener(async function({
+  chrome.runtime.onInstalled.addListener(async function ({
     reason,
     previousVersion,
   }) {
@@ -104,30 +104,56 @@ export function runBackgroundScript() {
   });
 }
 
+// Lock to prevent concurrent offscreen document creation
+let offscreenDocumentPromise = null;
+
 export async function ensureOffscreenDocument() {
-  console.log("Ensuring offscreen document is created...");
+  // If a creation/check is already in progress, wait for it
+  if (offscreenDocumentPromise) {
+    console.log("Waiting for ongoing offscreen document operation...");
+    return await offscreenDocumentPromise;
+  }
 
-  // Check if offscreen document actually exists
-  const offscreenUrl = chrome.runtime.getURL('offscreen.html');
-  const existingContexts = await chrome.runtime.getContexts({
-    contextTypes: ['OFFSCREEN_DOCUMENT'],
-    documentUrls: [offscreenUrl]
-  });
+  // Set the lock IMMEDIATELY before any async work
+  offscreenDocumentPromise = (async () => {
+    console.log("Ensuring offscreen document is created...");
 
-  if (existingContexts.length === 0) {
-    // No offscreen document exists, create one
-    await chrome.offscreen.createDocument({
-      url: 'offscreen.html',
-      reasons: ['AUDIO_PLAYBACK'],
-      justification: 'Play notification and alert sounds'
+    const offscreenUrl = chrome.runtime.getURL('offscreen.html');
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: ['OFFSCREEN_DOCUMENT'],
+      documentUrls: [offscreenUrl]
     });
-    console.log("Offscreen document created");
 
-    // Wait for the offscreen script to load and register its message listener
-    // This prevents "Receiving end does not exist" errors when sending messages immediately
-    await new Promise(resolve => setTimeout(resolve, 100));
-  } else {
-    console.log("Offscreen document already exists");
+    if (existingContexts.length === 0) {
+      try {
+        await chrome.offscreen.createDocument({
+          url: 'offscreen.html',
+          reasons: ['AUDIO_PLAYBACK'],
+          justification: 'Play notification and alert sounds'
+        });
+        console.log("Offscreen document created");
+
+        // Wait for the offscreen script to load and register its message listener
+        // This prevents "Receiving end does not exist" errors when sending messages immediately
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        // Handle the case where document was created by another call despite our check
+        if (error.message && error.message.includes('Only a single offscreen document')) {
+          console.log("Offscreen document already created by another call");
+        } else {
+          console.error("Error creating offscreen document:", error);
+          throw error;
+        }
+      }
+    } else {
+      console.log("Offscreen document already exists");
+    }
+  })();
+
+  try {
+    await offscreenDocumentPromise;
+  } finally {
+    offscreenDocumentPromise = null;
   }
 }
 
