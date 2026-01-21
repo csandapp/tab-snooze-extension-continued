@@ -19,7 +19,7 @@ export const styledComponentsTheme = {
   snoozePanel: {
     bgColor: '#fff', //'#373533',//   // snooze panel
     border: '#e5e9e9', // '#4B4947',
-    hoverColor: '#f5f8f8', //     hoverColor: '#403E3C',
+    hoverColor: '#E0E0E0', //     hoverColor: '#403E3C',
     footerTextColor: '#888888',//     footerTextColor: '#f0f0f0',
     buttonTextColor: '#788284',//     buttonTextColor: '#f4f4f4',
     countBadgeColor: '#929292',//     countBadgeColor: '#f0f0f0',
