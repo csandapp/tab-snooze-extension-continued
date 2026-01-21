@@ -78,10 +78,10 @@ function OptionsPage(props: {}): React.Node {
         <Main>
           <Routes>
             <Route
-              path={SLEEPING_TABS_PATH}
+              path="sleeping-tabs"
               element={<SleepingTabsPage />}
             />
-            <Route path={SETTINGS_PATH} element={<SettingsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Routes>
         </Main>
       </Root>
