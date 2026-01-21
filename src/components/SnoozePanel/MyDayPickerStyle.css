@@ -1,48 +1,74 @@
-.DayPicker-Month {
+/* react-day-picker v9 custom styles */
+
+/* Hide the default caption and nav since we use custom Navbar */
+.rdp-month_caption,
+.rdp-nav {
+  display: none;
+}
+
+.rdp {
+  margin: 0;
+}
+
+.rdp-month {
   width: 100%;
   margin: 0;
-
-  border-collapse: collapse;
-  /* border: 1px solid red; */
-  font-size: 20px !important;
+  font-size: 20px;
 }
 
-.DayPicker-Day {
+.rdp-months {
+  width: 100%;
+}
+
+.rdp-month_grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rdp-weekday {
+  color: #999;
+  font-weight: 700;
+  padding: 0.5em;
+}
+
+.rdp-day {
+  padding: 0;
+}
+
+.rdp-day_button {
   border-radius: 8px;
   padding: 0.45em;
-  /* transition: all 0.1s; */
-}
-.DayPicker-Day:not(.DayPicker-Day--outside) {
-  font-weight: 500;
-}
-
-.DayPicker:not(.DayPicker--interactionDisabled)
-  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover,
-  .DayPicker-Day--outside:not(.DayPicker-Day--disabled):hover {
-  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: inherit;
   cursor: pointer;
 }
 
-.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside),
-.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
-  /* transition: all 0.1s; */
-  background-color: #75ddff; /*#54caf0;*/
+.rdp-day:not(.rdp-outside) .rdp-day_button {
   font-weight: 500;
-  /* background-color: #fff;
-  border: 4px solid #54caf0;
-  border-radius: 10px; */
 }
 
-.DayPicker-Day--outside:not(.DayPicker-Day--disabled) {
+.rdp-day:not(.rdp-disabled):not(.rdp-selected):not(.rdp-outside) .rdp-day_button:hover {
+  background-color: #f0f0f0;
+}
+
+.rdp-outside:not(.rdp-disabled) .rdp-day_button:hover {
+  background-color: #f0f0f0;
+}
+
+.rdp-selected:not(.rdp-disabled):not(.rdp-outside) .rdp-day_button,
+.rdp-selected:not(.rdp-disabled):not(.rdp-outside) .rdp-day_button:hover {
+  background-color: #75ddff;
+  font-weight: 500;
+}
+
+.rdp-outside:not(.rdp-disabled) .rdp-day_button {
   color: #aaa;
 }
 
-.DayPicker-wrapper {
-  padding: 0;
-  margin: 0;
-}
-
-.DayPicker-Weekday {
-  color: #999;
-  font-weight: 700;
+.rdp-disabled .rdp-day_button {
+  color: #ccc;
+  cursor: not-allowed;
 }
