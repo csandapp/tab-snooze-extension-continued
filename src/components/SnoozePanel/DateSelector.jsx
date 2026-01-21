@@ -87,6 +87,27 @@ const DateSelector = (props: Props): React.Node => {
             moment(date).diff(moment().startOf('day')) < 0
           }
           showOutsideDays
+          classNames={{
+            root: 'DayPicker',
+            months: 'DayPicker-Months',
+            month: 'DayPicker-Month',
+            caption: 'DayPicker-Caption',
+            caption_label: 'DayPicker-Caption-Label',
+            nav: 'DayPicker-Nav',
+            nav_button: 'DayPicker-NavButton',
+            nav_button_previous: 'DayPicker-NavButton--prev',
+            nav_button_next: 'DayPicker-NavButton--next',
+            table: 'DayPicker-Table',
+            head_row: 'DayPicker-HeadRow',
+            head_cell: 'DayPicker-Weekday',
+            row: 'DayPicker-Week',
+            cell: 'DayPicker-Day-Cell',
+            day: 'DayPicker-Day',
+            day_selected: 'DayPicker-Day--selected',
+            day_disabled: 'DayPicker-Day--disabled',
+            day_outside: 'DayPicker-Day--outside',
+            day_today: 'DayPicker-Day--today',
+          }}
         />
         <SaveButton onMouseDown={onSnoozeClicked}>
           SNOOZE
