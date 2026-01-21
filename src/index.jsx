@@ -10,14 +10,14 @@ import { HelmetProvider } from 'react-helmet-async';
 
 const rootEl = document.getElementById('root');
 
-// // Only set max-content width when running as extension popup
-// // Check if we're in a Chrome extension context
-// const isExtensionPopup = window.location.protocol === 'chrome-extension:' && 
-//                         window.location.hash === '#popup';
+// Only set max-content width when running as extension popup
+// Check if we're in a Chrome extension context
+const isExtensionPopup = window.location.protocol === 'chrome-extension:' && 
+                        window.location.hash === '#popup';
 
-// if (isExtensionPopup) {
-//   rootEl.style.width = "max-content";
-// }
+if (isExtensionPopup) {
+  rootEl.style.width = "max-content";
+}
 
 console.log('Loading src/index.jsx');
 
