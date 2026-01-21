@@ -46,6 +46,20 @@ export default defineConfig({
     outDir: 'build',
     emptyOutDir: true,
     minify: false, // Keep unminified for Chrome Web Store review
+    rollupOptions: {
+      input: {
+        offscreen: resolve(__dirname, 'src/core/offscreen.js'),
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          // Place offscreen script in assets directory
+          if (chunkInfo.name === 'offscreen') {
+            return 'assets/offscreen.js';
+          }
+          return 'assets/[name]-[hash].js';
+        },
+      },
+    },
   },
   
   // Define globals for background scripts
