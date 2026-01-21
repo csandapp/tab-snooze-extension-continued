@@ -56,8 +56,8 @@ const SnoozeButton: ComponentType<Props> = (props: Props): React.Node => {  // D
 
   return (
     <Button
-      pressed={pressed ? "true" : undefined}
-      focused={focused ? "true" : undefined}
+      $pressed={pressed}
+      $focused={focused}
       onMouseDown={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -69,40 +69,55 @@ const SnoozeButton: ComponentType<Props> = (props: Props): React.Node => {  // D
         )}
       </IconWrapper>
       <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
-        <Title pressed={pressed ? "true" : undefined}>{title}</Title>
+        <Title $pressed={pressed}>{title}</Title>
       </Collapse>
       {proBadge && <ProCornerRibbon white={pressed ? true : undefined} />}
     </Button>
   );
 }
 
-export default (withTheme(SnoozeButton): ComponentType<Props>);
+export default (withTheme(SnoozeButton): ComponentType < Props >);
 const Button = styled.button`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   border: none;
   cursor: pointer;
   outline: inherit;
   background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
-  /* Hide ribbon edges */
-  overflow: hidden;
-  transition: background-color 0.1s;
   
+  /* overflow: hidden; */ /* Removing overflow hidden to debug/fix clipping */
+  transition: background-color 0.1s;
+
   :hover {
     background-color: ${(props: StyledProps) => props.theme.snoozePanel.hoverColor};
   }
 
+  /* Ensure children don't block the background */
+  & > * {
+    background-color: transparent;
+  }
+
+  /* Disable pointer events on all descendants so only Button receives hover */
+  & * {
+    pointer-events: none;
+  }
+
   ${(props: StyledProps) =>
-    props.focused &&
+    props.$focused &&
     css`
       background-color: ${props.theme.snoozePanel.hoverColor};
     `}
 
   ${(props: StyledProps) =>
-    props.pressed &&
+    props.$pressed &&
     css`
       /* To add transition, u need to transition the image too */
       transition: background-color ${SNOOZE_CLICK_EFFECT_TIME}ms;
@@ -138,9 +153,9 @@ const Title = styled.div`
   font-weight: 500;
   transition: color ${SNOOZE_CLICK_EFFECT_TIME}ms;
   /* height: 16px; */
-  
+
   ${(props: StyledProps) =>
-    props.pressed &&
+    props.$pressed &&
     css`
       color: #fff;
       /* height: 0; */
