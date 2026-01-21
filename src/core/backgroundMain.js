@@ -106,7 +106,7 @@ export function runBackgroundScript() {
 
 export async function ensureOffscreenDocument() {
   console.log("Ensuring offscreen document is created...");
-  
+
   // Check if offscreen document actually exists
   const offscreenUrl = chrome.runtime.getURL('offscreen.html');
   const existingContexts = await chrome.runtime.getContexts({
@@ -122,6 +122,10 @@ export async function ensureOffscreenDocument() {
       justification: 'Play notification and alert sounds'
     });
     console.log("Offscreen document created");
+
+    // Wait for the offscreen script to load and register its message listener
+    // This prevents "Receiving end does not exist" errors when sending messages immediately
+    await new Promise(resolve => setTimeout(resolve, 100));
   } else {
     console.log("Offscreen document already exists");
   }
