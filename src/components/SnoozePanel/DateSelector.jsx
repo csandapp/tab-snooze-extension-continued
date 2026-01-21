@@ -21,18 +21,18 @@ const DateSelector = (props: Props): React.Node => {
   const { visible, onDateSelected } = props;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedHour, setSelectedHour] = useState(9);
-  const datePicker = useRef(null);
-  
+  const [month, setMonth] = useState(new Date());
+
   useEffect(() => {
     let cancelled = false; // Flag to track if component is still mounted
-    
+
     // Load settings and set initial selected hour
     getSettings().then((settings) => {
       if (!cancelled) {
         setSelectedHour(settings.workdayStart);
       }
     });
-  
+
     return () => {
       cancelled = true; // Cleanup on unmount
     }
@@ -47,35 +47,46 @@ const DateSelector = (props: Props): React.Node => {
     onDateSelected(selectedDateTime);
   }
 
+  const handlePreviousClick = () => {
+    const newMonth = new Date(month);
+    newMonth.setMonth(newMonth.getMonth() - 1);
+    setMonth(newMonth);
+  };
+
+  const handleNextClick = () => {
+    const newMonth = new Date(month);
+    newMonth.setMonth(newMonth.getMonth() + 1);
+    setMonth(newMonth);
+  };
+
+  const gotoToday = () => {
+    const today = new Date();
+    setSelectedDate(today);
+    setMonth(today);
+  };
+
   return (
     <SnoozeModal visible={visible}>
       <Root>
+        <Navbar
+          hour={selectedHour}
+          onHourChange={hour => setSelectedHour(hour)}
+          gotoToday={gotoToday}
+          month={month}
+          onNextClick={handleNextClick}
+          onPreviousClick={handlePreviousClick}
+        />
         <MyDayPicker
-          selectedDays={selectedDate}
-          onDayClick={ date => setSelectedDate(date) }
-          // Don't allow going to past months
+          mode="single"
+          selected={selectedDate}
+          onSelect={date => date && setSelectedDate(date)}
+          month={month}
+          onMonthChange={setMonth}
           fromMonth={new Date()}
-          // Disable selection of past days
-          disabledDays={date =>
+          disabled={date =>
             moment(date).diff(moment().startOf('day')) < 0
           }
           showOutsideDays
-          fixedWeeks
-          // Disable caption element
-          captionElement={<Fragment />}
-          navbarElement={props => (
-            <Navbar
-              {...props}
-              hour={selectedHour}
-              onHourChange={ hour => setSelectedHour(hour)}
-              gotoToday={() => {
-                const today = new Date();
-                setSelectedDate(today);
-                datePicker.current.showMonth(today);
-              }}
-            />
-          )}
-          ref={datePicker}
         />
         <SaveButton onMouseDown={onSnoozeClicked}>
           SNOOZE
