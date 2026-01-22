@@ -82,11 +82,11 @@ const DateSelector = (props: Props): React.Node => {
           onSelect={date => date && setSelectedDate(date)}
           month={month}
           onMonthChange={setMonth}
-          fromMonth={new Date()}
           disabled={date =>
             moment(date).diff(moment().startOf('day')) < 0
           }
           showOutsideDays
+          fixedWeeks
         />
         <SaveButton onMouseDown={onSnoozeClicked}>
           SNOOZE
@@ -139,7 +139,7 @@ const Root = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: strech;
+  align-items: stretch;
 `;
 
 const MyDayPicker = styled(DayPicker)`

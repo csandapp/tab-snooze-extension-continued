@@ -1,13 +1,19 @@
 /* react-day-picker v9 custom styles */
 
+/* Override v9 default CSS variables */
+.rdp {
+  --rdp-accent-color: #75ddff;
+  --rdp-accent-background-color: #75ddff;
+  --rdp-selected-border: none;
+  --rdp-day_button-border-radius: 8px;
+  --rdp-outside-opacity: 1;
+  margin: 0;
+}
+
 /* Hide the default caption and nav since we use custom Navbar */
 .rdp-month_caption,
 .rdp-nav {
   display: none;
-}
-
-.rdp {
-  margin: 0;
 }
 
 .rdp-month {
@@ -37,7 +43,7 @@
 
 .rdp-day_button {
   border-radius: 8px;
-  padding: 0.45em;
+  padding: 0.3em 0.6em;
   width: 100%;
   height: 100%;
   border: none;
@@ -52,6 +58,7 @@
 
 .rdp-day:not(.rdp-disabled):not(.rdp-selected):not(.rdp-outside) .rdp-day_button:hover {
   background-color: #f0f0f0;
+
 }
 
 .rdp-outside:not(.rdp-disabled) .rdp-day_button:hover {
@@ -61,7 +68,14 @@
 .rdp-selected:not(.rdp-disabled):not(.rdp-outside) .rdp-day_button,
 .rdp-selected:not(.rdp-disabled):not(.rdp-outside) .rdp-day_button:hover {
   background-color: #75ddff;
+  color: white;
+  border: none;
   font-weight: 500;
+}
+
+/* Override default v9 selected styling that uses border */
+.rdp-selected .rdp-day_button {
+  border: none;
 }
 
 .rdp-outside:not(.rdp-disabled) .rdp-day_button {
