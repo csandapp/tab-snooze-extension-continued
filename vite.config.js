@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
+import flow from 'esbuild-plugin-flow'
 import manifest from './public/manifest.json'
 
 export default defineConfig({
@@ -15,14 +16,14 @@ export default defineConfig({
     }),
     crx({ manifest })
   ],
-  
+
   esbuild: {
     target: 'chrome88',
     loader: 'jsx',
     include: /\.(js|jsx|ts|tsx)$/,
     exclude: []
   },
-  
+
   optimizeDeps: {
     include: [
       "@mui/material/styles",
@@ -36,10 +37,11 @@ export default defineConfig({
       loader: {
         '.js': 'jsx',
         '.jsx': 'jsx'
-      }
+      },
+      plugins: [flow(/\.(js|jsx)$/, true)]
     }
   },
-  
+
   build: {
     target: 'chrome88',
     // @crxjs/vite-plugin handles the build configuration
@@ -61,14 +63,14 @@ export default defineConfig({
       },
     },
   },
-  
+
   // Define globals for background scripts
   define: {
     'global': 'globalThis',
     'process.env.NODE_ENV': '"production"',
     'chrome': 'chrome'
   },
-  
+
   // Configure for Chrome extension development
   server: {
     port: 3000,
@@ -93,7 +95,7 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
-  
+
   // Test configuration
   test: {
     environment: 'jsdom',
