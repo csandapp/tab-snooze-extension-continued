@@ -104,7 +104,17 @@ export function runBackgroundScript() {
   });
 }
 
+// Lock to prevent concurrent offscreen document creation
+let offscreenDocumentPromise = null;
+
 export async function ensureOffscreenDocument() {
+  // If a creation is already in progress, wait for it to complete
+  if (offscreenDocumentPromise) {
+    console.log("Waiting for ongoing offscreen document creation...");
+    await offscreenDocumentPromise;
+    return;
+  }
+
   console.log("Ensuring offscreen document is created...");
 
   // Check if offscreen document actually exists
@@ -116,16 +126,34 @@ export async function ensureOffscreenDocument() {
 
   if (existingContexts.length === 0) {
     // No offscreen document exists, create one
-    await chrome.offscreen.createDocument({
-      url: 'offscreen.html',
-      reasons: ['AUDIO_PLAYBACK'],
-      justification: 'Play notification and alert sounds'
-    });
-    console.log("Offscreen document created");
+    // Set the lock before starting the async operation
+    offscreenDocumentPromise = (async () => {
+      try {
+        await chrome.offscreen.createDocument({
+          url: 'offscreen.html',
+          reasons: ['AUDIO_PLAYBACK'],
+          justification: 'Play notification and alert sounds'
+        });
+        console.log("Offscreen document created");
 
-    // Wait for the offscreen script to load and register its message listener
-    // This prevents "Receiving end does not exist" errors when sending messages immediately
-    await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait for the offscreen script to load and register its message listener
+        // This prevents "Receiving end does not exist" errors when sending messages immediately
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        // Handle the case where document was created by another call despite our check
+        if (error.message && error.message.includes('Only a single offscreen document')) {
+          console.log("Offscreen document already created by another call");
+        } else {
+          console.error("Error creating offscreen document:", error);
+          throw error;
+        }
+      } finally {
+        // Clear the lock after creation is complete
+        offscreenDocumentPromise = null;
+      }
+    })();
+
+    await offscreenDocumentPromise;
   } else {
     console.log("Offscreen document already exists");
   }
