@@ -25,6 +25,13 @@ const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 // Generate a unique ID for this service worker instance to track restarts
 const SERVICE_WORKER_INSTANCE_ID = `SW-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 console.log(`🔵 [${SERVICE_WORKER_INSTANCE_ID}] Service worker instance started (wakeup.js loaded)`);
+/**
+ * Generate a unique key for a snoozed tab.
+ * Uses the same identity logic as areTabsEqual (url + when).
+ */
+function getTabKey(tab: SnoozedTab): string {
+  return `${tab.url}|${tab.when}`;
+}
 
 /*
     In-memory mutex to prevent concurrent calls to handleScheduledWakeup().
