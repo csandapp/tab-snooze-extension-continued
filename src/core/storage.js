@@ -7,6 +7,7 @@ export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
 export const STORAGE_KEY_SNOOZED_TABS = 'snoozedTabs';
 export const STORAGE_KEY_SERVER_CONFIG = 'serverConfig';
 export const STORAGE_KEY_BACKUPS = 'backups';
+export const STORAGE_KEY_RECENTLY_WOKEN = 'recentlyWokenTabs';
 
 // version 2.0
 // export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
