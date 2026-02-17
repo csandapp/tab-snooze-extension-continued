@@ -1,10 +1,9 @@
 // @flow
-import { getSnoozedTabs, saveSnoozedTabs } from './storage';
+import { getSnoozedTabs, saveSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
 
 import {
   createTabs,
   notifyUserAboutNewTabs,
-  addMinutes,
   areTabsEqual,
   getFirstTabToWakeup,
 } from './utils';
@@ -40,15 +39,6 @@ function getTabKey(tab: SnoozedTab): string {
     execution proceeds - the synchronous check happens before any async work.
 */
 let wakeupInProgress = false;
-
-/*
-    This timestamp prevents several alarms from going off at the same
-    time and cause tabs to be woken up more than once because of a
-    asynchrouneous nature of storage.get/set.
-    when alarm goes off, it sets this timestamp to a minute from now, to
-    mark that it handles waking up tabs in the next minute.
-*/
-let wakeupThreshold = new Date(0);
 
 /**
  * Send a message to the runtime with retry logic
@@ -190,13 +180,6 @@ export async function handleScheduledWakeup(): Promise<void> {
     let now = new Date();
 
     console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] Storage has ${snoozedTabs.length} total snoozed tabs`);
-    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] Current time: ${now.toISOString()}, wakeupThreshold: ${wakeupThreshold.toISOString()}`);
-
-    // check if tabs for right now already awoken by other alarm.
-    if (now <= wakeupThreshold) {
-      console.log(`🟡 [${SERVICE_WORKER_INSTANCE_ID}] SKIPPED - now (${now.toISOString()}) <= wakeupThreshold (${wakeupThreshold.toISOString()})`);
-      return;
-    }
 
     // ****** Fixing a bug in production ***** //
     // ****** THIS SHOULD NOT HAPPEN ***** //
@@ -217,18 +200,22 @@ export async function handleScheduledWakeup(): Promise<void> {
       snoozedTabs = snoozedTabs.filter(tab => tab);
     }
 
-    // set wakeupThreshold to a minute in the future to include
-    // nearby snoozed tabs.
-    wakeupThreshold = addMinutes(now, 1);
-    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] Updated wakeupThreshold to: ${wakeupThreshold.toISOString()}`);
+    // Get tabs currently being processed (prevents duplicates across Service Worker restarts)
+    const recentlyWokenKeys = await getRecentlyWokenTabs();
 
+    // Filter tabs: due now AND not already being processed
     let readySleepingTabs = snoozedTabs.filter(
-      snoozedTab => new Date(snoozedTab.when) <= wakeupThreshold
+      snoozedTab =>
+        new Date(snoozedTab.when) <= now &&
+        !recentlyWokenKeys.includes(getTabKey(snoozedTab))
     );
 
     console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Found ${readySleepingTabs.length} tabs ready to wake up`);
     if (readySleepingTabs.length > 0) {
       console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Tabs to wake:`, readySleepingTabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString(), period: t.period })));
+      // Mark tabs as being processed BEFORE opening (survives crashes)
+      const newWokenKeys = readySleepingTabs.map(getTabKey);
+      await saveRecentlyWokenTabs([...recentlyWokenKeys, ...newWokenKeys]);
 
       // create inactive tabs & notify user
       console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupTabs()...`);
