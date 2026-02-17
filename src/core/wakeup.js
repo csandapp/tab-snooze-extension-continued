@@ -1,10 +1,9 @@
 // @flow
-import { getSnoozedTabs, saveSnoozedTabs } from './storage';
+import { getSnoozedTabs, saveSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
 
 import {
   createTabs,
   notifyUserAboutNewTabs,
-  addMinutes,
   areTabsEqual,
   getFirstTabToWakeup,
 } from './utils';
@@ -29,15 +28,6 @@ const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 function getTabKey(tab: SnoozedTab): string {
   return `${tab.url}|${tab.when}`;
 }
-
-/*
-    This timestamp prevents several alarms from going off at the same
-    time and cause tabs to be woken up more than once because of a
-    asynchrouneous nature of storage.get/set.
-    when alarm goes off, it sets this timestamp to a minute from now, to
-    mark that it handles waking up tabs in the next minute.
-*/
-let wakeupThreshold = new Date(0);
 
 /**
  * Send a message to the runtime with retry logic
@@ -131,12 +121,7 @@ export async function wakeupTabs(
 export async function handleScheduledWakeup(): Promise<void> {
   const settings = await getSettings();
   let snoozedTabs = await getSnoozedTabs();
-  let now = new Date();
-
-  // check if tabs for right now already awoken by other alarm.
-  if (now <= wakeupThreshold) {
-    return;
-  }
+  const now = new Date();
 
   // ****** Fixing a bug in production ***** //
   // ****** THIS SHOULD NOT HAPPEN ***** //
@@ -157,15 +142,21 @@ export async function handleScheduledWakeup(): Promise<void> {
     snoozedTabs = snoozedTabs.filter(tab => tab);
   }
 
-  // set wakeupThreshold to a minute in the future to include
-  // nearby snoozed tabs.
-  wakeupThreshold = addMinutes(now, 1);
+  // Get tabs currently being processed (prevents duplicates across Service Worker restarts)
+  const recentlyWokenKeys = await getRecentlyWokenTabs();
 
+  // Filter tabs: due now AND not already being processed
   let readySleepingTabs = snoozedTabs.filter(
-    snoozedTab => new Date(snoozedTab.when) <= wakeupThreshold
+    snoozedTab =>
+      new Date(snoozedTab.when) <= now &&
+      !recentlyWokenKeys.includes(getTabKey(snoozedTab))
   );
 
   if (readySleepingTabs.length > 0) {
+    // Mark tabs as being processed BEFORE opening (survives crashes)
+    const newWokenKeys = readySleepingTabs.map(getTabKey);
+    await saveRecentlyWokenTabs([...recentlyWokenKeys, ...newWokenKeys]);
+
     // create inactive tabs & notify user
     const createdTabs = await wakeupTabs(readySleepingTabs, false);
 
