@@ -22,6 +22,14 @@ import { ensureOffscreenDocument } from "./backgroundMain";
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
+/**
+ * Generate a unique key for a snoozed tab.
+ * Uses the same identity logic as areTabsEqual (url + when).
+ */
+function getTabKey(tab: SnoozedTab): string {
+  return `${tab.url}|${tab.when}`;
+}
+
 /*
     This timestamp prevents several alarms from going off at the same
     time and cause tabs to be woken up more than once because of a
