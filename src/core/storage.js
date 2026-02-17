@@ -33,6 +33,21 @@ export function saveSnoozedTabs(
   });
 }
 
+export async function getRecentlyWokenTabs(): Promise<Array<string>> {
+  const { recentlyWokenTabs } = await chrome.storage.local.get(
+    STORAGE_KEY_RECENTLY_WOKEN
+  );
+  return recentlyWokenTabs || [];
+}
+
+export function saveRecentlyWokenTabs(
+  tabKeys: Array<string>
+): Promise<void> {
+  return chrome.storage.local.set({
+    [STORAGE_KEY_RECENTLY_WOKEN]: tabKeys,
+  });
+}
+
 // export function getSnoozeHistory() {
 //   return chrome.storage.local
 //     .get()
