@@ -284,13 +284,10 @@ function delayedSnoozeActiveTab(config: SnoozeConfig) {
   });
 
   setTimeout(async () => {
+    // Close the popup window, then close the tab if requested
     window.close();
-    // closing the tab closes the popup window. but if user requested that the tab
-    // remain open, we close the popup manually after a snooze
     if (config.closeTab) {
-      // close tab manually
       const activeTab = await getActiveTab();
-
       chrome.tabs.remove(activeTab.id);
     }
   }, 1100);
