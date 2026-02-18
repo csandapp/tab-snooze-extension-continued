@@ -115,6 +115,9 @@ export async function wakeupTabs(
   // re-create tabs
   const createdTabs = await createTabs(tabsToWakeUp, makeActive);
 
+  // Clear processing state - tabs successfully opened
+  await saveRecentlyWokenTabs([]);
+
   return createdTabs;
 }
 
