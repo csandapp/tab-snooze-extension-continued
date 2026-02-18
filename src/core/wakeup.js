@@ -160,6 +160,9 @@ export async function wakeupTabs({
   const createdTabs = await createTabs(tabs, makeActive);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Created ${createdTabs.length} browser tabs successfully`);
 
+  // Clear processing state - tabs successfully opened
+  await saveRecentlyWokenTabs([]);
+
   return createdTabs;
 }
 
