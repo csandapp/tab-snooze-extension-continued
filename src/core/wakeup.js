@@ -23,6 +23,14 @@ import { ensureOffscreenDocument } from "./backgroundMain";
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
 /*
+    In-memory mutex to prevent concurrent calls to handleScheduledWakeup().
+    Multiple events (onAlarm, idle.onStateChanged, onStartup, onInstalled) can fire
+    within milliseconds, causing concurrent calls. This flag ensures only one
+    execution proceeds - the synchronous check happens before any async work.
+*/
+let wakeupInProgress = false;
+
+/*
     This timestamp prevents several alarms from going off at the same
     time and cause tabs to be woken up more than once because of a
     asynchrouneous nature of storage.get/set.
@@ -121,65 +129,76 @@ export async function wakeupTabs(
 }
 
 export async function handleScheduledWakeup(): Promise<void> {
-  const settings = await getSettings();
-  let snoozedTabs = await getSnoozedTabs();
-  let now = new Date();
-
-  // check if tabs for right now already awoken by other alarm.
-  if (now <= wakeupThreshold) {
+  // In-memory mutex: prevent concurrent executions
+  if (wakeupInProgress) {
+    console.log('Wakeup already in progress, skipping');
     return;
   }
+  wakeupInProgress = true;
 
-  // ****** Fixing a bug in production ***** //
-  // ****** THIS SHOULD NOT HAPPEN ***** //
-  // ****** THIS SHOULD NOT HAPPEN ***** //
-  // ****** THIS SHOULD NOT HAPPEN ***** //
-  if (snoozedTabs.findIndex(tab => !tab) !== -1) {
-    console.error('Found null in snoozedTabs');
-    // Notify bugsnag about this error
-    // bugsnag.notify(new Error('Found null in snoozedTabs'), {
-    //   metaData: {
-    //     storage: {
-    //       snoozedTabs,
-    //     },
-    //   },
-    // });
+  try {
+    const settings = await getSettings();
+    let snoozedTabs = await getSnoozedTabs();
+    let now = new Date();
 
-    // TEMP FIX, remove null tabs
-    snoozedTabs = snoozedTabs.filter(tab => tab);
-  }
-
-  // set wakeupThreshold to a minute in the future to include
-  // nearby snoozed tabs.
-  wakeupThreshold = addMinutes(now, 1);
-
-  let readySleepingTabs = snoozedTabs.filter(
-    snoozedTab => new Date(snoozedTab.when) <= wakeupThreshold
-  );
-
-  if (readySleepingTabs.length > 0) {
-    // create inactive tabs & notify user
-    const createdTabs = await wakeupTabs(readySleepingTabs, false);
-
-    // Notify user
-    if (settings.showNotifications) {
-      // Show desktop notification
-      notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+    // check if tabs for right now already awoken by other alarm.
+    if (now <= wakeupThreshold) {
+      return;
     }
 
-    if (settings.playNotificationSound) {
-      console.log('Playing sound in background script');
-      // Note: handleScheduledWakeup() is ONLY called in background script
+    // ****** Fixing a bug in production ***** //
+    // ****** THIS SHOULD NOT HAPPEN ***** //
+    // ****** THIS SHOULD NOT HAPPEN ***** //
+    // ****** THIS SHOULD NOT HAPPEN ***** //
+    if (snoozedTabs.findIndex(tab => !tab) !== -1) {
+      console.error('Found null in snoozedTabs');
+      // Notify bugsnag about this error
+      // bugsnag.notify(new Error('Found null in snoozedTabs'), {
+      //   metaData: {
+      //     storage: {
+      //       snoozedTabs,
+      //     },
+      //   },
+      // });
 
-      // ensure offscreen document is created
-      await ensureOffscreenDocument();
-
-      // send message to offscreen document to play sound with retry logic
-      await sendMessageWithRetry({
-        action: 'playAudio',
-        sound: SOUND_WAKEUP,
-      }, 3);
+      // TEMP FIX, remove null tabs
+      snoozedTabs = snoozedTabs.filter(tab => tab);
     }
+
+    // set wakeupThreshold to a minute in the future to include
+    // nearby snoozed tabs.
+    wakeupThreshold = addMinutes(now, 1);
+
+    let readySleepingTabs = snoozedTabs.filter(
+      snoozedTab => new Date(snoozedTab.when) <= wakeupThreshold
+    );
+
+    if (readySleepingTabs.length > 0) {
+      // create inactive tabs & notify user
+      const createdTabs = await wakeupTabs(readySleepingTabs, false);
+
+      // Notify user
+      if (settings.showNotifications) {
+        // Show desktop notification
+        notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+      }
+
+      if (settings.playNotificationSound) {
+        console.log('Playing sound in background script');
+        // Note: handleScheduledWakeup() is ONLY called in background script
+
+        // ensure offscreen document is created
+        await ensureOffscreenDocument();
+
+        // send message to offscreen document to play sound with retry logic
+        await sendMessageWithRetry({
+          action: 'playAudio',
+          sound: SOUND_WAKEUP,
+        }, 3);
+      }
+    }
+  } finally {
+    wakeupInProgress = false;
   }
 }
 
