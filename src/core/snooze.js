@@ -6,7 +6,7 @@ import {
   getRecentlySnoozedTab,
   createCenteredWindow,
 } from './utils';
-import { trackTabSnooze, track, EVENTS } from './analytics';
+// import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
 
@@ -55,7 +55,7 @@ export async function snoozeTab(
   await scheduleWakeupAlarm('auto');
 
   // usage tracking
-  trackTabSnooze(snoozedTab);
+  // trackTabSnooze(snoozedTab);
 
   let { totalSnoozeCount } = await getSettings();
   totalSnoozeCount++;
@@ -103,7 +103,7 @@ export async function repeatLastSnooze() {
     return;
   }
 
-  track(EVENTS.REPEAT_SNOOZE);
+  // track(EVENTS.REPEAT_SNOOZE);
 
   return snoozeActiveTab({
     wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,

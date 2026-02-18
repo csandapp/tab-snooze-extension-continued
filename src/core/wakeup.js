@@ -24,12 +24,50 @@ const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 
 /*
     This timestamp prevents several alarms from going off at the same
-    time and cause tabs to be woken up more than once because of a 
+    time and cause tabs to be woken up more than once because of a
     asynchrouneous nature of storage.get/set.
     when alarm goes off, it sets this timestamp to a minute from now, to
     mark that it handles waking up tabs in the next minute.
 */
 let wakeupThreshold = new Date(0);
+
+/**
+ * Send a message to the runtime with retry logic
+ * This handles the "Could not establish connection. Receiving end does not exist" error
+ * that can occur when the offscreen document is still loading.
+ */
+async function sendMessageWithRetry(
+  message: Object,
+  maxRetries: number = 3,
+  delayMs: number = 100
+): Promise<any> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await chrome.runtime.sendMessage(message);
+      console.log('Message sent successfully:', response);
+      return response;
+    } catch (error) {
+      const isLastAttempt = attempt === maxRetries;
+      const isConnectionError = error.message?.includes('Receiving end does not exist');
+
+      if (isConnectionError && !isLastAttempt) {
+        console.warn(`Message sending failed (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        // Exponential backoff
+        delayMs *= 2;
+      } else {
+        // Either it's the last attempt or a different error
+        console.error('Failed to send message:', error);
+        if (isLastAttempt) {
+          console.error(`All ${maxRetries} retry attempts exhausted`);
+        }
+        // Don't throw - just log the error and continue
+        // Audio playback is non-critical functionality
+        return null;
+      }
+    }
+  }
+}
 
 /*
     Delete tabs from storage
@@ -136,11 +174,11 @@ export async function handleScheduledWakeup(): Promise<void> {
       // ensure offscreen document is created
       await ensureOffscreenDocument();
 
-      // send message to foreground script to play sound
-      await chrome.runtime.sendMessage({
+      // send message to offscreen document to play sound with retry logic
+      await sendMessageWithRetry({
         action: 'playAudio',
         sound: SOUND_WAKEUP,
-      });
+      }, 3);
     }
   }
 }

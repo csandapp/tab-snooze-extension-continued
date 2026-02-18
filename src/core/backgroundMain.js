@@ -1,3 +1,5 @@
+console.log('Pre imports background script...');
+
 // @flow
 /**
  * This script is executed only as a Chrome Extensions
@@ -13,7 +15,7 @@ import {
   TODO_PATH,
   SLEEPING_TABS_PATH,
   CHANGELOG_URL,
-  getTrackUninstallUrl,
+  // getTrackUninstallUrl,
   TUTORIAL_PATH,
 } from '../paths';
 import {
@@ -22,7 +24,7 @@ import {
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
 import { createTab, IS_BETA, APP_VERSION } from './utils';
-import { track, EVENTS } from './analytics';
+// import { track, EVENTS } from './analytics';
 
 import {
   updateBadge,
@@ -55,17 +57,17 @@ export function runBackgroundScript() {
   registerBadgeEventListeners();
 
   // Show CHANGELOG doc when extension updates
-  chrome.runtime.onInstalled.addListener(async function({
+  chrome.runtime.onInstalled.addListener(async function ({
     reason,
     previousVersion,
   }) {
     // [2] Make the main function run on Extension install/update
     await extensionMain();
 
-    chrome.runtime.setUninstallURL(getTrackUninstallUrl());
+    // chrome.runtime.setUninstallURL(getTrackUninstallUrl());
 
     if (reason === 'install') {
-      track(EVENTS.EXT_INSTALLED);
+      // track(EVENTS.EXT_INSTALLED);
 
       // Save install date for new users.
       // Old users will have a 0 install date
@@ -77,7 +79,7 @@ export function runBackgroundScript() {
     }
 
     if (reason === 'update') {
-      track(EVENTS.EXT_UPDATED);
+      // track(EVENTS.EXT_UPDATED);
 
       // Open the changelog every version update for beta testers
       if (IS_BETA) {
@@ -102,26 +104,56 @@ export function runBackgroundScript() {
   });
 }
 
-export async function ensureOffscreenDocument() {
-  console.log("Ensuring offscreen document is created...");
-  
-  // Check if offscreen document actually exists
-  const offscreenUrl = chrome.runtime.getURL('offscreen.html');
-  const existingContexts = await chrome.runtime.getContexts({
-    contextTypes: ['OFFSCREEN_DOCUMENT'],
-    documentUrls: [offscreenUrl]
-  });
+// Lock to prevent concurrent offscreen document creation
+let offscreenDocumentPromise = null;
 
-  if (existingContexts.length === 0) {
-    // No offscreen document exists, create one
-    await chrome.offscreen.createDocument({
-      url: 'offscreen.html',
-      reasons: ['AUDIO_PLAYBACK'],
-      justification: 'Play notification and alert sounds'
+export async function ensureOffscreenDocument() {
+  // If a creation/check is already in progress, wait for it
+  if (offscreenDocumentPromise) {
+    console.log("Waiting for ongoing offscreen document operation...");
+    return await offscreenDocumentPromise;
+  }
+
+  // Set the lock IMMEDIATELY before any async work
+  offscreenDocumentPromise = (async () => {
+    console.log("Ensuring offscreen document is created...");
+
+    const offscreenUrl = chrome.runtime.getURL('offscreen.html');
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: ['OFFSCREEN_DOCUMENT'],
+      documentUrls: [offscreenUrl]
     });
-    console.log("Offscreen document created");
-  } else {
-    console.log("Offscreen document already exists");
+
+    if (existingContexts.length === 0) {
+      try {
+        await chrome.offscreen.createDocument({
+          url: 'offscreen.html',
+          reasons: ['AUDIO_PLAYBACK'],
+          justification: 'Play notification and alert sounds'
+        });
+        console.log("Offscreen document created");
+
+        // Wait for the offscreen script to load and register its message listener
+        // This prevents "Receiving end does not exist" errors when sending messages immediately
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        // Handle the case where document was created by another call despite our check
+        if (error.message && error.message.includes('Only a single offscreen document')) {
+          console.log("Offscreen document already created by another call");
+        } else {
+          console.error("Error creating offscreen document:", error);
+          throw error;
+        }
+      }
+    } else {
+      console.log("Offscreen document already exists");
+    }
+  })();
+
+  try {
+    await offscreenDocumentPromise;
+  } finally {
+    offscreenDocumentPromise = null;
   }
 }
 

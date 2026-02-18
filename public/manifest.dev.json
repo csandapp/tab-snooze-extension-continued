@@ -27,24 +27,19 @@
     "matches": ["<all_urls>"]
   }],
   
-  // seems like action should be used instead of browser action https://developer.chrome.com/docs/extensions/reference/manifest
   "action": {
     "default_title": "Snooze This Tab",
     "default_popup": "index.html#popup",
-    // TODO why did I change from 32 to 128?
     "default_icon": {
       "32": "images/browser_action_32.png"
     }
   },
   "options_page": "index.html#options/settings",
   "background": {
-    // mainunbobs seems to have some nice stuff
-    // background was this one... "page": "index.html#background",
-    "service_worker": "static/js/background.js", 
+    "service_worker": "src/core/backgroundMain.js",
     "type": "module"
   },
   "commands": {
-    // changed from _execute__browser_action
     "_execute_action": {
       "suggested_key": {
         "default": "Alt+S"

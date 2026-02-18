@@ -90,7 +90,7 @@ export async function getWakeupTimeRanges(): Promise<
   ];
 }
 
-function futureDay(day) {
+function futureDay(day: number): moment {
   const thisWeekDay = moment().day(day);
   const now = moment();
   return now.isBefore(thisWeekDay)
