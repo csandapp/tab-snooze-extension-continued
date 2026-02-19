@@ -42,14 +42,11 @@ const StyledListSubheader = muiStyled(ListSubheader)(({ theme }) => ({
 
 const StyledListItem = muiStyled(ListItem)(({ theme }) => ({
   paddingLeft: theme.spacing(3),
-  '&:hover .delete-btn': {
-    opacity: 1,
-  },
 }));
 
 const StyledDeleteButton = muiStyled(IconButton)(({ theme }) => ({
   transition: 'opacity 0.2s',
-  opacity: 0,
+  opacity: 1,
   marginRight: theme.spacing(2),
 }));
 
