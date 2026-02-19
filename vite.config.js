@@ -104,6 +104,21 @@ export default defineConfig({
     // Mock Chrome APIs for testing
     deps: {
       inline: ['@testing-library/jest-dom']
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'json'],
+      exclude: [
+        'node_modules/**',
+        'src/__tests__/**',
+        '**/*.test.js',
+        '**/*.test.jsx',
+        'vite.config.js',
+        'public/**',
+        'build/**',
+        '.eslintrc.cjs',
+        'src/setupChromeMock.js'
+      ]
     }
   }
 })
