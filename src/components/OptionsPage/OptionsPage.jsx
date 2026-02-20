@@ -15,7 +15,6 @@ import { NavLink, Routes, Route, useLocation } from 'react-router-dom';
 import {
   SLEEPING_TABS_PATH,
   SETTINGS_PATH,
-  TS_HOMEPAGE_URL,
 } from '../../paths';
 import Tooltip from '@mui/material/Tooltip';
 import navbarLogo from './images/navbar_logo.svg';
@@ -47,13 +46,7 @@ function OptionsPage(props: {}): React.Node {
     <>
       <AppBar position="fixed">
         <Toolbar>
-          <a
-            href={TS_HOMEPAGE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Logo src={navbarLogo} />
-          </a>
+          <Logo src={navbarLogo} />
           <NavButton component={NavLink} to={SLEEPING_TABS_PATH}>
             < StyledSleepingIcon /> Sleeping Tabs
           </NavButton>

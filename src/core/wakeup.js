@@ -59,7 +59,7 @@ async function sendMessageWithRetry(
       const isConnectionError = error.message?.includes('Receiving end does not exist');
 
       if (isConnectionError && !isLastAttempt) {
-        console.warn(`Message sending failed (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`);
+        console.log(`Retrying message (attempt ${attempt}/${maxRetries}) in ${delayMs}ms...`);
         await new Promise(resolve => setTimeout(resolve, delayMs));
         // Exponential backoff
         delayMs *= 2;
