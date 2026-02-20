@@ -14,7 +14,7 @@ import {
 import {
   TODO_PATH,
   SLEEPING_TABS_PATH,
-  CHANGELOG_URL,
+  // CHANGELOG_URL,
   // getTrackUninstallUrl,
   TUTORIAL_PATH,
 } from '../paths';
@@ -82,9 +82,9 @@ export function runBackgroundScript() {
       // track(EVENTS.EXT_UPDATED);
 
       // Open the changelog every version update for beta testers
-      if (IS_BETA) {
-        notifyAboutNewBetaVersion();
-      }
+      // if (IS_BETA) {
+      //   notifyAboutNewBetaVersion();
+      // }
     }
   });
 
@@ -176,26 +176,26 @@ async function extensionMain() {
   // require('../components/dialogs/FirstSnoozeDialog').default.open();
 }
 
-async function notifyAboutNewBetaVersion() {
-  const notificationId = await chrome.notifications.create('', {
-    type: 'basic',
-    title: `Tab Snooze ${APP_VERSION} installed`,
-    message: 'Click to open the changelog',
-    iconUrl: '/images/beta_extension_icon_128.png',
-    requireInteraction: true,
-  });
+// async function notifyAboutNewBetaVersion() {
+//   const notificationId = await chrome.notifications.create('', {
+//     type: 'basic',
+//     title: `Tab Snooze ${APP_VERSION} installed`,
+//     message: 'Click to open the changelog',
+//     iconUrl: '/images/beta_extension_icon_128.png',
+//     requireInteraction: true,
+//   });
 
-  // If notification clicked, open changelog
-  chrome.notifications.onClicked.addListener(
-    async function makeTabActive(notifId) {
-      if (notifId === notificationId) {
-        createTab(CHANGELOG_URL);
+//   // If notification clicked, open changelog
+//   chrome.notifications.onClicked.addListener(
+//     async function makeTabActive(notifId) {
+//       if (notifId === notificationId) {
+//         createTab(CHANGELOG_URL);
 
-        chrome.notifications.clear(notificationId);
-        chrome.notifications.onClicked.removeListener(makeTabActive);
-      }
-    }
-  );
-}
+//         chrome.notifications.clear(notificationId);
+//         chrome.notifications.onClicked.removeListener(makeTabActive);
+//       }
+//     }
+//   );
+// }
 
 runBackgroundScript();
