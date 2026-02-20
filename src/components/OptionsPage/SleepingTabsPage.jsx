@@ -103,7 +103,7 @@ const SleepingTabsPage = (props: Props): React.Node => {
     );
 
     // delay wakeup for click ripple animation to finish
-    setTimeout(() => wakeupTabs([tab], makeTabActive), 300);
+    setTimeout(() => wakeupTabs({ tabs: [tab], makeActive: makeTabActive, deleteAfterWakeup: false }), 300);
   }
 
   const renderTabGroup = (tabGroup: TabGroup, index: number) =>{

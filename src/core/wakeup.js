@@ -102,28 +102,35 @@ export async function deleteSnoozedTabs(
 }
 
 /*
-    Create tabs, notify user, and delete from storage
+    Create tabs, notify user, and optionally delete from storage
 */
-export async function wakeupTabs(
-  tabsToWakeUp: Array<SnoozedTab>,
-  makeActive: boolean
-): Promise<Array<ChromeTab>> {
-  console.log(`Waking up ${tabsToWakeUp.length} tabs`);
+export async function wakeupTabs({
+  tabs,
+  makeActive = false,
+  deleteAfterWakeup = true,
+}: {
+  tabs: Array<SnoozedTab>,
+  makeActive?: boolean,
+  deleteAfterWakeup?: boolean,
+}): Promise<Array<ChromeTab>> {
+  console.log(`Waking up ${tabs.length} tabs`);
 
-  // delete waking tabs from storage
-  await deleteSnoozedTabs(tabsToWakeUp);
+  if (deleteAfterWakeup) {
+    // delete waking tabs from storage
+    await deleteSnoozedTabs(tabs);
 
-  // Reschedule repeated tabs, if any
-  const periodicTabs = tabsToWakeUp.filter(tab => tab.period);
-  for (let tab of periodicTabs) {
-    await resnoozePeriodicTab(tab);
+    // Reschedule repeated tabs, if any
+    const periodicTabs = tabs.filter(tab => tab.period);
+    for (let tab of periodicTabs) {
+      await resnoozePeriodicTab(tab);
+    }
+
+    // schedule wakeup for next tabs in list
+    await scheduleWakeupAlarm('auto');
   }
 
-  // schedule wakeup for next tabs in list
-  await scheduleWakeupAlarm('auto');
-
   // re-create tabs
-  const createdTabs = await createTabs(tabsToWakeUp, makeActive);
+  const createdTabs = await createTabs(tabs, makeActive);
 
   return createdTabs;
 }
@@ -175,7 +182,7 @@ export async function handleScheduledWakeup(): Promise<void> {
 
     if (readySleepingTabs.length > 0) {
       // create inactive tabs & notify user
-      const createdTabs = await wakeupTabs(readySleepingTabs, false);
+      const createdTabs = await wakeupTabs({ tabs: readySleepingTabs, makeActive: false });
 
       // Notify user
       if (settings.showNotifications) {
