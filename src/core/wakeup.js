@@ -88,15 +88,27 @@ export async function deleteSnoozedTabs(
   tabsToDelete: Array<SnoozedTab>
 ): Promise<void> {
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs`);
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
   const snoozedTabs = await getSnoozedTabs();
   console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] Storage currently has ${snoozedTabs.length} tabs before deletion`);
+  console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] All storage tabs:`, snoozedTabs.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
   // Is given tab marked for deletion?
-  const shouldDeleteTab = tab =>
-    tabsToDelete.find(tabToDelete =>
-      areTabsEqual(tabToDelete, tab)
-    ) != null;
+  const shouldDeleteTab = tab => {
+    const matchingTab = tabsToDelete.find(tabToDelete => {
+      const isEqual = areTabsEqual(tabToDelete, tab);
+      console.log(`🔍 [${SERVICE_WORKER_INSTANCE_ID}] Comparing:`, {
+        tabToDelete: { url: tabToDelete.url, when: tabToDelete.when },
+        tab: { url: tab.url, when: tab.when },
+        isEqual,
+        urlMatch: tabToDelete.url === tab.url,
+        whenMatch: tabToDelete.when === tab.when
+      });
+      return isEqual;
+    });
+    return matchingTab != null;
+  };
 
   const newSnoozedTabs = snoozedTabs.filter(
     tab => !shouldDeleteTab(tab)
