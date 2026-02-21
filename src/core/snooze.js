@@ -48,8 +48,19 @@ export async function snoozeTab(
 
   // Store & persist snoozed tab for later
   const snoozedTabs = await getSnoozedTabs();
-  snoozedTabs.push(snoozedTab);
-  await saveSnoozedTabs(snoozedTabs);
+
+  // Check if this exact tab (same URL and wakeup time) already exists
+  // This prevents duplicates when rapidly re-snoozing before deletion completes
+  const isDuplicate = snoozedTabs.some(existingTab =>
+    existingTab.url === snoozedTab.url && existingTab.when === snoozedTab.when
+  );
+
+  if (!isDuplicate) {
+    snoozedTabs.push(snoozedTab);
+    await saveSnoozedTabs(snoozedTabs);
+  } else {
+    console.log('Duplicate tab already in storage, skipping:', snoozedTab.url);
+  }
 
   // Schedule a wake-up for the Chrome extension on snoozed time
   await scheduleWakeupAlarm('auto');
