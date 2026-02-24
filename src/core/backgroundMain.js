@@ -212,5 +212,14 @@ async function extensionMain() {
 // }
 
 console.log(`🔵 backgroundMain.js - Initializing background script...`);
-runBackgroundScript();
+
+// CRITICAL: Only run background script registration in service worker context
+// This prevents duplicate event listeners when UI pages (popup/options) import this module
+if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
+  console.log(`🔵 Running in SERVICE WORKER context - registering event listeners`);
+  runBackgroundScript();
+} else {
+  console.log(`⚠️ Running in UI context (popup/options) - SKIPPING event listener registration`);
+}
+
 console.log(`✅ backgroundMain.js - Background script initialized (event listeners registered)`);
