@@ -7,6 +7,7 @@ export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
 export const STORAGE_KEY_SNOOZED_TABS = 'snoozedTabs';
 export const STORAGE_KEY_SERVER_CONFIG = 'serverConfig';
 export const STORAGE_KEY_BACKUPS = 'backups';
+export const STORAGE_KEY_RECENTLY_WOKEN = 'recentlyWokenTabs';
 
 // version 2.0
 // export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
@@ -29,6 +30,21 @@ export function saveSnoozedTabs(
 ): Promise<void> {
   return chrome.storage.local.set({
     [STORAGE_KEY_SNOOZED_TABS]: snoozedTabs,
+  });
+}
+
+export async function getRecentlyWokenTabs(): Promise<Array<string>> {
+  const { recentlyWokenTabs } = await chrome.storage.local.get(
+    STORAGE_KEY_RECENTLY_WOKEN
+  );
+  return recentlyWokenTabs || [];
+}
+
+export function saveRecentlyWokenTabs(
+  tabKeys: Array<string>
+): Promise<void> {
+  return chrome.storage.local.set({
+    [STORAGE_KEY_RECENTLY_WOKEN]: tabKeys,
   });
 }
 

@@ -31,7 +31,11 @@ import {
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { saveSettings } from './settings';
+import { saveRecentlyWokenTabs } from './storage';
 
+// Clear recently woken tabs on every Service Worker startup.
+// This ensures tabs can retry if SW crashed mid-wakeup.
+saveRecentlyWokenTabs([]);
 
 /**
  * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension
