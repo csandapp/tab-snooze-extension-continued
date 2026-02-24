@@ -134,9 +134,20 @@ export async function wakeupTabs({
 }): Promise<Array<ChromeTab>> {
   console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Waking ${tabs.length} tabs (deleteAfterWakeup: ${deleteAfterWakeup})`);
 
+  // Create tabs FIRST to prevent data loss if crash occurs
+  // If we crash after delete but before create, tabs are lost forever
+  
+  // Debug: log the tabs being woken up to detect duplicates
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Tabs to wake:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
+
+  // re-create tabs
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Creating ${tabs.length} browser tabs (makeActive: ${makeActive})...`);
+  const createdTabs = await createTabs(tabs, makeActive);
+  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Created ${createdTabs.length} browser tabs successfully`);
+
   if (deleteAfterWakeup) {
+    // Delete from storage AFTER tabs are created
     console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Deleting tabs from storage...`);
-    // delete waking tabs from storage
     await deleteSnoozedTabs(tabs);
 
     // Reschedule repeated tabs, if any
@@ -152,15 +163,7 @@ export async function wakeupTabs({
     await scheduleWakeupAlarm('auto');
   }
 
-  // Debug: log the tabs being woken up to detect duplicates
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Tabs to wake:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
-
-  // re-create tabs
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Creating ${tabs.length} browser tabs (makeActive: ${makeActive})...`);
-  const createdTabs = await createTabs(tabs, makeActive);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Created ${createdTabs.length} browser tabs successfully`);
-
-  // Clear processing state - tabs successfully opened
+  // Clear processing state - tabs successfully opened and deleted
   await saveRecentlyWokenTabs([]);
 
   return createdTabs;
