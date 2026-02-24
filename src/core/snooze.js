@@ -142,7 +142,4 @@ export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
   const snoozedTabs = await getSnoozedTabs();
   snoozedTabs.push(snoozedTab);
   await saveSnoozedTabs(snoozedTabs);
-
-  // Schedule next wakeup
-  await scheduleWakeupAlarm('auto');
 }

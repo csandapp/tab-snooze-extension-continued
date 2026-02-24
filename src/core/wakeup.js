@@ -115,9 +115,11 @@ export async function deleteSnoozedTabs(
   await saveSnoozedTabs(newSnoozedTabs);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
-  // reschedule alarm
-  console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] Rescheduling alarm after deletion...`);
-  await scheduleWakeupAlarm('auto');
+  // NOTE: Alarm rescheduling removed from deleteSnoozedTabs()
+  // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
+  // Now the caller is responsible for rescheduling the alarm after deletion.
+  // Main flow: onAlarm → handleScheduledWakeup() → wakeupTabs() → deleteSnoozedTabs() → (back to onAlarm) → scheduleWakeupAlarm('auto')
+  // UI flow: SleepingTabsPage.deleteTab() → deleteSnoozedTabs() → scheduleWakeupAlarm('auto')
 }
 
 /*
@@ -158,7 +160,10 @@ export async function wakeupTabs({
       await resnoozePeriodicTab(tab);
     }
 
-    // schedule wakeup for next tabs in list
+    // Schedule wakeup for next tabs in list (SINGLE SOURCE OF TRUTH)
+    // This is called after waking tabs to reschedule the alarm for the next batch.
+    // Previously, the onAlarm handler also called scheduleWakeupAlarm('auto') after
+    // calling handleScheduledWakeup(), causing duplicate alarms and tabs waking twice.
     console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Scheduling next alarm...`);
     await scheduleWakeupAlarm('auto');
   }
@@ -315,9 +320,10 @@ export function registerEventListeners(): void {
       // wake up ready tabs, if any
       await handleScheduledWakeup();
 
-      // Schedule wakeup for next tabs
-      console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] Alarm handler: Rescheduling next alarm...`);
-      await scheduleWakeupAlarm('auto');
+      // NOTE: Redundant alarm scheduling removed from onAlarm handler
+      // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
+      // handleScheduledWakeup() → wakeupTabs() already calls scheduleWakeupAlarm('auto') at line 165,
+      // so scheduling here would create duplicate alarms and cause tabs to wake up twice.
       console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Alarm handler: Complete`);
     }
   });
