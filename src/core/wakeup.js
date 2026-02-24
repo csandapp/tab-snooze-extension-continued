@@ -83,10 +83,11 @@ async function sendMessageWithRetry(
 
 /*
     Delete tabs from storage
+    Returns the number of tabs actually deleted
 */
 export async function deleteSnoozedTabs(
   tabsToDelete: Array<SnoozedTab>
-): Promise<void> {
+): Promise<number> {
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs`);
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
@@ -114,13 +115,23 @@ export async function deleteSnoozedTabs(
     tab => !shouldDeleteTab(tab)
   );
 
-  console.log(`💾 [${SERVICE_WORKER_INSTANCE_ID}] Saving ${newSnoozedTabs.length} tabs to storage (${snoozedTabs.length - newSnoozedTabs.length} deleted)`);
+  const actualDeleteCount = snoozedTabs.length - newSnoozedTabs.length;
+  console.log(`💾 [${SERVICE_WORKER_INSTANCE_ID}] Saving ${newSnoozedTabs.length} tabs to storage (${actualDeleteCount} deleted)`);
+
+  if (actualDeleteCount !== tabsToDelete.length) {
+    console.warn(`⚠️ [${SERVICE_WORKER_INSTANCE_ID}] WARNING: Expected to delete ${tabsToDelete.length} tabs but only deleted ${actualDeleteCount}!`);
+    console.warn(`⚠️ [${SERVICE_WORKER_INSTANCE_ID}] This likely means the tabs were already deleted by another process`);
+  }
+
   await saveSnoozedTabs(newSnoozedTabs);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
   // reschedule alarm
   console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] Rescheduling alarm after deletion...`);
   await scheduleWakeupAlarm('auto');
+
+  // Return the actual delete count so caller knows if deletion succeeded
+  return actualDeleteCount;
 }
 
 /*
@@ -137,10 +148,20 @@ export async function wakeupTabs({
 }): Promise<Array<ChromeTab>> {
   console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Waking ${tabs.length} tabs (deleteAfterWakeup: ${deleteAfterWakeup})`);
 
+  let tabsToActuallyWake = tabs;
+
   if (deleteAfterWakeup) {
     console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Deleting tabs from storage...`);
     // delete waking tabs from storage
-    await deleteSnoozedTabs(tabs);
+    const actualDeleteCount = await deleteSnoozedTabs(tabs);
+
+    // Check if all tabs were successfully deleted
+    if (actualDeleteCount < tabs.length) {
+      console.warn(`⚠️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Only ${actualDeleteCount}/${tabs.length} tabs were deleted from storage`);
+      console.warn(`⚠️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - This likely means they were already processed by another concurrent wakeup`);
+      console.warn(`⚠️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Skipping tab creation to prevent duplicates`);
+      return [];
+    }
 
     // Reschedule repeated tabs, if any
     const periodicTabs = tabs.filter(tab => tab.period);
@@ -156,11 +177,11 @@ export async function wakeupTabs({
   }
 
   // Debug: log the tabs being woken up to detect duplicates
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Tabs to wake:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Tabs to wake:`, tabsToActuallyWake.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
 
   // re-create tabs
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Creating ${tabs.length} browser tabs (makeActive: ${makeActive})...`);
-  const createdTabs = await createTabs(tabs, makeActive);
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Creating ${tabsToActuallyWake.length} browser tabs (makeActive: ${makeActive})...`);
+  const createdTabs = await createTabs(tabsToActuallyWake, makeActive);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Created ${createdTabs.length} browser tabs successfully`);
 
   return createdTabs;
