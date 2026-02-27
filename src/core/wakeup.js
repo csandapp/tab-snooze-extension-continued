@@ -79,12 +79,20 @@ async function sendMessageWithRetry(
 }
 
 /*
-    Delete tabs from storage
+    Delete tabs from storage and optionally reschedule alarm
+
+    @param reschedule - If true (default), automatically reschedules the wakeup alarm.
+                        Set to false if you need to do additional work (like rescheduling
+                        periodic tabs) before rescheduling the alarm.
 */
-export async function deleteSnoozedTabs(
-  tabsToDelete: Array<SnoozedTab>
-): Promise<void> {
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs`);
+export async function deleteSnoozedTabs({
+  tabsToDelete,
+  reschedule = true,
+}: {
+  tabsToDelete: Array<SnoozedTab>,
+  reschedule?: boolean,
+}): Promise<void> {
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (reschedule: ${reschedule})`);
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
   const snoozedTabs = await getSnoozedTabs();
@@ -115,11 +123,12 @@ export async function deleteSnoozedTabs(
   await saveSnoozedTabs(newSnoozedTabs);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
-  // NOTE: Alarm rescheduling removed from deleteSnoozedTabs()
-  // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
-  // Now the caller is responsible for rescheduling the alarm after deletion.
-  // Main flow: onAlarm → handleScheduledWakeup() → wakeupTabs() → deleteSnoozedTabs() → (back to onAlarm) → scheduleWakeupAlarm('auto')
-  // UI flow: SleepingTabsPage.deleteTab() → deleteSnoozedTabs() → scheduleWakeupAlarm('auto')
+  // Safe by default: automatically reschedule alarm after deletion
+  // Caller can pass reschedule=false if they need to batch other operations first
+  if (reschedule) {
+    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Auto-rescheduling alarm...`);
+    await scheduleWakeupAlarm('auto');
+  }
 }
 
 /*
