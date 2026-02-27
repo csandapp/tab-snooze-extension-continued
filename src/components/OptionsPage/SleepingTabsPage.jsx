@@ -109,7 +109,8 @@ const SleepingTabsPage = (props: Props): React.Node => {
     );
 
     // delay wakeup for click ripple animation to finish
-    setTimeout(() => wakeupTabs({ tabs: [tab], makeActive: makeTabActive, deleteAfterWakeup: false }), 300);
+    // Use openTabs() since we just want to open the tab, not delete it from storage
+    setTimeout(() => openTabs({ tabs: [tab], makeActive: makeTabActive }), 300);
   }
 
   const renderTabGroup = (tabGroup: TabGroup, index: number) =>{
