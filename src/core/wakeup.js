@@ -236,33 +236,52 @@ export async function handleScheduledWakeup(): Promise<void> {
     console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Found ${readySleepingTabs.length} tabs ready to wake up`);
     if (readySleepingTabs.length > 0) {
       console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Tabs to wake:`, readySleepingTabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString(), period: t.period })));
+
       // Mark tabs as being processed BEFORE opening (survives crashes)
       const newWokenKeys = readySleepingTabs.map(getTabKey);
       await saveRecentlyWokenTabs([...recentlyWokenKeys, ...newWokenKeys]);
 
-      // create inactive tabs & notify user
-      console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupTabs()...`);
-      const createdTabs = await wakeupTabs({ tabs: readySleepingTabs, makeActive: false });
-      console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() completed - created ${createdTabs.length} browser tabs`);
+      try {
+        // create inactive tabs & notify user
+        console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupDeleteAndReschedule()...`);
+        const createdTabs = await wakeupDeleteAndReschedule({ tabs: readySleepingTabs, makeActive: false });
+        console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() completed - created ${createdTabs.length} browser tabs`);
 
-      // Notify user
-      if (settings.showNotifications) {
-        // Show desktop notification
-        notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
-      }
+        // Clear processing state immediately after successful wakeup
+        // Critical work is done (tabs opened, deleted, alarm rescheduled)
+        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state...`);
+        await saveRecentlyWokenTabs([]);
 
-      if (settings.playNotificationSound) {
-        console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
-        // Note: handleScheduledWakeup() is ONLY called in background script
+        // Notify user (non-critical - OK if this fails)
+        if (settings.showNotifications) {
+          // Show desktop notification
+          notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+        }
 
-        // ensure offscreen document is created
-        await ensureOffscreenDocument();
+        if (settings.playNotificationSound) {
+          console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
+          // Note: handleScheduledWakeup() is ONLY called in background script
 
-        // send message to offscreen document to play sound with retry logic
-        await sendMessageWithRetry({
-          action: 'playAudio',
-          sound: SOUND_WAKEUP,
-        }, 3);
+          // ensure offscreen document is created
+          await ensureOffscreenDocument();
+
+          // send message to offscreen document to play sound with retry logic
+          await sendMessageWithRetry({
+            action: 'playAudio',
+            sound: SOUND_WAKEUP,
+          }, 3);
+        }
+      } catch (error) {
+        // Log error for debugging
+        console.error(`🚨 [${SERVICE_WORKER_INSTANCE_ID}] Wakeup failed:`, error);
+
+        // Clear processing state to allow retry on next alarm
+        // Defense in depth: mutex prevents concurrent retries within same SW instance,
+        // and backgroundMain.js clears state on SW restart
+        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state after error...`);
+        await saveRecentlyWokenTabs([]);
+
+        // Don't re-throw - we want the outer finally block to release the mutex
       }
     } else {
       console.log(`ℹ️ [${SERVICE_WORKER_INSTANCE_ID}] No tabs ready to wake up`);
@@ -334,7 +353,7 @@ export function registerEventListeners(): void {
 
       // NOTE: Redundant alarm scheduling removed from onAlarm handler
       // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
-      // handleScheduledWakeup() → wakeupTabs() already calls scheduleWakeupAlarm('auto') at line 165,
+      // handleScheduledWakeup() → wakeupDeleteAndReschedule() already calls scheduleWakeupAlarm('auto'),
       // so scheduling here would create duplicate alarms and cause tabs to wake up twice.
       console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Alarm handler: Complete`);
     }
