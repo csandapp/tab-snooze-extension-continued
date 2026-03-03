@@ -4,7 +4,7 @@ import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
-import { wakeupTabs, deleteSnoozedTabs } from '../../core/wakeup';
+import { wakeupTabs, deleteSnoozedTabs, scheduleWakeupAlarm } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@mui/material/List';
@@ -90,7 +90,13 @@ const SleepingTabsPage = (props: Props): React.Node => {
     // so that openTab() won't be called
     event.stopPropagation();
 
-    setTimeout(() => deleteSnoozedTabs([tab]), 150);
+    // Delay deletion for animation, then reschedule alarm
+    // Note: deleteSnoozedTabs() no longer schedules alarms internally,
+    // so we must call scheduleWakeupAlarm() explicitly after deletion
+    setTimeout(async () => {
+      await deleteSnoozedTabs([tab]);
+      await scheduleWakeupAlarm("auto");
+    }, 150);
   }
 
   const wakeupTab = (tab: SnoozedTab, event: any) => {

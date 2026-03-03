@@ -32,16 +32,30 @@ export function createTabs(
   tabInfos: Array<SnoozedTab>,
   makeActive: boolean
 ): Promise<Array<ChromeTab>> {
+  // Generate a unique call ID to track this specific invocation
+  const callId = `CT-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+
+  console.log(`🌐 [${callId}] createTabs() CALLED with ${tabInfos.length} tabs, makeActive: ${makeActive}`);
+  console.log(`🌐 [${callId}] Tab URLs:`, tabInfos.map(t => t.url));
+  console.log(`🌐 [${callId}] Stack trace:`, new Error().stack);
+
   const allTabsCreatedPromise = Promise.all(
-    tabInfos.map(tabInfo =>
-      chrome.tabs.create({
+    tabInfos.map((tabInfo, index) => {
+      console.log(`🌐 [${callId}] Creating tab ${index + 1}/${tabInfos.length}: ${tabInfo.url}`);
+      return chrome.tabs.create({
         url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
-      })
-    )
+      }).then(tab => {
+        console.log(`✅ [${callId}] Tab ${index + 1} created successfully: ${tab.id} - ${tabInfo.url}`);
+        return tab;
+      });
+    })
   );
 
-  return allTabsCreatedPromise;
+  return allTabsCreatedPromise.then(tabs => {
+    console.log(`✅ [${callId}] createTabs() COMPLETED - Created ${tabs.length} tabs`);
+    return tabs;
+  });
 }
 
 // Attach affiliate tracking ID for amazon product links

@@ -31,7 +31,11 @@ import {
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { saveSettings } from './settings';
+import { saveRecentlyWokenTabs } from './storage';
 
+// Clear recently woken tabs on every Service Worker startup.
+// This ensures tabs can retry if SW crashed mid-wakeup.
+saveRecentlyWokenTabs([]);
 
 /**
  * runBackgroundScript() is called by index.js on the main thread of a Chrome Extension
@@ -47,8 +51,13 @@ import { saveSettings } from './settings';
  * and not the other, depends on the case... THANK YOU CHROME for making it hard on us.
  */
 export function runBackgroundScript() {
+  console.log(`🔵 runBackgroundScript() CALLED - Registering event listeners`);
+
   // Make the main function run on Chrome startup
-  chrome.runtime.onStartup.addListener(extensionMain);
+  chrome.runtime.onStartup.addListener(() => {
+    console.log(`🔵 chrome.runtime.onStartup FIRED`);
+    extensionMain();
+  });
 
   // [1] Register more background events by the wakeup module (synchroneously)
   registerWakeupEventListeners();
@@ -61,6 +70,8 @@ export function runBackgroundScript() {
     reason,
     previousVersion,
   }) {
+    console.log(`🔵 chrome.runtime.onInstalled FIRED - reason: ${reason}, previousVersion: ${previousVersion}`);
+
     // [2] Make the main function run on Extension install/update
     await extensionMain();
 
@@ -165,12 +176,18 @@ async function extensionMain() {
    * are certain it will be called **first thing** after an update.
    */
 
+  console.log(`🔵 extensionMain() CALLED - Extension startup/install/update`);
+
   // Set 1 mintue delay for Chrome to load after startup before
   // waking up tabs so chrome is not stuck
+  console.log(`⏰ extensionMain() - Scheduling 1-minute startup alarm...`);
   await scheduleWakeupAlarm('1min');
 
   // update badge after chrome startup
+  console.log(`🔢 extensionMain() - Updating badge...`);
   await updateBadge();
+
+  console.log(`✅ extensionMain() - Complete`);
 
   // Uncomment for Debug:
   // require('../components/dialogs/FirstSnoozeDialog').default.open();
@@ -198,4 +215,15 @@ async function extensionMain() {
 //   );
 // }
 
-runBackgroundScript();
+console.log(`🔵 backgroundMain.js - Initializing background script...`);
+
+// CRITICAL: Only run background script registration in service worker context
+// This prevents duplicate event listeners when UI pages (popup/options) import this module
+if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
+  console.log(`🔵 Running in SERVICE WORKER context - registering event listeners`);
+  runBackgroundScript();
+} else {
+  console.log(`⚠️ Running in UI context (popup/options) - SKIPPING event listener registration`);
+}
+
+console.log(`✅ backgroundMain.js - Background script initialized (event listeners registered)`);
