@@ -4,7 +4,7 @@ import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
-import { wakeupTabs, deleteSnoozedTabs, scheduleWakeupAlarm } from '../../core/wakeup';
+import { openTabs, deleteSnoozedTabs } from '../../core/wakeup';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@mui/material/List';
@@ -90,12 +90,10 @@ const SleepingTabsPage = (props: Props): React.Node => {
     // so that openTab() won't be called
     event.stopPropagation();
 
-    // Delay deletion for animation, then reschedule alarm
-    // Note: deleteSnoozedTabs() no longer schedules alarms internally,
-    // so we must call scheduleWakeupAlarm() explicitly after deletion
+    // Delay deletion for animation
+    // deleteSnoozedTabs() auto-reschedules by default
     setTimeout(async () => {
-      await deleteSnoozedTabs([tab]);
-      await scheduleWakeupAlarm("auto");
+      await deleteSnoozedTabs({ tabsToDelete: [tab] });
     }, 150);
   }
 
@@ -109,7 +107,8 @@ const SleepingTabsPage = (props: Props): React.Node => {
     );
 
     // delay wakeup for click ripple animation to finish
-    setTimeout(() => wakeupTabs({ tabs: [tab], makeActive: makeTabActive, deleteAfterWakeup: false }), 300);
+    // Use openTabs() since we just want to open the tab, not delete it from storage
+    setTimeout(() => openTabs({ tabs: [tab], makeActive: makeTabActive }), 300);
   }
 
   const renderTabGroup = (tabGroup: TabGroup, index: number) =>{

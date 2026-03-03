@@ -79,12 +79,20 @@ async function sendMessageWithRetry(
 }
 
 /*
-    Delete tabs from storage
+    Delete tabs from storage and optionally reschedule alarm
+
+    @param reschedule - If true (default), automatically reschedules the wakeup alarm.
+                        Set to false if you need to do additional work (like rescheduling
+                        periodic tabs) before rescheduling the alarm.
 */
-export async function deleteSnoozedTabs(
-  tabsToDelete: Array<SnoozedTab>
-): Promise<void> {
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs`);
+export async function deleteSnoozedTabs({
+  tabsToDelete,
+  reschedule = true,
+}: {
+  tabsToDelete: Array<SnoozedTab>,
+  reschedule?: boolean,
+}): Promise<void> {
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (reschedule: ${reschedule})`);
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
   const snoozedTabs = await getSnoozedTabs();
@@ -115,61 +123,65 @@ export async function deleteSnoozedTabs(
   await saveSnoozedTabs(newSnoozedTabs);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
-  // NOTE: Alarm rescheduling removed from deleteSnoozedTabs()
-  // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
-  // Now the caller is responsible for rescheduling the alarm after deletion.
-  // Main flow: onAlarm → handleScheduledWakeup() → wakeupTabs() → deleteSnoozedTabs() → (back to onAlarm) → scheduleWakeupAlarm('auto')
-  // UI flow: SleepingTabsPage.deleteTab() → deleteSnoozedTabs() → scheduleWakeupAlarm('auto')
+  // Safe by default: automatically reschedule alarm after deletion
+  // Caller can pass reschedule=false if they need to batch other operations first
+  if (reschedule) {
+    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Auto-rescheduling alarm...`);
+    await scheduleWakeupAlarm('auto');
+  }
 }
 
 /*
-    Create tabs, notify user, and optionally delete from storage
+    Low-level: Just open tabs (pure operation, no side effects)
 */
-export async function wakeupTabs({
+export async function openTabs({
   tabs,
   makeActive = false,
-  deleteAfterWakeup = true,
 }: {
   tabs: Array<SnoozedTab>,
   makeActive?: boolean,
-  deleteAfterWakeup?: boolean,
 }): Promise<Array<ChromeTab>> {
-  console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Waking ${tabs.length} tabs (deleteAfterWakeup: ${deleteAfterWakeup})`);
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Opening ${tabs.length} tabs (makeActive: ${makeActive})`);
+  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Tabs:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
+
+  const createdTabs = await createTabs(tabs, makeActive);
+  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${createdTabs.length} browser tabs successfully`);
+
+  return createdTabs;
+}
+
+/*
+    High-level: Complete wakeup lifecycle - open tabs, delete from storage, reschedule alarms
+*/
+export async function wakeupDeleteAndReschedule({
+  tabs,
+  makeActive = false,
+}: {
+  tabs: Array<SnoozedTab>,
+  makeActive?: boolean,
+}): Promise<Array<ChromeTab>> {
+  console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Waking ${tabs.length} tabs`);
 
   // Create tabs FIRST to prevent data loss if crash occurs
   // If we crash after delete but before create, tabs are lost forever
-  
-  // Debug: log the tabs being woken up to detect duplicates
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Tabs to wake:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
+  const createdTabs = await openTabs({ tabs, makeActive });
 
-  // re-create tabs
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Creating ${tabs.length} browser tabs (makeActive: ${makeActive})...`);
-  const createdTabs = await createTabs(tabs, makeActive);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Created ${createdTabs.length} browser tabs successfully`);
+  // Delete from storage AFTER tabs are created
+  // Pass reschedule=false because we need to handle periodic tabs first
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting tabs from storage...`);
+  await deleteSnoozedTabs({ tabsToDelete: tabs, reschedule: false });
 
-  if (deleteAfterWakeup) {
-    // Delete from storage AFTER tabs are created
-    console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Deleting tabs from storage...`);
-    await deleteSnoozedTabs(tabs);
-
-    // Reschedule repeated tabs, if any
-    const periodicTabs = tabs.filter(tab => tab.period);
-    console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Found ${periodicTabs.length} periodic tabs to reschedule`);
-    for (let tab of periodicTabs) {
-      console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Rescheduling periodic tab: ${tab.url}`);
-      await resnoozePeriodicTab(tab);
-    }
-
-    // Schedule wakeup for next tabs in list (SINGLE SOURCE OF TRUTH)
-    // This is called after waking tabs to reschedule the alarm for the next batch.
-    // Previously, the onAlarm handler also called scheduleWakeupAlarm('auto') after
-    // calling handleScheduledWakeup(), causing duplicate alarms and tabs waking twice.
-    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() - Scheduling next alarm...`);
-    await scheduleWakeupAlarm('auto');
+  // Reschedule repeated tabs, if any
+  const periodicTabs = tabs.filter(tab => tab.period);
+  console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Found ${periodicTabs.length} periodic tabs to reschedule`);
+  for (let tab of periodicTabs) {
+    console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Rescheduling periodic tab: ${tab.url}`);
+    await resnoozePeriodicTab(tab);
   }
 
-  // Clear processing state - tabs successfully opened and deleted
-  await saveRecentlyWokenTabs([]);
+  // NOW schedule wakeup for next tabs - all storage operations complete
+  console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Scheduling next alarm...`);
+  await scheduleWakeupAlarm('auto');
 
   return createdTabs;
 }
@@ -224,33 +236,52 @@ export async function handleScheduledWakeup(): Promise<void> {
     console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Found ${readySleepingTabs.length} tabs ready to wake up`);
     if (readySleepingTabs.length > 0) {
       console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Tabs to wake:`, readySleepingTabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString(), period: t.period })));
+
       // Mark tabs as being processed BEFORE opening (survives crashes)
       const newWokenKeys = readySleepingTabs.map(getTabKey);
       await saveRecentlyWokenTabs([...recentlyWokenKeys, ...newWokenKeys]);
 
-      // create inactive tabs & notify user
-      console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupTabs()...`);
-      const createdTabs = await wakeupTabs({ tabs: readySleepingTabs, makeActive: false });
-      console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupTabs() completed - created ${createdTabs.length} browser tabs`);
+      try {
+        // create inactive tabs & notify user
+        console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupDeleteAndReschedule()...`);
+        const createdTabs = await wakeupDeleteAndReschedule({ tabs: readySleepingTabs, makeActive: false });
+        console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() completed - created ${createdTabs.length} browser tabs`);
 
-      // Notify user
-      if (settings.showNotifications) {
-        // Show desktop notification
-        notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
-      }
+        // Clear processing state immediately after successful wakeup
+        // Critical work is done (tabs opened, deleted, alarm rescheduled)
+        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state...`);
+        await saveRecentlyWokenTabs([]);
 
-      if (settings.playNotificationSound) {
-        console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
-        // Note: handleScheduledWakeup() is ONLY called in background script
+        // Notify user (non-critical - OK if this fails)
+        if (settings.showNotifications) {
+          // Show desktop notification
+          notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+        }
 
-        // ensure offscreen document is created
-        await ensureOffscreenDocument();
+        if (settings.playNotificationSound) {
+          console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
+          // Note: handleScheduledWakeup() is ONLY called in background script
 
-        // send message to offscreen document to play sound with retry logic
-        await sendMessageWithRetry({
-          action: 'playAudio',
-          sound: SOUND_WAKEUP,
-        }, 3);
+          // ensure offscreen document is created
+          await ensureOffscreenDocument();
+
+          // send message to offscreen document to play sound with retry logic
+          await sendMessageWithRetry({
+            action: 'playAudio',
+            sound: SOUND_WAKEUP,
+          }, 3);
+        }
+      } catch (error) {
+        // Log error for debugging
+        console.error(`🚨 [${SERVICE_WORKER_INSTANCE_ID}] Wakeup failed:`, error);
+
+        // Clear processing state to allow retry on next alarm
+        // Defense in depth: mutex prevents concurrent retries within same SW instance,
+        // and backgroundMain.js clears state on SW restart
+        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state after error...`);
+        await saveRecentlyWokenTabs([]);
+
+        // Don't re-throw - we want the outer finally block to release the mutex
       }
     } else {
       console.log(`ℹ️ [${SERVICE_WORKER_INSTANCE_ID}] No tabs ready to wake up`);
@@ -322,7 +353,7 @@ export function registerEventListeners(): void {
 
       // NOTE: Redundant alarm scheduling removed from onAlarm handler
       // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
-      // handleScheduledWakeup() → wakeupTabs() already calls scheduleWakeupAlarm('auto') at line 165,
+      // handleScheduledWakeup() → wakeupDeleteAndReschedule() already calls scheduleWakeupAlarm('auto'),
       // so scheduling here would create duplicate alarms and cause tabs to wake up twice.
       console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Alarm handler: Complete`);
     }
