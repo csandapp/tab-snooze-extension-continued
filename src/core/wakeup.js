@@ -11,6 +11,7 @@ import {
 import { getSettings } from './settings';
 
 import { SOUND_WAKEUP } from './audio';
+import { MSG_PLAY_AUDIO } from './messages';
 
 import { resnoozePeriodicTab } from './snooze';
 
@@ -253,7 +254,7 @@ export async function handleScheduledWakeup(): Promise<void> {
 
           // send message to offscreen document to play sound with retry logic
           await sendMessageWithRetry({
-            action: 'playAudio',
+            action: MSG_PLAY_AUDIO,
             sound: SOUND_WAKEUP,
           }, 3);
         }
