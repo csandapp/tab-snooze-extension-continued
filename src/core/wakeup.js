@@ -1,5 +1,5 @@
 // @flow
-import { getSnoozedTabs, saveSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
+import { getSnoozedTabs, addSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
 
 import {
   createTabs,
@@ -186,9 +186,7 @@ export async function wakeupDeleteAndReschedule({
       await resnoozePeriodicTab(tab);
     } catch (error) {
       console.error('Failed to resnooze periodic tab, re-adding to storage:', error);
-      const snoozedTabs = await getSnoozedTabs();
-      snoozedTabs.push(tab);
-      await saveSnoozedTabs(snoozedTabs);
+      await addSnoozedTabs([tab]);
     }
   }
 
