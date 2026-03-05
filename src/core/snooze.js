@@ -135,6 +135,7 @@ export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
 
   console.log('Re-snoozing tab until ' + newWakeupDate.toString());
 
+  // Assumes tab's wakeup time has already passed because tabs passed in have been scheduled for wakeup
   snoozedTab.when = newWakeupDate.getTime();
 
   // Store & persist snoozed tab info for later

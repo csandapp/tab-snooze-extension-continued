@@ -168,6 +168,12 @@ export async function wakeupDeleteAndReschedule({
 
   // Delete from storage AFTER tabs are created
   // Pass reschedule=false because we need to handle periodic tabs first
+
+  //
+  // ORDER MATTERS: Delete BEFORE rescheduling periodic tabs.
+  // resnoozePeriodicTab() updates the in-memory tab object with a new `when`,
+  // then pushes it to storage as a fresh entry. If we rescheduled first,
+  // deleteSnoozedTabs() would match and remove the newly created entry.
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting tabs from storage...`);
   await deleteSnoozedTabs({ tabsToDelete: tabs, reschedule: false });
 
