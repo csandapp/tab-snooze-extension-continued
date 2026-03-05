@@ -34,7 +34,10 @@ export async function addSnoozedTabs(
   const tabs = await getSnoozedTabs();
   const newTabs = tabsToAdd.filter(toAdd => !includesTab(tabs, toAdd));
   if (newTabs.length > 0) {
+    console.log(`➕ Adding ${newTabs.length} tab(s) to storage (${tabsToAdd.length - newTabs.length} dedup'd)`);
     await saveSnoozedTabs([...tabs, ...newTabs]);
+  } else if (tabsToAdd.length > 0) {
+    console.log(`⏭️ All ${tabsToAdd.length} tab(s) already in storage, skipping add`);
   }
 }
 
@@ -42,12 +45,17 @@ export async function removeSnoozedTabs(
   tabsToRemove: Array<SnoozedTab>
 ): Promise<void> {
   const tabs = await getSnoozedTabs();
-  await saveSnoozedTabs(
-    tabs.filter(t => !includesTab(tabsToRemove, t))
-  );
+  const newTabs = tabs.filter(t => !includesTab(tabsToRemove, t));
+  if (newTabs.length !== tabs.length) {
+    const removed = tabs.length - newTabs.length;
+    console.log(`🗑️ Removed ${removed} tab(s) from storage (${tabsToRemove.length - removed} not found)`);
+    await saveSnoozedTabs(newTabs);
+  } else {
+    console.log(`⏭️ No matching tabs found to remove`);
+  }
 }
 
-export function saveSnoozedTabs(
+function saveSnoozedTabs(
   snoozedTabs: Array<SnoozedTab>
 ): Promise<void> {
   return chrome.storage.local.set({
