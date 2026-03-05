@@ -1,5 +1,5 @@
 // @flow
-import { addSnoozedTabs } from './storage';
+import { addSnoozedTabs, getSnoozedTabs } from './storage';
 import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
