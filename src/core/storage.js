@@ -1,6 +1,7 @@
 // @flow
 
 import './debugStorage';
+import { areTabsEqual } from './utils';
 
 export const STORAGE_KEY_TS_VERSION = 'tsVersion';
 export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
@@ -13,6 +14,8 @@ export const STORAGE_KEY_RECENTLY_WOKEN = 'recentlyWokenTabs';
 // export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
 // export const STORAGE_KEY_HISTORY = 'history';
 
+const includesTab = (list, tab) => list.some(t => areTabsEqual(t, tab));
+
 /*
     Storage sync has a QUOTA_BYTES_PER_ITEM of 4000, so we save
     each tab in a different key... instead of one big array :( it's sad
@@ -23,6 +26,25 @@ export async function getSnoozedTabs(): Promise<Array<SnoozedTab>> {
   );
 
   return snoozedTabs || [];
+}
+
+export async function addSnoozedTabs(
+  tabsToAdd: Array<SnoozedTab>
+): Promise<void> {
+  const tabs = await getSnoozedTabs();
+  const newTabs = tabsToAdd.filter(toAdd => !includesTab(tabs, toAdd));
+  if (newTabs.length > 0) {
+    await saveSnoozedTabs([...tabs, ...newTabs]);
+  }
+}
+
+export async function removeSnoozedTabs(
+  tabsToRemove: Array<SnoozedTab>
+): Promise<void> {
+  const tabs = await getSnoozedTabs();
+  await saveSnoozedTabs(
+    tabs.filter(t => !includesTab(tabsToRemove, t))
+  );
 }
 
 export function saveSnoozedTabs(
