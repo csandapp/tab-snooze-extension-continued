@@ -184,7 +184,7 @@ export async function wakeupDeleteAndReschedule({
     console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Rescheduling periodic tab: ${tab.url}`);
     try {
       await resnoozePeriodicTab(tab);
-    } catch {
+    } catch (error) {
       console.error('Failed to resnooze periodic tab, re-adding to storage:', error);
       const snoozedTabs = await getSnoozedTabs();
       snoozedTabs.push(tab);
