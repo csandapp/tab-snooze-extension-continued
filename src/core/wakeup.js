@@ -1,5 +1,5 @@
 // @flow
-import { getSnoozedTabs, addSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
+import { getSnoozedTabs, addSnoozedTabs, removeSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
 
 import {
   createTabs,
@@ -95,32 +95,7 @@ export async function deleteSnoozedTabs({
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (reschedule: ${reschedule})`);
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
-  const snoozedTabs = await getSnoozedTabs();
-  console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] Storage currently has ${snoozedTabs.length} tabs before deletion`);
-  console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] All storage tabs:`, snoozedTabs.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
-
-  // Is given tab marked for deletion?
-  const shouldDeleteTab = tab => {
-    const matchingTab = tabsToDelete.find(tabToDelete => {
-      const isEqual = areTabsEqual(tabToDelete, tab);
-      console.log(`🔍 [${SERVICE_WORKER_INSTANCE_ID}] Comparing:`, {
-        tabToDelete: { url: tabToDelete.url, when: tabToDelete.when },
-        tab: { url: tab.url, when: tab.when },
-        isEqual,
-        urlMatch: tabToDelete.url === tab.url,
-        whenMatch: tabToDelete.when === tab.when
-      });
-      return isEqual;
-    });
-    return matchingTab != null;
-  };
-
-  const newSnoozedTabs = snoozedTabs.filter(
-    tab => !shouldDeleteTab(tab)
-  );
-
-  console.log(`💾 [${SERVICE_WORKER_INSTANCE_ID}] Saving ${newSnoozedTabs.length} tabs to storage (${snoozedTabs.length - newSnoozedTabs.length} deleted)`);
-  await saveSnoozedTabs(newSnoozedTabs);
+  await removeSnoozedTabs(tabsToDelete);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
   // Safe by default: automatically reschedule alarm after deletion
