@@ -270,17 +270,13 @@ export async function handleScheduledWakeup(): Promise<void> {
     based on current snoozedTabs array.
 */
 export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> {
-  console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] scheduleWakeupAlarm('${when}') CALLED`);
-
   await cancelWakeupAlarm();
-  console.log(`🔕 [${SERVICE_WORKER_INSTANCE_ID}] Existing alarms cancelled`);
 
   const snoozedTabs = await getSnoozedTabs();
   console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] Found ${snoozedTabs.length} snoozed tabs for alarm scheduling`);
   let alarmTime = 0;
 
   if (snoozedTabs.length === 0) {
-    console.log(`ℹ️ [${SERVICE_WORKER_INSTANCE_ID}] No tabs to schedule, returning`);
     return;
   }
 
@@ -299,7 +295,6 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> 
   chrome.alarms.create(WAKEUP_TABS_ALARM_NAME, {
     when: alarmTime,
   });
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Alarm created successfully`);
 }
 
 export function cancelWakeupAlarm(): Promise<void> {
