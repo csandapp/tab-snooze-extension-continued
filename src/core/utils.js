@@ -36,7 +36,6 @@ export function createTabs(
 
   console.log(`🌐 [${callId}] createTabs() CALLED with ${tabInfos.length} tabs, makeActive: ${makeActive}`);
   console.log(`🌐 [${callId}] Tab URLs:`, tabInfos.map(t => t.url));
-  console.log(`🌐 [${callId}] Stack trace:`, new Error().stack);
 
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map((tabInfo, index) => {
