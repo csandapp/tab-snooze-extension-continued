@@ -10,8 +10,10 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import congratsImage from './images/congrats.png';
 
 const CHANGELOG_ITEMS = [
-  'Improved reliability of tab wake-ups',
-  'Bug fixes and performance improvements',
+  'Fixed tabs opening multiple times',
+  'Open sleeping tabs without removing them from the list',
+  'Snooze times are now rounded to the exact minute',
+  'Upgraded to React 18',
 ];
 
 export default function WhatsNewDialog(): React.Node {
@@ -22,7 +24,7 @@ export default function WhatsNewDialog(): React.Node {
       headline={`Tab Snooze ${APP_VERSION}`}
       subheader={
         <Fragment>
-          Here&apos;s what&apos;s new in this update:
+          Thanks for sticking with Tab Snooze. I appreciate your patience for this update. Here&apos;s what&apos;s new:
           <ChangelogList>
             {CHANGELOG_ITEMS.map((item, i) => (
               <li key={i}>{item}</li>
