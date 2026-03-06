@@ -173,22 +173,16 @@ export async function wakeupDeleteAndReschedule({
 }
 
 export async function handleScheduledWakeup(): Promise<void> {
-  console.log(`🟢 [${SERVICE_WORKER_INSTANCE_ID}] handleScheduledWakeup() CALLED`);
-
   // In-memory mutex: prevent concurrent executions
   if (wakeupInProgress) {
-    console.log(`🟡 [${SERVICE_WORKER_INSTANCE_ID}] SKIPPED - wakeup already in progress (mutex blocked)`);
     return;
   }
   wakeupInProgress = true;
-  console.log(`🟢 [${SERVICE_WORKER_INSTANCE_ID}] handleScheduledWakeup() STARTING (mutex acquired)`);
 
   try {
     const settings = await getSettings();
     let snoozedTabs = await getSnoozedTabs();
     let now = new Date();
-
-    console.log(`📊 [${SERVICE_WORKER_INSTANCE_ID}] Storage has ${snoozedTabs.length} total snoozed tabs`);
 
     // ****** Fixing a bug in production ***** //
     // ****** THIS SHOULD NOT HAPPEN ***** //
@@ -228,13 +222,11 @@ export async function handleScheduledWakeup(): Promise<void> {
 
       try {
         // create inactive tabs & notify user
-        console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] Calling wakeupDeleteAndReschedule()...`);
         const createdTabs = await wakeupDeleteAndReschedule({ tabs: readySleepingTabs, makeActive: false });
         console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() completed - created ${createdTabs.length} browser tabs`);
 
         // Clear processing state immediately after successful wakeup
         // Critical work is done (tabs opened, deleted, alarm rescheduled)
-        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state...`);
         await saveRecentlyWokenTabs([]);
 
         // Notify user (non-critical - OK if this fails)
@@ -263,19 +255,13 @@ export async function handleScheduledWakeup(): Promise<void> {
         // Clear processing state to allow retry on next alarm
         // Defense in depth: mutex prevents concurrent retries within same SW instance,
         // and backgroundMain.js clears state on SW restart
-        console.log(`🧹 [${SERVICE_WORKER_INSTANCE_ID}] Clearing recentlyWokenTabs state after error...`);
         await saveRecentlyWokenTabs([]);
 
         // Don't re-throw - we want the outer finally block to release the mutex
       }
-    } else {
-      console.log(`ℹ️ [${SERVICE_WORKER_INSTANCE_ID}] No tabs ready to wake up`);
     }
-
-    console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] handleScheduledWakeup() COMPLETED`);
   } finally {
     wakeupInProgress = false;
-    console.log(`🔓 [${SERVICE_WORKER_INSTANCE_ID}] handleScheduledWakeup() released mutex`);
   }
 }
 
