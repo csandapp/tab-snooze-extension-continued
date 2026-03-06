@@ -1,5 +1,4 @@
 // @flow
-console.log('Loading src/index.jsx');
 
 import './setupChromeMock.js'; // Setup Chrome Extension environment
 import React from 'react';
@@ -18,8 +17,6 @@ const isExtensionPopup = window.location.protocol === 'chrome-extension:' &&
 if (isExtensionPopup) {
   rootEl.style.width = "max-content";
 }
-
-console.log('Loading src/index.jsx');
 
 if (!rootEl) {
   throw new Error('React root element is missing');

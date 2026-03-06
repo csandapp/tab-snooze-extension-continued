@@ -1,4 +1,3 @@
-console.log('Loading src/core/utils.js');
 // @flow
 
 import moment from 'moment';
@@ -37,17 +36,12 @@ export function createTabs(
 
   console.log(`🌐 [${callId}] createTabs() CALLED with ${tabInfos.length} tabs, makeActive: ${makeActive}`);
   console.log(`🌐 [${callId}] Tab URLs:`, tabInfos.map(t => t.url));
-  console.log(`🌐 [${callId}] Stack trace:`, new Error().stack);
 
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map((tabInfo, index) => {
-      console.log(`🌐 [${callId}] Creating tab ${index + 1}/${tabInfos.length}: ${tabInfo.url}`);
       return chrome.tabs.create({
         url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
-      }).then(tab => {
-        console.log(`✅ [${callId}] Tab ${index + 1} created successfully: ${tab.id} - ${tabInfo.url}`);
-        return tab;
       });
     })
   );
