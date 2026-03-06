@@ -51,8 +51,6 @@ saveRecentlyWokenTabs([]);
  * and not the other, depends on the case... THANK YOU CHROME for making it hard on us.
  */
 export function runBackgroundScript() {
-  console.log(`🔵 runBackgroundScript() CALLED - Registering event listeners`);
-
   // Make the main function run on Chrome startup
   chrome.runtime.onStartup.addListener(() => {
     console.log(`🔵 chrome.runtime.onStartup FIRED`);
@@ -151,14 +149,11 @@ let offscreenDocumentPromise = null;
 export async function ensureOffscreenDocument() {
   // If a creation/check is already in progress, wait for it
   if (offscreenDocumentPromise) {
-    console.log("Waiting for ongoing offscreen document operation...");
     return await offscreenDocumentPromise;
   }
 
   // Set the lock IMMEDIATELY before any async work
   offscreenDocumentPromise = (async () => {
-    console.log("Ensuring offscreen document is created...");
-
     const offscreenUrl = chrome.runtime.getURL('offscreen.html');
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT'],
@@ -172,22 +167,17 @@ export async function ensureOffscreenDocument() {
           reasons: ['AUDIO_PLAYBACK'],
           justification: 'Play notification and alert sounds'
         });
-        console.log("Offscreen document created");
-
         // Wait for the offscreen script to load and register its message listener
         // This prevents "Receiving end does not exist" errors when sending messages immediately
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
         // Handle the case where document was created by another call despite our check
         if (error.message && error.message.includes('Only a single offscreen document')) {
-          console.log("Offscreen document already created by another call");
         } else {
           console.error("Error creating offscreen document:", error);
           throw error;
         }
       }
-    } else {
-      console.log("Offscreen document already exists");
     }
   })();
 
@@ -206,18 +196,12 @@ async function extensionMain() {
    * are certain it will be called **first thing** after an update.
    */
 
-  console.log(`🔵 extensionMain() CALLED - Extension startup/install/update`);
-
   // Set 1 mintue delay for Chrome to load after startup before
   // waking up tabs so chrome is not stuck
-  console.log(`⏰ extensionMain() - Scheduling 1-minute startup alarm...`);
   await scheduleWakeupAlarm('1min');
 
   // update badge after chrome startup
-  console.log(`🔢 extensionMain() - Updating badge...`);
   await updateBadge();
-
-  console.log(`✅ extensionMain() - Complete`);
 
   // Uncomment for Debug:
   // require('../components/dialogs/FirstSnoozeDialog').default.open();
@@ -245,8 +229,6 @@ async function extensionMain() {
 //   );
 // }
 
-console.log(`🔵 backgroundMain.js - Initializing background script...`);
-
 // CRITICAL: Only run background script registration in service worker context
 // This prevents duplicate event listeners when UI pages (popup/options) import this module
 if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
@@ -255,5 +237,3 @@ if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWo
 } else {
   console.log(`⚠️ Running in UI context (popup/options) - SKIPPING event listener registration`);
 }
-
-console.log(`✅ backgroundMain.js - Background script initialized (event listeners registered)`);
