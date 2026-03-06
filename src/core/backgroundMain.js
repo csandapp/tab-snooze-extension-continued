@@ -1,5 +1,3 @@
-console.log('Pre imports background script...');
-
 // @flow
 /**
  * This script is executed only as a Chrome Extensions
