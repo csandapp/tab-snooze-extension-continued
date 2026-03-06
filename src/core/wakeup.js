@@ -94,10 +94,8 @@ export async function deleteSnoozedTabs({
   reschedule?: boolean,
 }): Promise<void> {
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (reschedule: ${reschedule})`);
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] Tabs to delete:`, tabsToDelete.map(t => ({ url: t.url, when: t.when, whenISO: new Date(t.when).toISOString() })));
 
   await removeSnoozedTabs(tabsToDelete);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Storage write completed`);
 
   // Safe by default: automatically reschedule alarm after deletion
   // Caller can pass reschedule=false if they need to batch other operations first
@@ -117,8 +115,6 @@ export async function openTabs({
   tabs: Array<SnoozedTab>,
   makeActive?: boolean,
 }): Promise<Array<ChromeTab>> {
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Opening ${tabs.length} tabs (makeActive: ${makeActive})`);
-
   const createdTabs = await createTabs(tabs, makeActive);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${createdTabs.length} browser tabs successfully`);
 
@@ -312,8 +308,6 @@ export function registerEventListeners(): void {
     console.log(`🔔 [${SERVICE_WORKER_INSTANCE_ID}] ALARM FIRED: "${alarm.name}" at ${new Date(alarm.scheduledTime).toISOString()}`);
 
     if (alarm.name === WAKEUP_TABS_ALARM_NAME) {
-      console.log(`🔔 [${SERVICE_WORKER_INSTANCE_ID}] Processing WAKEUP_TABS_ALARM...`);
-
       // wake up ready tabs, if any
       await handleScheduledWakeup();
 
@@ -321,7 +315,6 @@ export function registerEventListeners(): void {
       // Previously called scheduleWakeupAlarm('auto') here, but this caused duplicate scheduling.
       // handleScheduledWakeup() → wakeupDeleteAndReschedule() already calls scheduleWakeupAlarm('auto'),
       // so scheduling here would create duplicate alarms and cause tabs to wake up twice.
-      console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] Alarm handler: Complete`);
     }
   });
 
