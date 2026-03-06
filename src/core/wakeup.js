@@ -80,27 +80,27 @@ async function sendMessageWithRetry(
 }
 
 /*
-    Delete tabs from storage and optionally reschedule alarm
+    Delete tabs from storage and optionally schedule the wakeup alarm
 
-    @param reschedule - If true (default), automatically reschedules the wakeup alarm.
-                        Set to false if you need to do additional work (like rescheduling
-                        periodic tabs) before rescheduling the alarm.
+    @param scheduleAlarm - If true (default), automatically schedules the wakeup alarm.
+                           Set to false if you need to do additional work (like rescheduling
+                           periodic tabs) before scheduling the alarm.
 */
 export async function deleteSnoozedTabs({
   tabsToDelete,
-  reschedule = true,
+  scheduleAlarm = true,
 }: {
   tabsToDelete: Array<SnoozedTab>,
-  reschedule?: boolean,
+  scheduleAlarm?: boolean,
 }): Promise<void> {
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (reschedule: ${reschedule})`);
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (scheduleAlarm: ${scheduleAlarm})`);
 
   await removeSnoozedTabs(tabsToDelete);
 
-  // Safe by default: automatically reschedule alarm after deletion
-  // Caller can pass reschedule=false if they need to batch other operations first
-  if (reschedule) {
-    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Auto-rescheduling alarm...`);
+  // Safe by default: automatically schedule alarm after deletion
+  // Caller can pass scheduleAlarm=false if they need to batch other operations first
+  if (scheduleAlarm) {
+    console.log(`⏰ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Auto-scheduling alarm...`);
     await scheduleWakeupAlarm('auto');
   }
 }
@@ -138,7 +138,7 @@ export async function wakeupDeleteAndReschedule({
   const createdTabs = await openTabs({ tabs, makeActive });
 
   // Delete from storage AFTER tabs are created
-  // Pass reschedule=false because we need to handle periodic tabs first
+  // Pass scheduleAlarm=false because we need to handle periodic tabs first
 
   //
   // ORDER MATTERS: Delete BEFORE rescheduling periodic tabs.
@@ -146,7 +146,7 @@ export async function wakeupDeleteAndReschedule({
   // then pushes it to storage as a fresh entry. If we rescheduled first,
   // deleteSnoozedTabs() would match and remove the newly created entry.
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting tabs from storage...`);
-  await deleteSnoozedTabs({ tabsToDelete: tabs, reschedule: false });
+  await deleteSnoozedTabs({ tabsToDelete: tabs, scheduleAlarm: false });
 
   // Reschedule repeated tabs, if any
   const periodicTabs = tabs.filter(tab => tab.period);

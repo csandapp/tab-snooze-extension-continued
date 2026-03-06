@@ -12,6 +12,7 @@ import {
   RATE_TS_PATH,
   // BETA_PATH,
   TUTORIAL_PATH,
+  WHATS_NEW_PATH,
 } from './paths';
 
 // Replace react-loadable with React.lazy
@@ -32,6 +33,9 @@ const AsyncRateTSDialog = React.lazy(() =>
 // );
 const AsyncTutorial = React.lazy(() =>
   import('./components/dialogs/Tutorial')
+);
+const AsyncWhatsNewDialog = React.lazy(() =>
+  import('./components/dialogs/WhatsNewDialog')
 );
 
 const Router = () => (
@@ -54,6 +58,7 @@ const Router = () => (
         <Route path={RATE_TS_PATH} element={<AsyncRateTSDialog />} />
         {/* <Route path={BETA_PATH} element={<AsyncBetaDialog />} /> */}
         <Route path={TUTORIAL_PATH} element={<AsyncTutorial />} />
+        <Route path={WHATS_NEW_PATH} element={<AsyncWhatsNewDialog />} />
       </Routes>
     </Suspense>
   </HashRouter>

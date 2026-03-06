@@ -17,6 +17,7 @@ import {
   // CHANGELOG_URL,
   // getTrackUninstallUrl,
   TUTORIAL_PATH,
+  WHATS_NEW_PATH,
 } from '../paths';
 import {
   COMMAND_NEW_TODO,
@@ -90,10 +91,7 @@ export function runBackgroundScript() {
     if (reason === 'update') {
       // track(EVENTS.EXT_UPDATED);
 
-      // Open the changelog every version update for beta testers
-      // if (IS_BETA) {
-      //   notifyAboutNewBetaVersion();
-      // }
+      createTab(WHATS_NEW_PATH);
     }
   });
 
