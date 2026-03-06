@@ -28,6 +28,10 @@ export const DEFAULT_SETTINGS: Settings = {
     weekNumber: 0,
     usageCount: 0,
   },
+
+  // Support reminders
+  showSupportReminders: true,
+  lastSupportReminderDate: 0,
 };
 
 export async function getSettings(): Promise<Settings> {
