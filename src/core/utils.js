@@ -254,7 +254,8 @@ function momentWithHour(aMoment: any, hour: number) {
   return aMoment
     .hours(h)
     .minutes(m)
-    .seconds(0);
+    .seconds(0)
+    .milliseconds(0);
 }
 
 export const compareTabs = (tab1: SnoozedTab, tab2: SnoozedTab) =>

@@ -43,6 +43,8 @@ const DateSelector = (props: Props): React.Node => {
     const selectedDateTime = moment(selectedDate)
       .hour(selectedHour)
       .minutes(selectedHour % 1 ? 30 : 0)
+      .seconds(0)
+      .milliseconds(0)
       .toDate();
     onDateSelected(selectedDateTime);
   }
