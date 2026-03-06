@@ -98,7 +98,7 @@ const SleepingTabsPage = (props: Props): React.Node => {
       chrome.runtime.sendMessage({
         action: MSG_DELETE_SNOOZED_TABS,
         tabsToDelete: [tab],
-      });
+      }).catch(error => console.error('Failed to send delete message to SW:', error));
     }, 150);
   }
 

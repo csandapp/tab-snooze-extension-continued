@@ -294,7 +294,7 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
       // Don't close tab automatically, we close it ourselves below.
       closeTab: false,
     },
-  });
+  }).catch(error => console.error('Failed to send snooze message to SW:', error));
 
   setTimeout(() => {
     // Close the popup window, then close the tab if requested
