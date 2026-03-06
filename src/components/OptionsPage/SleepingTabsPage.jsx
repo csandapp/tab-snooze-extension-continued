@@ -4,7 +4,8 @@ import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
-import { openTabs, deleteSnoozedTabs } from '../../core/wakeup';
+import { openTabs } from '../../core/wakeup';
+import { MSG_DELETE_SNOOZED_TABS } from '../../core/messages';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@mui/material/List';
@@ -90,10 +91,14 @@ const SleepingTabsPage = (props: Props): React.Node => {
     // so that openTab() won't be called
     event.stopPropagation();
 
-    // Delay deletion for animation
-    // deleteSnoozedTabs() auto-reschedules by default
-    setTimeout(async () => {
-      await deleteSnoozedTabs({ tabsToDelete: [tab] });
+    // Delay deletion for animation.
+    // Send to service worker (single writer for snoozedTabs).
+    // UI updates reactively via chrome.storage.onChanged listener.
+    setTimeout(() => {
+      chrome.runtime.sendMessage({
+        action: MSG_DELETE_SNOOZED_TABS,
+        tabsToDelete: [tab],
+      }).catch(error => console.error('Failed to send delete message to SW:', error));
     }, 150);
   }
 

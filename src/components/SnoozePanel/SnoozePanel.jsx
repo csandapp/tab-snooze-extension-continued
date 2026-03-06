@@ -10,7 +10,7 @@ import calcSnoozeOptions, {
   SNOOZE_TYPE_SPECIFIC_DATE,
 } from './calcSnoozeOptions';
 import SnoozeButtonsGrid from './SnoozeButtonsGrid';
-import { snoozeActiveTab } from '../../core/snooze';
+import { MSG_SNOOZE_TAB } from '../../core/messages';
 import TooltipHelper from './TooltipHelper';
 import UpgradeDialog from './UpgradeDialog';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
@@ -23,7 +23,6 @@ import {
   SOUND_SNOOZE,
 } from '../../core/audio';
 import keycode from 'keycode';
-import { getSnoozedTabs } from '../../core/storage';
 import {
   countConsecutiveSnoozes,
   IS_BETA,
@@ -276,18 +275,31 @@ const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
 const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
 
 // give time for animation & sound to finish before snoozing (closing) tab
-function delayedSnoozeActiveTab(config: SnoozeConfig) {
-  snoozeActiveTab({
-    ...config,
-    // Don't close tab automatically, we close it ourselves in the lines below.
-    closeTab: false,
-  });
+async function delayedSnoozeActiveTab(config: SnoozeConfig) {
+  // Capture active tab NOW in popup context where chrome.tabs.query
+  // reliably returns the correct tab. The SW can't determine this.
+  const activeTab = await getActiveTab();
 
-  setTimeout(async () => {
+  // Send snooze request to service worker (single writer for snoozedTabs).
+  // Fire-and-forget: animation/sound don't need to wait for storage write.
+  chrome.runtime.sendMessage({
+    action: MSG_SNOOZE_TAB,
+    tab: {
+      url: activeTab.url,
+      title: activeTab.title,
+      favIconUrl: activeTab.favIconUrl,
+    },
+    config: {
+      ...config,
+      // Don't close tab automatically, we close it ourselves below.
+      closeTab: false,
+    },
+  }).catch(error => console.error('Failed to send snooze message to SW:', error));
+
+  setTimeout(() => {
     // Close the popup window, then close the tab if requested
     window.close();
     if (config.closeTab) {
-      const activeTab = await getActiveTab();
       chrome.tabs.remove(activeTab.id);
     }
   }, 1100);

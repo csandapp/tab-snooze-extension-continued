@@ -1,5 +1,5 @@
 // @flow
-import { getSnoozedTabs, saveSnoozedTabs } from './storage';
+import { addSnoozedTabs, getSnoozedTabs } from './storage';
 import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
@@ -47,20 +47,8 @@ export async function snoozeTab(
   };
 
   // Store & persist snoozed tab for later
-  const snoozedTabs = await getSnoozedTabs();
-
-  // Check if this exact tab (same URL and wakeup time) already exists
-  // This prevents duplicates when rapidly re-snoozing before deletion completes
-  const isDuplicate = snoozedTabs.some(existingTab =>
-    existingTab.url === snoozedTab.url && existingTab.when === snoozedTab.when
-  );
-
-  if (!isDuplicate) {
-    snoozedTabs.push(snoozedTab);
-    await saveSnoozedTabs(snoozedTabs);
-  } else {
-    console.log('Duplicate tab already in storage, skipping:', snoozedTab.url);
-  }
+  // addSnoozedTabs handles dedup internally (prevents duplicates when rapidly re-snoozing)
+  await addSnoozedTabs([snoozedTab]);
 
   // Schedule a wake-up for the Chrome extension on snoozed time
   await scheduleWakeupAlarm('auto');
@@ -138,9 +126,6 @@ export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
   // Assumes tab's wakeup time has already passed because tabs passed in have been scheduled for wakeup
   snoozedTab.when = newWakeupDate.getTime();
 
-  // Store & persist snoozed tab info for later
-  // Add our new tab
-  const snoozedTabs = await getSnoozedTabs();
-  snoozedTabs.push(snoozedTab);
-  await saveSnoozedTabs(snoozedTabs);
+  // Store & persist rescheduled tab for later
+  await addSnoozedTabs([snoozedTab]);
 }

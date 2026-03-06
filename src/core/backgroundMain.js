@@ -6,10 +6,12 @@ console.log('Pre imports background script...');
  * Background Page - a page that opens in the background
  * without a view.
  */
-import { repeatLastSnooze } from './snooze';
+import { repeatLastSnooze, snoozeTab } from './snooze';
+import { MSG_SNOOZE_TAB, MSG_DELETE_SNOOZED_TABS } from './messages';
 import {
   registerEventListeners as registerWakeupEventListeners,
   scheduleWakeupAlarm,
+  deleteSnoozedTabs,
 } from './wakeup';
 import {
   TODO_PATH,
@@ -111,6 +113,36 @@ export function runBackgroundScript() {
 
     if (command === COMMAND_OPEN_SLEEPING_TABS) {
       createTab(SLEEPING_TABS_PATH);
+    }
+  });
+
+  // Handle snooze/delete requests from popup and options page.
+  // The service worker is the single writer for snoozedTabs storage.
+  // We use snoozeTab() (not snoozeActiveTab) because the popup sends
+  // the tab info — getActiveTab() wouldn't return the right tab from SW context.
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === MSG_SNOOZE_TAB) {
+      const { tab, config } = message;
+      console.log(`📨 [SW] Received snoozeTab message for: ${tab?.url}`);
+      snoozeTab(tab, config)
+        .then(() => sendResponse({ success: true }))
+        .catch(error => {
+          console.error('snoozeTab message handler failed:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // keep channel open for async sendResponse
+    }
+
+    if (message.action === MSG_DELETE_SNOOZED_TABS) {
+      const { tabsToDelete } = message;
+      console.log(`📨 [SW] Received deleteSnoozedTabs message for ${tabsToDelete?.length} tab(s)`);
+      deleteSnoozedTabs({ tabsToDelete })
+        .then(() => sendResponse({ success: true }))
+        .catch(error => {
+          console.error('deleteSnoozedTabs message handler failed:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // keep channel open for async sendResponse
     }
   });
 }
