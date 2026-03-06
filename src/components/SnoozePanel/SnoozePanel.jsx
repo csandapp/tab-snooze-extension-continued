@@ -281,31 +281,20 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
   const activeTab = await getActiveTab();
 
   // Send snooze request to service worker (single writer for snoozedTabs).
-  // Await confirmation before closing the tab to prevent data loss.
-  let snoozeSucceeded = false;
-  try {
-    const response = await chrome.runtime.sendMessage({
-      action: MSG_SNOOZE_TAB,
-      tab: {
-        url: activeTab.url,
-        title: activeTab.title,
-        favIconUrl: activeTab.favIconUrl,
-      },
-      config: {
-        ...config,
-        // Don't close tab automatically, we close it ourselves below.
-        closeTab: false,
-      },
-    });
-    snoozeSucceeded = response?.success === true;
-  } catch (error) {
-    console.error('Failed to send snooze message to SW:', error);
-  }
-
-  if (!snoozeSucceeded) {
-    console.error('Snooze failed — not closing tab to prevent data loss');
-    return;
-  }
+  // Fire-and-forget: animation/sound don't need to wait for storage write.
+  chrome.runtime.sendMessage({
+    action: MSG_SNOOZE_TAB,
+    tab: {
+      url: activeTab.url,
+      title: activeTab.title,
+      favIconUrl: activeTab.favIconUrl,
+    },
+    config: {
+      ...config,
+      // Don't close tab automatically, we close it ourselves below.
+      closeTab: false,
+    },
+  });
 
   setTimeout(() => {
     // Close the popup window, then close the tab if requested
