@@ -39,13 +39,9 @@ export function createTabs(
 
   const allTabsCreatedPromise = Promise.all(
     tabInfos.map((tabInfo, index) => {
-      console.log(`🌐 [${callId}] Creating tab ${index + 1}/${tabInfos.length}: ${tabInfo.url}`);
       return chrome.tabs.create({
         url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
-      }).then(tab => {
-        console.log(`✅ [${callId}] Tab ${index + 1} created successfully: ${tab.id} - ${tabInfo.url}`);
-        return tab;
       });
     })
   );

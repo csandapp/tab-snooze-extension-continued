@@ -118,7 +118,6 @@ export async function openTabs({
   makeActive?: boolean,
 }): Promise<Array<ChromeTab>> {
   console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Opening ${tabs.length} tabs (makeActive: ${makeActive})`);
-  console.log(`🌐 [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Tabs:`, tabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString() })));
 
   const createdTabs = await createTabs(tabs, makeActive);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${createdTabs.length} browser tabs successfully`);
@@ -222,7 +221,6 @@ export async function handleScheduledWakeup(): Promise<void> {
 
     console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Found ${readySleepingTabs.length} tabs ready to wake up`);
     if (readySleepingTabs.length > 0) {
-      console.log(`📋 [${SERVICE_WORKER_INSTANCE_ID}] Tabs to wake:`, readySleepingTabs.map(t => ({ url: t.url, when: new Date(t.when).toISOString(), period: t.period })));
 
       // Mark tabs as being processed BEFORE opening (survives crashes)
       const newWokenKeys = readySleepingTabs.map(getTabKey);
