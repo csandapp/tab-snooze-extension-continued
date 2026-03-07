@@ -466,6 +466,12 @@ const SettingsPage = (props: Props): Node => {
         <EditShortcutsInstructions />
 
         <Header>Miscellaneous</Header>
+        {renderCheckboxSetting({
+          icon: <NotificationIcon />,
+          title: 'Support reminders',
+          description: 'Show occasional reminders to rate and support Tab Snooze',
+          stateKey: 'showSupportReminders',
+        })}
         {renderButtonSetting({
           icon: <StarIcon />,
           title: 'Loving Tab Snooze?',
