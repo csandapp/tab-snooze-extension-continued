@@ -71,7 +71,7 @@ export async function snoozeTab(
   }
 
   if (totalSnoozeCount === 10) {
-    createCenteredWindow(SUPPORT_TS_PATH, 500, 540);
+    createCenteredWindow(SUPPORT_TS_PATH, 500, 875);
   }
 
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
