@@ -14,6 +14,7 @@ import {
 import {
   TODO_PATH,
   SLEEPING_TABS_PATH,
+  SUPPORT_TS_PATH,
   // CHANGELOG_URL,
   // getTrackUninstallUrl,
   TUTORIAL_PATH,
@@ -24,14 +25,14 @@ import {
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
-import { createTab, IS_BETA, APP_VERSION } from './utils';
+import { createTab, createCenteredWindow, IS_BETA, APP_VERSION } from './utils';
 // import { track, EVENTS } from './analytics';
 
 import {
   updateBadge,
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
-import { saveSettings } from './settings';
+import { getSettings, saveSettings } from './settings';
 import { saveRecentlyWokenTabs } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
@@ -200,6 +201,27 @@ async function extensionMain() {
 
   // update badge after chrome startup
   await updateBadge();
+
+  // Periodically show support reminder (every ~90 days for active users)
+  const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
+  const settings = await getSettings();
+
+  console.log(`🔵 Support reminder check:`, {
+    showSupportReminders: settings.showSupportReminders,
+    totalSnoozeCount: settings.totalSnoozeCount,
+    lastSupportReminderDate: settings.lastSupportReminderDate
+      ? new Date(settings.lastSupportReminderDate).toString()
+      : 'never',
+  });
+
+  if (
+    settings.showSupportReminders &&
+    settings.totalSnoozeCount >= 5 &&
+    Date.now() - settings.lastSupportReminderDate >= NINETY_DAYS_MS
+  ) {
+    await saveSettings({ lastSupportReminderDate: Date.now() });
+    createCenteredWindow(SUPPORT_TS_PATH, 500, 875);
+  }
 
   // Uncomment for Debug:
   // require('../components/dialogs/FirstSnoozeDialog').default.open();
