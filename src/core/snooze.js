@@ -10,7 +10,7 @@ import {
 import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
 
-import { FIRST_SNOOZE_PATH, RATE_TS_PATH } from '../paths';
+import { FIRST_SNOOZE_PATH } from '../paths';
 import { incrementWeeklyUsage } from './license';
 
 export async function snoozeTab(
@@ -70,9 +70,6 @@ export async function snoozeTab(
     createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
   }
 
-  if (totalSnoozeCount === 10) {
-    createCenteredWindow(RATE_TS_PATH, 500, 540);
-  }
 
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
   // the flow of this code before finish. so close tab at the end.

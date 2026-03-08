@@ -70,12 +70,18 @@ export async function createCenteredWindow(
   width: number,
   height: number
 ) {
+  const currentWindow = await chrome.windows.getCurrent();
+  const screenWidth = currentWindow.width || 1920;
+  const screenHeight = currentWindow.height || 1080;
+  const left = Math.round(currentWindow.left + (screenWidth - width) / 2);
+  const top = Math.round(currentWindow.top + (screenHeight - height) / 3);
+
   const newWindow = await chrome.windows.create({
     type: 'popup',
     state: 'normal',
     url: APP_BASE_PATH + path,
-    left: Math.round((window.screen.width - width) / 2),
-    top: Math.round((window.screen.height - height) / 3),
+    left,
+    top,
     width,
     height,
     focused: true,

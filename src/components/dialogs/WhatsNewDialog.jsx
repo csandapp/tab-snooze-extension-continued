@@ -1,11 +1,12 @@
 // @flow
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { CURR_DEVELOPER_DONATE_URL, ORIGINAL_DEVLOPER_DONATE_URL } from '../../paths';
+import { CURR_DEVELOPER_DONATE_URL, ORIGINAL_DEVLOPER_DONATE_URL, GITHUB_REPO_URL } from '../../paths';
 import { APP_VERSION } from '../../core/utils';
 import TSDialog from './TSDialog';
 import Button from '../SnoozePanel/Button';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import CodeIcon from '@mui/icons-material/Code';
 
 import congratsImage from './images/congrats.png';
 
@@ -54,6 +55,17 @@ export default function WhatsNewDialog(): React.Node {
         >
           <FavoriteIcon />
           Support Original Developer
+        </DonateButton>
+
+        <DonateButton
+          raised
+          as="a"
+          color="#777777"
+          href={GITHUB_REPO_URL}
+          target="_blank"
+        >
+          <CodeIcon/>
+          Open source codebase
         </DonateButton>
       </DonateButtons>
     </TSDialog>
