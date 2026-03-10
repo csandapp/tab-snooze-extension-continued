@@ -21,6 +21,7 @@ import { ensureOffscreenDocument } from "./backgroundMain";
 
 
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
+const KEEPALIVE_CHECK_ALARM_NAME = 'KEEPALIVE_CHECK';
 
 // Generate a unique ID for this service worker instance to track restarts
 const SERVICE_WORKER_INSTANCE_ID = `SW-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -316,7 +317,24 @@ export function registerEventListeners(): void {
       // handleScheduledWakeup() → wakeupDeleteAndReschedule() already calls scheduleWakeupAlarm('auto'),
       // so scheduling here would create duplicate alarms and cause tabs to wake up twice.
     }
+
+    if (alarm.name === KEEPALIVE_CHECK_ALARM_NAME) {
+      // Safety net: periodic check for overdue tabs.
+      // Catches cases where the one-shot alarm was cancelled during sleep
+      // and idle.onStateChanged didn't fire reliably to reschedule it.
+      const state = await chrome.idle.queryState(60);
+      console.log(`🔄 [${SERVICE_WORKER_INSTANCE_ID}] Keepalive check - user state: ${state}`);
+      if (state === 'active') {
+        await handleScheduledWakeup();
+      }
+    }
   });
+
+  // Periodic keepalive: safety net that survives sleep/wake cycles.
+  // Chrome persists periodic alarms independently of the SW lifecycle and
+  // fires overdue ones when the system wakes, restarting the SW automatically.
+  // This ensures overdue tabs are always caught even if idle.onStateChanged doesn't fire.
+  chrome.alarms.create(KEEPALIVE_CHECK_ALARM_NAME, { periodInMinutes: 1 });
 
   /*
     After computer sleeps and then wakes, for some reason
