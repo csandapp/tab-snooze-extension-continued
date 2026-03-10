@@ -7,6 +7,7 @@ import GlobalStyles from './GlobalStyles';
 import Router from './Router';
 
 function App() {
+  console.log(`[popup-debug] 🟡 App: render()`);
   return (
     <ThemeProvider theme={muiTheme}>
       <StyledThemeProvider theme={styledComponentsTheme}>

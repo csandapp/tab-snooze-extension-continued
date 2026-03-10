@@ -38,7 +38,9 @@ const AsyncWhatsNewDialog = React.lazy(() =>
   import('./components/dialogs/WhatsNewDialog')
 );
 
-const Router = () => (
+const Router = () => {
+  console.log(`[popup-debug] 🟡 Router: render() hash=${window.location.hash}`);
+  return (
   <HashRouter hashType="noslash">
     <Suspense fallback={<div style={{ padding: '10px', textAlign: 'center' }}>Loading...</div>}>
       <Routes>
@@ -62,6 +64,7 @@ const Router = () => (
       </Routes>
     </Suspense>
   </HashRouter>
-);
+  );
+};
 
 export default Router;

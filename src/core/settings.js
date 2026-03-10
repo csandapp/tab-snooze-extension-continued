@@ -35,9 +35,12 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
+  const _t = performance.now();
   let { settings } = await chrome.storage.local.get(
     STORAGE_KEY_SETTINGS
   );
+  const elapsed = performance.now() - _t;
+  console.log(`[popup-debug] ${elapsed > 100 ? '🔴' : '🟢'} getSettings(): chrome.storage.local.get took ${elapsed.toFixed(1)}ms`);
 
   // Add new settings keys, preserve user old preferences
   return Object.assign({}, DEFAULT_SETTINGS, settings);

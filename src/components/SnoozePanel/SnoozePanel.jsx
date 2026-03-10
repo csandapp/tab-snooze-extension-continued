@@ -57,26 +57,40 @@ export function SnoozePanel(props: Props): React.Node {
   const [isOverFreePlanLimit, setIsOverFreePlanLimit] = useState(false);
 
   useEffect(() => {
+    const _mountTime = performance.now();
+    console.log(`[popup-debug] 🟡 SnoozePanel: useEffect fired (mount)`);
+
     let cancelled = false;
     let timeoutId;
 
     const loadData = async () => {
       try {
+        const _t1 = performance.now();
+        console.log(`[popup-debug] 🟡 SnoozePanel: calling getSettings()...`);
         const settings = await getSettings()
-        
+        const settingsElapsed = performance.now() - _t1;
+        console.log(`[popup-debug] ${settingsElapsed > 200 ? '🔴' : '🟢'} SnoozePanel: getSettings() resolved in ${settingsElapsed.toFixed(1)}ms`, {
+          cancelled,
+          settingsKeys: Object.keys(settings),
+        });
+
         if (!cancelled) {
           setSnoozeOptions(calcSnoozeOptions(settings));
           setIsProUser(true);
+          console.log(`[popup-debug] 🟢 SnoozePanel: snoozeOptions SET — UI should render now (+${(performance.now() - _mountTime).toFixed(1)}ms since mount)`);
         }
 
         timeoutId = setTimeout(async () => {
+          const _t2 = performance.now();
+          console.log(`[popup-debug] 🟡 SnoozePanel: calling isOverFreeWeeklyQuota()...`);
           const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
+          console.log(`[popup-debug] 🟢 SnoozePanel: isOverFreeWeeklyQuota() resolved in ${(performance.now() - _t2).toFixed(1)}ms, result=${isOverFreePlanLimit}`);
           if (!cancelled) {
             setIsOverFreePlanLimit(isOverFreePlanLimit);
           }
         }, 300);
       } catch (error) {
-        console.error('Failed to load data:', error);
+        console.error(`[popup-debug] 🔴 SnoozePanel: loadData() FAILED:`, error);
       }
     };
 

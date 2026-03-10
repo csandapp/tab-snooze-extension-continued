@@ -116,6 +116,13 @@ export function runBackgroundScript() {
   // We use snoozeTab() (not snoozeActiveTab) because the popup sends
   // the tab info — getActiveTab() wouldn't return the right tab from SW context.
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Debug ping from popup to measure SW responsiveness
+    if (message.action === '__popup_debug_ping__') {
+      console.log(`[popup-debug] 🟢 [SW] received debug ping from popup`);
+      sendResponse({ pong: true, swUptime: performance.now() });
+      return;
+    }
+
     if (message.action === MSG_SNOOZE_TAB) {
       const { tab, config } = message;
       console.log(`📨 [SW] Received snoozeTab message for: ${tab?.url}`);
