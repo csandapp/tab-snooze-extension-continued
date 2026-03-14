@@ -334,7 +334,7 @@ export function registerEventListeners(): void {
   // Chrome persists periodic alarms independently of the SW lifecycle and
   // fires overdue ones when the system wakes, restarting the SW automatically.
   // This ensures overdue tabs are always caught even if idle.onStateChanged doesn't fire.
-  chrome.alarms.create(KEEPALIVE_CHECK_ALARM_NAME, { periodInMinutes: 1 });
+  chrome.alarms.create(KEEPALIVE_CHECK_ALARM_NAME, { periodInMinutes: 10 });
 
   /*
     After computer sleeps and then wakes, for some reason
