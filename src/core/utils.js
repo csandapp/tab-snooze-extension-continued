@@ -31,16 +31,25 @@ export function createTabs(
   tabInfos: Array<SnoozedTab>,
   makeActive: boolean
 ): Promise<Array<ChromeTab>> {
+  // Generate a unique call ID to track this specific invocation
+  const callId = `CT-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+
+  console.log(`🌐 [${callId}] createTabs() CALLED with ${tabInfos.length} tabs, makeActive: ${makeActive}`);
+  console.log(`🌐 [${callId}] Tab URLs:`, tabInfos.map(t => t.url));
+
   const allTabsCreatedPromise = Promise.all(
-    tabInfos.map(tabInfo =>
-      chrome.tabs.create({
+    tabInfos.map((tabInfo, index) => {
+      return chrome.tabs.create({
         url: tabInfo.url, // attachAffiliationTag(tabInfo.url),
         active: makeActive,
-      })
-    )
+      });
+    })
   );
 
-  return allTabsCreatedPromise;
+  return allTabsCreatedPromise.then(tabs => {
+    console.log(`✅ [${callId}] createTabs() COMPLETED - Created ${tabs.length} tabs`);
+    return tabs;
+  });
 }
 
 // Attach affiliate tracking ID for amazon product links
@@ -61,12 +70,18 @@ export async function createCenteredWindow(
   width: number,
   height: number
 ) {
+  const currentWindow = await chrome.windows.getCurrent();
+  const screenWidth = currentWindow.width || 1920;
+  const screenHeight = currentWindow.height || 1080;
+  const left = Math.round(currentWindow.left + (screenWidth - width) / 2);
+  const top = Math.round(currentWindow.top + (screenHeight - height) / 3);
+
   const newWindow = await chrome.windows.create({
     type: 'popup',
     state: 'normal',
     url: APP_BASE_PATH + path,
-    left: Math.round((window.screen.width - width) / 2),
-    top: Math.round((window.screen.height - height) / 3),
+    left,
+    top,
     width,
     height,
     focused: true,
@@ -239,7 +254,8 @@ function momentWithHour(aMoment: any, hour: number) {
   return aMoment
     .hours(h)
     .minutes(m)
-    .seconds(0);
+    .seconds(0)
+    .milliseconds(0);
 }
 
 export const compareTabs = (tab1: SnoozedTab, tab2: SnoozedTab) =>

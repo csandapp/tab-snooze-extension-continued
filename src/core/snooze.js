@@ -1,16 +1,16 @@
 // @flow
-import { getSnoozedTabs, saveSnoozedTabs } from './storage';
+import { addSnoozedTabs, getSnoozedTabs } from './storage';
 import {
   getActiveTab,
   calcNextOccurrenceForPeriod,
   getRecentlySnoozedTab,
   createCenteredWindow,
 } from './utils';
-import { trackTabSnooze, track, EVENTS } from './analytics';
+// import { trackTabSnooze, track, EVENTS } from './analytics';
 import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
 
-import { FIRST_SNOOZE_PATH, RATE_TS_PATH } from '../paths';
+import { FIRST_SNOOZE_PATH } from '../paths';
 import { incrementWeeklyUsage } from './license';
 
 export async function snoozeTab(
@@ -47,15 +47,14 @@ export async function snoozeTab(
   };
 
   // Store & persist snoozed tab for later
-  const snoozedTabs = await getSnoozedTabs();
-  snoozedTabs.push(snoozedTab);
-  await saveSnoozedTabs(snoozedTabs);
+  // addSnoozedTabs handles dedup internally (prevents duplicates when rapidly re-snoozing)
+  await addSnoozedTabs([snoozedTab]);
 
   // Schedule a wake-up for the Chrome extension on snoozed time
   await scheduleWakeupAlarm('auto');
 
   // usage tracking
-  trackTabSnooze(snoozedTab);
+  // trackTabSnooze(snoozedTab);
 
   let { totalSnoozeCount } = await getSettings();
   totalSnoozeCount++;
@@ -71,9 +70,6 @@ export async function snoozeTab(
     createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
   }
 
-  if (totalSnoozeCount === 10) {
-    createCenteredWindow(RATE_TS_PATH, 500, 540);
-  }
 
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
   // the flow of this code before finish. so close tab at the end.
@@ -103,7 +99,7 @@ export async function repeatLastSnooze() {
     return;
   }
 
-  track(EVENTS.REPEAT_SNOOZE);
+  // track(EVENTS.REPEAT_SNOOZE);
 
   return snoozeActiveTab({
     wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,
@@ -124,14 +120,9 @@ export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
 
   console.log('Re-snoozing tab until ' + newWakeupDate.toString());
 
+  // Assumes tab's wakeup time has already passed because tabs passed in have been scheduled for wakeup
   snoozedTab.when = newWakeupDate.getTime();
 
-  // Store & persist snoozed tab info for later
-  // Add our new tab
-  const snoozedTabs = await getSnoozedTabs();
-  snoozedTabs.push(snoozedTab);
-  await saveSnoozedTabs(snoozedTabs);
-
-  // Schedule next wakeup
-  await scheduleWakeupAlarm('auto');
+  // Store & persist rescheduled tab for later
+  await addSnoozedTabs([snoozedTab]);
 }
