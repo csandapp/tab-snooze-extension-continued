@@ -23,7 +23,7 @@ export default defineConfig({
   ],
 
   esbuild: {
-    target: 'chrome88',
+    target: 'chrome109',
     loader: 'jsx',
     include: /\.(js|jsx|ts|tsx)$/,
     exclude: []
@@ -48,7 +48,7 @@ export default defineConfig({
   },
 
   build: {
-    target: 'chrome88',
+    target: 'chrome109',
     // @crxjs/vite-plugin handles the build configuration
     outDir: 'build',
     emptyOutDir: true,
