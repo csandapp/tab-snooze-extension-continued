@@ -136,21 +136,23 @@ export async function wakeupDeleteAndReschedule({
 
   // Create tabs FIRST to prevent data loss if crash occurs
   // If we crash after delete but before create, tabs are lost forever
-  const createdTabs = await openTabs({ tabs, makeActive });
+  const { created: createdTabs, failedTabs } = await openTabs({ tabs, makeActive });
+
+  // Only delete tabs that were successfully opened — failed tabs stay in storage for retry
+  const successfulTabs = tabs.filter(tab => !failedTabs.includes(tab));
 
   // Delete from storage AFTER tabs are created
   // Pass scheduleAlarm=false because we need to handle periodic tabs first
-
   //
   // ORDER MATTERS: Delete BEFORE rescheduling periodic tabs.
   // resnoozePeriodicTab() updates the in-memory tab object with a new `when`,
   // then pushes it to storage as a fresh entry. If we rescheduled first,
   // deleteSnoozedTabs() would match and remove the newly created entry.
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting tabs from storage...`);
-  await deleteSnoozedTabs({ tabsToDelete: tabs, scheduleAlarm: false });
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting ${successfulTabs.length} tabs from storage (${failedTabs.length} failed, kept)...`);
+  await deleteSnoozedTabs({ tabsToDelete: successfulTabs, scheduleAlarm: false });
 
-  // Reschedule repeated tabs, if any
-  const periodicTabs = tabs.filter(tab => tab.period);
+  // Reschedule repeated tabs that succeeded — failed periodic tabs stay as-is for retry
+  const periodicTabs = successfulTabs.filter(tab => tab.period);
   console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Found ${periodicTabs.length} periodic tabs to reschedule`);
   for (let tab of periodicTabs) {
     console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Rescheduling periodic tab: ${tab.url}`);
