@@ -115,11 +115,11 @@ export async function openTabs({
 }: {
   tabs: Array<SnoozedTab>,
   makeActive?: boolean,
-}): Promise<Array<ChromeTab>> {
-  const createdTabs = await createTabs(tabs, makeActive);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${createdTabs.length} browser tabs successfully`);
+}): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab> }> {
+  const result = await createTabs(tabs, makeActive);
+  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${result.created.length} browser tabs, ${result.failedTabs.length} failed`);
 
-  return createdTabs;
+  return result;
 }
 
 /*
@@ -136,21 +136,23 @@ export async function wakeupDeleteAndReschedule({
 
   // Create tabs FIRST to prevent data loss if crash occurs
   // If we crash after delete but before create, tabs are lost forever
-  const createdTabs = await openTabs({ tabs, makeActive });
+  const { created: createdTabs, failedTabs } = await openTabs({ tabs, makeActive });
+
+  // Only delete tabs that were successfully opened — failed tabs stay in storage for retry
+  const successfulTabs = tabs.filter(tab => !failedTabs.includes(tab));
 
   // Delete from storage AFTER tabs are created
   // Pass scheduleAlarm=false because we need to handle periodic tabs first
-
   //
   // ORDER MATTERS: Delete BEFORE rescheduling periodic tabs.
   // resnoozePeriodicTab() updates the in-memory tab object with a new `when`,
   // then pushes it to storage as a fresh entry. If we rescheduled first,
   // deleteSnoozedTabs() would match and remove the newly created entry.
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting tabs from storage...`);
-  await deleteSnoozedTabs({ tabsToDelete: tabs, scheduleAlarm: false });
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting ${successfulTabs.length} tabs from storage (${failedTabs.length} failed, kept)...`);
+  await deleteSnoozedTabs({ tabsToDelete: successfulTabs, scheduleAlarm: false });
 
-  // Reschedule repeated tabs, if any
-  const periodicTabs = tabs.filter(tab => tab.period);
+  // Reschedule repeated tabs that succeeded — failed periodic tabs stay as-is for retry
+  const periodicTabs = successfulTabs.filter(tab => tab.period);
   console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Found ${periodicTabs.length} periodic tabs to reschedule`);
   for (let tab of periodicTabs) {
     console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Rescheduling periodic tab: ${tab.url}`);
@@ -227,23 +229,26 @@ export async function handleScheduledWakeup(): Promise<void> {
         await saveRecentlyWokenTabs([]);
 
         // Notify user (non-critical - OK if this fails)
-        if (settings.showNotifications) {
-          // Show desktop notification
-          notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
-        }
+        // Skip if no tabs were actually created (all failed)
+        if (createdTabs.length > 0) {
+          if (settings.showNotifications) {
+            // Show desktop notification
+            notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+          }
 
-        if (settings.playNotificationSound) {
-          console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
-          // Note: handleScheduledWakeup() is ONLY called in background script
+          if (settings.playNotificationSound) {
+            console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
+            // Note: handleScheduledWakeup() is ONLY called in background script
 
-          // ensure offscreen document is created
-          await ensureOffscreenDocument();
+            // ensure offscreen document is created
+            await ensureOffscreenDocument();
 
-          // send message to offscreen document to play sound with retry logic
-          await sendMessageWithRetry({
-            action: MSG_PLAY_AUDIO,
-            sound: SOUND_WAKEUP,
-          }, 3);
+            // send message to offscreen document to play sound with retry logic
+            await sendMessageWithRetry({
+              action: MSG_PLAY_AUDIO,
+              sound: SOUND_WAKEUP,
+            }, 3);
+          }
         }
       } catch (error) {
         // Log error for debugging
