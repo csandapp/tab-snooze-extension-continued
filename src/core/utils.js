@@ -30,7 +30,7 @@ export function isMacOS() {
 export function createTabs(
   tabInfos: Array<SnoozedTab>,
   makeActive: boolean
-): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab> }> {
+): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab>, customHandled: Array<SnoozedTab> }> {
   // Generate a unique call ID to track this specific invocation
   const callId = `CT-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
 
@@ -47,18 +47,24 @@ export function createTabs(
   ).then(results => {
     const created = [];
     const failedTabs = [];
+    const customHandled = [];
 
     results.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         created.push(result.value);
+      } else if (result.reason?.message?.includes('handled by Atlas')) {
+        // Some browsers (e.g. Atlas) physically open the tab but reject the promise.
+        // Not a real failure — tab is open, just no ChromeTab object returned.
+        customHandled.push(tabInfos[index]);
+        console.log(`ℹ️ [${callId}] Tab handled externally: ${tabInfos[index].url}`, result.reason?.message);
       } else {
         console.warn(`⚠️ [${callId}] Failed to create tab: ${tabInfos[index].url}`, result.reason);
         failedTabs.push(tabInfos[index]);
       }
     });
 
-    console.log(`✅ [${callId}] createTabs() done: ${created.length} created, ${failedTabs.length} failed`);
-    return { created, failedTabs };
+    console.log(`✅ [${callId}] createTabs() done: ${created.length} created, ${customHandled.length} externally handled, ${failedTabs.length} failed`);
+    return { created, failedTabs, customHandled };
   });
 }
 
