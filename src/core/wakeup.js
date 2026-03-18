@@ -229,23 +229,26 @@ export async function handleScheduledWakeup(): Promise<void> {
         await saveRecentlyWokenTabs([]);
 
         // Notify user (non-critical - OK if this fails)
-        if (settings.showNotifications) {
-          // Show desktop notification
-          notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
-        }
+        // Skip if no tabs were actually created (all failed)
+        if (createdTabs.length > 0) {
+          if (settings.showNotifications) {
+            // Show desktop notification
+            notifyUserAboutNewTabs(readySleepingTabs, createdTabs[0]);
+          }
 
-        if (settings.playNotificationSound) {
-          console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
-          // Note: handleScheduledWakeup() is ONLY called in background script
+          if (settings.playNotificationSound) {
+            console.log(`🔊 [${SERVICE_WORKER_INSTANCE_ID}] Playing notification sound...`);
+            // Note: handleScheduledWakeup() is ONLY called in background script
 
-          // ensure offscreen document is created
-          await ensureOffscreenDocument();
+            // ensure offscreen document is created
+            await ensureOffscreenDocument();
 
-          // send message to offscreen document to play sound with retry logic
-          await sendMessageWithRetry({
-            action: MSG_PLAY_AUDIO,
-            sound: SOUND_WAKEUP,
-          }, 3);
+            // send message to offscreen document to play sound with retry logic
+            await sendMessageWithRetry({
+              action: MSG_PLAY_AUDIO,
+              sound: SOUND_WAKEUP,
+            }, 3);
+          }
         }
       } catch (error) {
         // Log error for debugging
