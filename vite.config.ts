@@ -2,8 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
+import { fileURLToPath } from 'url'
 import flow from 'esbuild-plugin-flow'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import manifest from './public/manifest.json'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   plugins: [
@@ -14,7 +18,8 @@ export default defineConfig({
         ]
       }
     }),
-    crx({ manifest })
+    crx({ manifest }),
+    tsconfigPaths()
   ],
 
   esbuild: {
@@ -78,16 +83,6 @@ export default defineConfig({
     fs: {
       allow: ['..'],
     },
-    // Add middleware to handle routing for different extension pages
-    // middlewares: [
-    //   (req, res, next) => {
-    //     // Handle extension routes in development
-    //     if (req.url.includes('#popup') || req.url.includes('#options')) {
-    //       req.url = '/';
-    //     }
-    //     next();
-    //   }
-    // ]
   },
   // Resolve configuration
   resolve: {
@@ -113,10 +108,11 @@ export default defineConfig({
         'src/__tests__/**',
         '**/*.test.js',
         '**/*.test.jsx',
-        'vite.config.js',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'vite.config.ts',
         'public/**',
         'build/**',
-        '.eslintrc.cjs',
         'src/setupChromeMock.js'
       ]
     }
