@@ -1,13 +1,14 @@
 {
-  "parser": "@babel/eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "requireConfigFile": false,
-    "babelOptions": {
-      "presets": ["@babel/preset-flow"]
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
     }
   },
   "extends": ["react-app", "prettier"],
-  "plugins": ["import", "react-hooks"],
+  "plugins": ["import", "react-hooks", "@typescript-eslint"],
   "globals": {
     "chrome": "readonly"
   },
@@ -20,8 +21,8 @@
     }
   },
   "rules": {
-    "import/no-unresolved": [2, { 
-      "commonjs": true, 
+    "import/no-unresolved": [2, {
+      "commonjs": true,
       "amd": true
     }],
     "import/named": 2,
