@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+import { execSync } from 'child_process'
+import { writeFileSync } from 'fs'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
@@ -8,6 +10,10 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import manifest from './public/manifest.json'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+
+const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
+const gitCommitMsg = execSync('git log -1 --pretty=%s').toString().trim()
+const gitDirty = execSync('git status --porcelain').toString().trim() !== ''
 
 export default defineConfig({
   plugins: [
@@ -19,7 +25,20 @@ export default defineConfig({
       }
     }),
     crx({ manifest }),
-    tsconfigPaths()
+    tsconfigPaths(),
+    {
+      name: 'build-info',
+      closeBundle() {
+        const info = [
+          `Commit: ${gitHash}`,
+          `Message: ${gitCommitMsg}`,
+          `Dirty: ${gitDirty ? 'yes' : 'no'}`,
+          `Built: ${new Date().toISOString()}`,
+        ].join('\n')
+        writeFileSync('build/build-info.txt', info + '\n')
+        console.log('\n📦 Build Info:\n' + info + '\n')
+      }
+    }
   ],
 
   esbuild: {
