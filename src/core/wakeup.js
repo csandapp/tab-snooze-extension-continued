@@ -115,11 +115,11 @@ export async function openTabs({
 }: {
   tabs: Array<SnoozedTab>,
   makeActive?: boolean,
-}): Promise<Array<ChromeTab>> {
-  const createdTabs = await createTabs(tabs, makeActive);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${createdTabs.length} browser tabs successfully`);
+}): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab> }> {
+  const result = await createTabs(tabs, makeActive);
+  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${result.created.length} browser tabs, ${result.failedTabs.length} failed`);
 
-  return createdTabs;
+  return result;
 }
 
 /*
