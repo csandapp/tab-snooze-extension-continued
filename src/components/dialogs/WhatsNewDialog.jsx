@@ -11,10 +11,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import congratsImage from './images/congrats.png';
 
 const CHANGELOG_ITEMS = [
-  'Fixed tabs opening multiple times',
-  'Open sleeping tabs without removing them from the list',
-  'Snooze times are now rounded to the exact minute',
-  'Upgraded to React 18',
+  'Fixed a bug where snoozed tabs could re-open repeatedly',
 ];
 
 export default function WhatsNewDialog(): React.Node {
