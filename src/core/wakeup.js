@@ -115,9 +115,9 @@ export async function openTabs({
 }: {
   tabs: Array<SnoozedTab>,
   makeActive?: boolean,
-}): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab> }> {
+}): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab>, customHandled: Array<SnoozedTab> }> {
   const result = await createTabs(tabs, makeActive);
-  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${result.created.length} browser tabs, ${result.failedTabs.length} failed`);
+  console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${result.created.length} browser tabs, ${result.customHandled.length} externally handled, ${result.failedTabs.length} failed`);
 
   return result;
 }
@@ -136,7 +136,7 @@ export async function wakeupDeleteAndReschedule({
 
   // Create tabs FIRST to prevent data loss if crash occurs
   // If we crash after delete but before create, tabs are lost forever
-  const { created: createdTabs, failedTabs } = await openTabs({ tabs, makeActive });
+  const { created: createdTabs, failedTabs, customHandled } = await openTabs({ tabs, makeActive });
 
   // Only delete tabs that were successfully opened — failed tabs stay in storage for retry
   const successfulTabs = tabs.filter(tab => !failedTabs.includes(tab));
@@ -148,7 +148,7 @@ export async function wakeupDeleteAndReschedule({
   // resnoozePeriodicTab() updates the in-memory tab object with a new `when`,
   // then pushes it to storage as a fresh entry. If we rescheduled first,
   // deleteSnoozedTabs() would match and remove the newly created entry.
-  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting ${successfulTabs.length} tabs from storage (${failedTabs.length} failed, kept)...`);
+  console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Deleting ${successfulTabs.length} tabs from storage (${customHandled.length} externally handled, ${failedTabs.length} failed, kept)...`);
   await deleteSnoozedTabs({ tabsToDelete: successfulTabs, scheduleAlarm: false });
 
   // Reschedule repeated tabs that succeeded — failed periodic tabs stay as-is for retry
