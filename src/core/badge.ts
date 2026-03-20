@@ -1,4 +1,3 @@
-// @flow
 import { getSnoozedTabs } from './storage';
 import { styledComponentsTheme } from '../theme';
 import { getSettings } from './settings';

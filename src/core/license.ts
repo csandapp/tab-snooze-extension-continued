@@ -1,4 +1,3 @@
-// @flow
 import { getSettings, saveSettings } from './settings';
 import moment from 'moment';
 

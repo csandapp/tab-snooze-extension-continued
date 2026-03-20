@@ -1,4 +1,3 @@
-// @flow
 // import bugsnag from '../bugsnag';
 
 // export const SOUND_TAB_SNOOZE1 = 'sounds/snooze1.mp3';
