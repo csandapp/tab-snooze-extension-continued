@@ -1,4 +1,3 @@
-// @flow
 import { addSnoozedTabs, getSnoozedTabs } from './storage';
 import {
   getActiveTab,
@@ -12,9 +11,10 @@ import { scheduleWakeupAlarm } from './wakeup';
 
 import { FIRST_SNOOZE_PATH } from '../paths';
 import { incrementWeeklyUsage } from './license';
+import type { SnoozedTab, SnoozeConfig } from '../types';
 
 export async function snoozeTab(
-  tab: ChromeTab,
+  tab: chrome.tabs.Tab,
   config: SnoozeConfig
 ) {
   let { wakeupTime, period, type, closeTab = true } = config;
@@ -37,9 +37,9 @@ export async function snoozeTab(
 
   // The info to store about this tab
   const snoozedTab: SnoozedTab = {
-    url: tab.url,
-    title: tab.title,
-    favicon: tab.favIconUrl,
+    url: tab.url!,
+    title: tab.title!,
+    favicon: tab.favIconUrl || '',
     type,
     sleepStart: Date.now(),
     period,
@@ -74,7 +74,7 @@ export async function snoozeTab(
   // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
   // the flow of this code before finish. so close tab at the end.
   if (closeTab) {
-    chrome.tabs.remove(tab.id);
+    chrome.tabs.remove(tab.id!);
   }
 
   // Add tab to history

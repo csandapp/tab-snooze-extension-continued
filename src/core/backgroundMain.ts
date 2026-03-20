@@ -1,4 +1,3 @@
-// @flow
 /**
  * This script is executed only as a Chrome Extensions
  * Background Page - a page that opens in the background
@@ -143,7 +142,7 @@ export function runBackgroundScript() {
 }
 
 // Lock to prevent concurrent offscreen document creation
-let offscreenDocumentPromise = null;
+let offscreenDocumentPromise: Promise<void> | null = null;
 
 export async function ensureOffscreenDocument() {
   // If a creation/check is already in progress, wait for it
@@ -169,9 +168,9 @@ export async function ensureOffscreenDocument() {
         // Wait for the offscreen script to load and register its message listener
         // This prevents "Receiving end does not exist" errors when sending messages immediately
         await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (error) {
+      } catch (error: unknown) {
         // Handle the case where document was created by another call despite our check
-        if (error.message && error.message.includes('Only a single offscreen document')) {
+        if (error instanceof Error && error.message.includes('Only a single offscreen document')) {
         } else {
           console.error("Error creating offscreen document:", error);
           throw error;

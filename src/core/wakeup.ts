@@ -1,4 +1,3 @@
-// @flow
 import { getSnoozedTabs, addSnoozedTabs, removeSnoozedTabs, getRecentlyWokenTabs, saveRecentlyWokenTabs } from './storage';
 
 import {
@@ -16,6 +15,7 @@ import { MSG_PLAY_AUDIO } from './messages';
 import { resnoozePeriodicTab } from './snooze';
 
 import { ensureOffscreenDocument } from "./backgroundMain";
+import type { SnoozedTab } from '../types';
 
 // import bugsnag from '../bugsnag';
 
@@ -48,18 +48,18 @@ let wakeupInProgress = false;
  * that can occur when the offscreen document is still loading.
  */
 async function sendMessageWithRetry(
-  message: Object,
+  message: Record<string, unknown>,
   maxRetries: number = 3,
   delayMs: number = 100
-): Promise<any> {
+): Promise<void> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const response = await chrome.runtime.sendMessage(message);
       console.log('Message sent successfully:', response);
       return response;
-    } catch (error) {
+    } catch (error: unknown) {
       const isLastAttempt = attempt === maxRetries;
-      const isConnectionError = error.message?.includes('Receiving end does not exist');
+      const isConnectionError = error instanceof Error && error.message?.includes('Receiving end does not exist');
 
       if (isConnectionError && !isLastAttempt) {
         console.log(`Retrying message (attempt ${attempt}/${maxRetries}) in ${delayMs}ms...`);
@@ -74,7 +74,7 @@ async function sendMessageWithRetry(
         }
         // Don't throw - just log the error and continue
         // Audio playback is non-critical functionality
-        return null;
+        return;
       }
     }
   }
@@ -91,8 +91,8 @@ export async function deleteSnoozedTabs({
   tabsToDelete,
   scheduleAlarm = true,
 }: {
-  tabsToDelete: Array<SnoozedTab>,
-  scheduleAlarm?: boolean,
+  tabsToDelete: SnoozedTab[];
+  scheduleAlarm?: boolean;
 }): Promise<void> {
   console.log(`🗑️ [${SERVICE_WORKER_INSTANCE_ID}] deleteSnoozedTabs() - Deleting ${tabsToDelete.length} tabs (scheduleAlarm: ${scheduleAlarm})`);
 
@@ -113,9 +113,9 @@ export async function openTabs({
   tabs,
   makeActive = false,
 }: {
-  tabs: Array<SnoozedTab>,
-  makeActive?: boolean,
-}): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab>, customHandled: Array<SnoozedTab> }> {
+  tabs: SnoozedTab[];
+  makeActive?: boolean;
+}): Promise<{ created: chrome.tabs.Tab[]; failedTabs: SnoozedTab[]; customHandled: SnoozedTab[] }> {
   const result = await createTabs(tabs, makeActive);
   console.log(`✅ [${SERVICE_WORKER_INSTANCE_ID}] openTabs() - Created ${result.created.length} browser tabs, ${result.customHandled.length} externally handled, ${result.failedTabs.length} failed`);
 
@@ -129,9 +129,9 @@ export async function wakeupDeleteAndReschedule({
   tabs,
   makeActive = false,
 }: {
-  tabs: Array<SnoozedTab>,
-  makeActive?: boolean,
-}): Promise<Array<ChromeTab>> {
+  tabs: SnoozedTab[];
+  makeActive?: boolean;
+}): Promise<chrome.tabs.Tab[]> {
   console.log(`🚀 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Waking ${tabs.length} tabs`);
 
   // Create tabs FIRST to prevent data loss if crash occurs
@@ -299,8 +299,8 @@ export async function scheduleWakeupAlarm(when: 'auto' | '1min'): Promise<void> 
   });
 }
 
-export function cancelWakeupAlarm(): Promise<void> {
-  return chrome.alarms.clear(WAKEUP_TABS_ALARM_NAME);
+export async function cancelWakeupAlarm(): Promise<void> {
+  await chrome.alarms.clear(WAKEUP_TABS_ALARM_NAME);
 }
 
 /**
