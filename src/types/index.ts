@@ -1,3 +1,27 @@
+import 'styled-components';
+
+declare module 'styled-components' {
+  export interface DefaultTheme {
+    dark: boolean;
+    primary: string;
+    black: string;
+    gray: string;
+    beta: string;
+    border: string;
+    lightBorder: string;
+    fontFamily: string;
+    snoozePanel: {
+      bgColor: string;
+      border: string;
+      hoverColor: string;
+      footerTextColor: string;
+      buttonTextColor: string;
+      countBadgeColor: string;
+      whiteIcons: boolean;
+    };
+  }
+}
+
 export type SnoozePeriod =
   | { type: 'daily'; hour: number }
   | { type: 'weekly'; hour: number; days: number[] }
