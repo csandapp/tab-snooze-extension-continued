@@ -24,9 +24,7 @@ export default defineConfig({
 
   esbuild: {
     target: 'chrome109',
-    loader: 'jsx',
-    include: /\.(js|jsx|ts|tsx)$/,
-    exclude: []
+    jsx: 'automatic',
   },
 
   optimizeDeps: {
@@ -41,7 +39,7 @@ export default defineConfig({
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
-        '.jsx': 'jsx'
+        '.jsx': 'jsx',
       },
       plugins: [flow(/\.(js|jsx)$/, true)]
     }
@@ -55,7 +53,7 @@ export default defineConfig({
     minify: false, // Keep unminified for Chrome Web Store review
     rollupOptions: {
       input: {
-        offscreen: resolve(__dirname, 'src/core/offscreen.js'),
+        offscreen: resolve(__dirname, 'src/core/offscreen.ts'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
@@ -113,7 +111,7 @@ export default defineConfig({
         'vite.config.ts',
         'public/**',
         'build/**',
-        'src/setupChromeMock.js'
+        'src/setupChromeMock.ts'
       ]
     }
   }
