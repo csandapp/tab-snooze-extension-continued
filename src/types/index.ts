@@ -28,10 +28,21 @@ export type SnoozePeriod =
   | { type: 'monthly'; hour: number; day: number }
   | { type: 'yearly'; hour: number; date: [number, number] };
 
+export type SnoozeType =
+  | 'later'
+  | 'evening'
+  | 'tomorrow'
+  | 'weekend'
+  | 'next_week'
+  | 'in_a_month'
+  | 'someday'
+  | 'repeated'
+  | 'specific_date';
+
 export interface SnoozedTab {
   title: string;
   url: string;
-  type: string;
+  type: SnoozeType;
   favicon: string;
   when: number;
   sleepStart: number;
@@ -41,7 +52,7 @@ export interface SnoozedTab {
 export interface SnoozeConfig {
   wakeupTime?: number;
   period?: SnoozePeriod;
-  type: string;
+  type: SnoozeType;
   closeTab?: boolean;
 }
 
