@@ -1,7 +1,6 @@
-// @flow
-
 import { BADGE_HIDDEN } from './badge';
 // import { exposeFunctionForDebug } from './utils';
+import type { Settings } from '../types';
 
 export const STORAGE_KEY_SETTINGS = 'settings';
 
@@ -44,14 +43,14 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function saveSettings(
-  newSettings: $Shape<Settings>
+  newSettings: Partial<Settings>
 ): Promise<void> {
   const currentSettings = await getSettings();
 
-  newSettings = Object.assign(currentSettings, newSettings);
+  const mergedSettings = Object.assign(currentSettings, newSettings);
 
   return chrome.storage.local.set({
-    [STORAGE_KEY_SETTINGS]: newSettings,
+    [STORAGE_KEY_SETTINGS]: mergedSettings,
   });
 }
 

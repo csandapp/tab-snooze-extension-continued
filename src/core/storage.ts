@@ -1,7 +1,6 @@
-// @flow
-
 import './debugStorage';
 import { areTabsEqual } from './utils';
+import type { SnoozedTab } from '../types';
 
 export const STORAGE_KEY_TS_VERSION = 'tsVersion';
 export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
@@ -14,7 +13,7 @@ export const STORAGE_KEY_RECENTLY_WOKEN = 'recentlyWokenTabs';
 // export const STORAGE_KEY_TAB_COUNT = 'tabsCount';
 // export const STORAGE_KEY_HISTORY = 'history';
 
-const includesTab = (list, tab) => list.some(t => areTabsEqual(t, tab));
+const includesTab = (list: SnoozedTab[], tab: SnoozedTab) => list.some(t => areTabsEqual(t, tab));
 
 /*
     Promise-chain mutex for serializing snoozedTabs storage writes.
@@ -35,16 +34,14 @@ function withStorageLock<T>(fn: () => Promise<T>): Promise<T> {
     Storage sync has a QUOTA_BYTES_PER_ITEM of 4000, so we save
     each tab in a different key... instead of one big array :( it's sad
 */
-export async function getSnoozedTabs(): Promise<Array<SnoozedTab>> {
-  const { snoozedTabs } = await chrome.storage.local.get(
-    STORAGE_KEY_SNOOZED_TABS
-  );
+export async function getSnoozedTabs(): Promise<SnoozedTab[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEY_SNOOZED_TABS);
 
-  return snoozedTabs || [];
+  return (result[STORAGE_KEY_SNOOZED_TABS] as SnoozedTab[]) || [];
 }
 
 export function addSnoozedTabs(
-  tabsToAdd: Array<SnoozedTab>
+  tabsToAdd: SnoozedTab[]
 ): Promise<void> {
   return withStorageLock(async () => {
     const tabs = await getSnoozedTabs();
@@ -59,7 +56,7 @@ export function addSnoozedTabs(
 }
 
 export function removeSnoozedTabs(
-  tabsToRemove: Array<SnoozedTab>
+  tabsToRemove: SnoozedTab[]
 ): Promise<void> {
   return withStorageLock(async () => {
     const tabs = await getSnoozedTabs();
@@ -75,22 +72,20 @@ export function removeSnoozedTabs(
 }
 
 function saveSnoozedTabs(
-  snoozedTabs: Array<SnoozedTab>
+  snoozedTabs: SnoozedTab[]
 ): Promise<void> {
   return chrome.storage.local.set({
     [STORAGE_KEY_SNOOZED_TABS]: snoozedTabs,
   });
 }
 
-export async function getRecentlyWokenTabs(): Promise<Array<string>> {
-  const { recentlyWokenTabs } = await chrome.storage.local.get(
-    STORAGE_KEY_RECENTLY_WOKEN
-  );
-  return recentlyWokenTabs || [];
+export async function getRecentlyWokenTabs(): Promise<string[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEY_RECENTLY_WOKEN);
+  return (result[STORAGE_KEY_RECENTLY_WOKEN] as string[]) || [];
 }
 
 export function saveRecentlyWokenTabs(
-  tabKeys: Array<string>
+  tabKeys: string[]
 ): Promise<void> {
   return chrome.storage.local.set({
     [STORAGE_KEY_RECENTLY_WOKEN]: tabKeys,

@@ -1,5 +1,5 @@
+// @ts-nocheck — Dev-only mock that intentionally reassigns the chrome global
 console.log('Loading src/setup.js');
-// src/setup.js
 if (import.meta.env.DEV) {
   const mockStorage = {
     snooze_settings: {

@@ -1,7 +1,3 @@
-// @flow
-
-// import { addTrackingIdToUrl } from './core/analytics';
-
 // Base app file path
 export const APP_BASE_PATH = '/index.html#';
 

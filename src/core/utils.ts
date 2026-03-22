@@ -1,8 +1,7 @@
-// @flow
-
 import moment from 'moment';
 import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
 import URL from 'url';
+import type { SnoozedTab, SnoozePeriod } from '../types';
 
 
 const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
@@ -28,9 +27,9 @@ export function isMacOS() {
     Create tabs and call callback() when they are all created.
 */
 export function createTabs(
-  tabInfos: Array<SnoozedTab>,
+  tabInfos: SnoozedTab[],
   makeActive: boolean
-): Promise<{ created: Array<ChromeTab>, failedTabs: Array<SnoozedTab>, customHandled: Array<SnoozedTab> }> {
+): Promise<{ created: chrome.tabs.Tab[], failedTabs: SnoozedTab[], customHandled: SnoozedTab[] }> {
   // Generate a unique call ID to track this specific invocation
   const callId = `CT-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
 
@@ -45,9 +44,9 @@ export function createTabs(
       });
     })
   ).then(results => {
-    const created = [];
-    const failedTabs = [];
-    const customHandled = [];
+    const created: chrome.tabs.Tab[] = [];
+    const failedTabs: SnoozedTab[] = [];
+    const customHandled: SnoozedTab[] = [];
 
     results.forEach((result, index) => {
       if (result.status === 'fulfilled') {
@@ -69,14 +68,14 @@ export function createTabs(
 }
 
 // Attach affiliate tracking ID for amazon product links
-function attachAffiliationTag(url: string) {
+function attachAffiliationTag(url: string): string {
   if (!url.includes('amazon.')) {
     return url; // as is
   }
   const parsedUrl = URL.parse(url, true /* parse query too */);
 
-  parsedUrl.query.tag = AMAZON_AFFILIATE_ID;
-  delete parsedUrl.search; // delete search so 'query' will be used for formatting
+  parsedUrl.query!.tag = AMAZON_AFFILIATE_ID;
+  parsedUrl.search = undefined as unknown as string; // clear search so 'query' will be used for formatting
 
   return URL.format(parsedUrl);
 }
@@ -89,8 +88,8 @@ export async function createCenteredWindow(
   const currentWindow = await chrome.windows.getCurrent();
   const screenWidth = currentWindow.width || 1920;
   const screenHeight = currentWindow.height || 1080;
-  const left = Math.round(currentWindow.left + (screenWidth - width) / 2);
-  const top = Math.round(currentWindow.top + (screenHeight - height) / 3);
+  const left = Math.round((currentWindow.left || 0) + (screenWidth - width) / 2);
+  const top = Math.round((currentWindow.top || 0) + (screenHeight - height) / 3);
 
   const newWindow = await chrome.windows.create({
     type: 'popup',
@@ -103,7 +102,7 @@ export async function createCenteredWindow(
     focused: true,
   });
 
-  chrome.windows.update(newWindow.id, { focused: true });
+  chrome.windows.update(newWindow!.id!, { focused: true });
 }
 
 export async function createTab(path: string) {
@@ -124,8 +123,8 @@ export async function createTab(path: string) {
   and make the jumpToTab active, if notification is clicked.
 */
 export async function notifyUserAboutNewTabs(
-  tabs: Array<SnoozedTab>,
-  jumpToTab: ChromeTab
+  tabs: SnoozedTab[],
+  jumpToTab: chrome.tabs.Tab
 ) {
   const message = tabs.map(tab => tab.title).join('\n');
 
@@ -169,7 +168,7 @@ export async function notifyUserAboutNewTabs(
     notifId
   ) {
     if (notifId === createdNotifId) {
-      chrome.tabs.update(jumpToTab.id, { active: true });
+      chrome.tabs.update(jumpToTab.id!, { active: true });
       chrome.windows.update(jumpToTab.windowId, {
         focused: true,
       });
@@ -180,11 +179,11 @@ export async function notifyUserAboutNewTabs(
   });
 }
 
-export function addMinutes(date: Date, minutes: number) {
+export function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-export async function getActiveTab() {
+export async function getActiveTab(): Promise<chrome.tabs.Tab> {
   const tabs = await chrome.tabs.query({
     active: true,
     currentWindow: true,
@@ -203,7 +202,7 @@ export async function getActiveTab() {
 export function calcNextOccurrenceForPeriod(
   period: SnoozePeriod
 ): Date {
-  let occurrences = [];
+  let occurrences: moment.Moment[] = [];
 
   if (period.type === 'daily') {
     const today = moment();
@@ -215,7 +214,7 @@ export function calcNextOccurrenceForPeriod(
   if (period.type === 'weekly') {
     // occurences for this week and the next week
     for (let weekIndex = 0; weekIndex < 2; weekIndex++) {
-      for (let weekdayIndex of period.days) {
+      for (const weekdayIndex of period.days) {
         occurrences.push(
           moment()
             .add(weekIndex, 'week')
@@ -263,7 +262,7 @@ export function calcNextOccurrenceForPeriod(
   return nextFutureOccurrence.toDate();
 }
 
-function momentWithHour(aMoment: any, hour: number) {
+function momentWithHour(aMoment: moment.Moment, hour: number): moment.Moment {
   const h = Math.floor(hour);
   const m = Math.floor((hour - h) * 60); // 0.5h--> 30m
 
@@ -274,15 +273,15 @@ function momentWithHour(aMoment: any, hour: number) {
     .milliseconds(0);
 }
 
-export const compareTabs = (tab1: SnoozedTab, tab2: SnoozedTab) =>
+export const compareTabs = (tab1: SnoozedTab, tab2: SnoozedTab): number =>
   tab1.when === tab2.when
     ? tab1.sleepStart - tab2.sleepStart
     : tab1.when - tab2.when;
 
-export const areTabsEqual = (tab1: SnoozedTab, tab2: SnoozedTab) =>
+export const areTabsEqual = (tab1: SnoozedTab, tab2: SnoozedTab): boolean =>
   tab1.url === tab2.url && tab1.when === tab2.when;
 
-export function ordinalNum(n: number) {
+export function ordinalNum(n: number): string {
   return moment.localeData().ordinal(n);
 }
 
@@ -291,7 +290,7 @@ export function ordinalNum(n: number) {
  * than 10s between them.
  */
 export function countConsecutiveSnoozes(
-  snoozedTabs: Array<SnoozedTab>,
+  snoozedTabs: SnoozedTab[],
   consecutiveSnoozeTimeout: number
 ): number {
   // Sort tabs by sleep start. Most recently snoozed first.
@@ -311,7 +310,7 @@ export function countConsecutiveSnoozes(
 }
 
 export function getRecentlySnoozedTab(
-  snoozedTabs: Array<SnoozedTab>
+  snoozedTabs: SnoozedTab[]
 ): SnoozedTab {
   // Sort tabs by sleep start. Most recently snoozed first.
   snoozedTabs.sort((tabA, tabB) => tabB.sleepStart - tabA.sleepStart);
@@ -320,7 +319,7 @@ export function getRecentlySnoozedTab(
 }
 
 export function getFirstTabToWakeup(
-  snoozedTabs: Array<SnoozedTab>
+  snoozedTabs: SnoozedTab[]
 ): SnoozedTab {
   // Sort tabs by sleep start. Most recently snoozed first.
   snoozedTabs.sort((tabA, tabB) => tabA.when - tabB.when);
@@ -377,7 +376,7 @@ export async function imageUrlToBase64(url: string): Promise<string> {
     .getReader()
     .read()
     .then(result =>
-      btoa(String.fromCharCode.apply(null, result.value))
+      btoa(String.fromCharCode.apply(null, Array.from(result.value!)))
     );
 
   const type = response.headers.get('Content-Type');

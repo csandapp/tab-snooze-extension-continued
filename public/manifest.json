@@ -36,7 +36,7 @@
   },
   "options_page": "index.html#options/settings",
   "background": {
-    "service_worker": "src/core/backgroundMain.js",
+    "service_worker": "src/core/backgroundMain.ts",
     "type": "module"
   },
   "commands": {
