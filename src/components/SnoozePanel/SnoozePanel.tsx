@@ -49,7 +49,7 @@ interface Props {
 export function SnoozePanel(props: Props): React.ReactNode {
   const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
 
-  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
+  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<string | null>(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
   const [isProUser, setIsProUser] = useState(true);
@@ -58,7 +58,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
   useEffect(() => {
     let cancelled = false;
-    let timeoutId;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const loadData = async () => {
       try {
@@ -88,7 +88,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
-  const onSnoozeButtonClicked = useCallback((event: Event, snoozeOption: SnoozeOption) => {
+  const onSnoozeButtonClicked = useCallback((event: any, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
       return;
@@ -104,7 +104,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       const wakeupTime = snoozeOption.when.getTime();
 
       delayedSnoozeActiveTab({
-        type: snoozeOption.id,
+        type: snoozeOption.id as any,
         wakeupTime,
         closeTab: !(event as any).altKey,
       });
@@ -114,17 +114,17 @@ export function SnoozePanel(props: Props): React.ReactNode {
     }
   }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
-  const onKeyPress = useCallback((event: KeyboardEvent) => {
+  const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (isOverFreePlanLimit) {
       // ignore shortcuts when Upgrade dialog is visible
       return;
     }
 
     let nextFocusedIndex = focusedButtonIndex;
-    const key = keycode(event);
+    const key = keycode(event as any) as string | undefined;
     const mappedOptionIndex =
-      key && SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
-    const numpadKey = parseInt(key);
+      key ? SNOOZE_SHORTCUT_KEYS[key.toUpperCase()] : undefined;
+    const numpadKey = parseInt(key || '');
 
     if (mappedOptionIndex != null) {
       onSnoozeButtonClicked(
@@ -169,7 +169,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
     delayedSnoozeActiveTab({
-      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      type: (selectedSnoozeOptionId || '') as any,
       wakeupTime: date.getTime(),
       closeTab: true,
     });
@@ -182,21 +182,21 @@ export function SnoozePanel(props: Props): React.ReactNode {
     }
 
     delayedSnoozeActiveTab({
-      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      type: (selectedSnoozeOptionId || '') as any,
       period,
       closeTab: true,
     });
   }, [selectedSnoozeOptionId, isProUser]);
 
   // decide whether or not to use callback here...
-  const getSnoozeButtons = (): Array<SnoozeButtonProps> => {
+  const getSnoozeButtons = () => {
     return snoozeOptions.map(
       (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
         proBadge: !isProUser && Boolean(snoozeOpt.isProFeature),
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: Event) => onSnoozeButtonClicked(ev, snoozeOpt),
+        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev as any, snoozeOpt),
         onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
         onMouseLeave: () => onTooltipAreaMouseLeave(),
       })
@@ -212,7 +212,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
   return (
     <Root
       onKeyDown={onKeyPress}
-      tabIndex="0"
+      tabIndex={0}
       ref={ref => {
         // autofocus Root so we get key press events
         if (ref) ref.focus();
@@ -311,7 +311,7 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
     }
 
     if (config.closeTab) {
-      chrome.tabs.remove(activeTab.id);
+      chrome.tabs.remove(activeTab.id!);
     }
     window.close();
   }, 1100);
