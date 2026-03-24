@@ -28,7 +28,7 @@ export default function FirstSnoozeDialog(): React.ReactNode {
       >
         <Root>
           <Button
-            raised="true"
+            raised
             as={Link}
             color="#4A90E2"
             to={SLEEPING_TABS_PATH}
