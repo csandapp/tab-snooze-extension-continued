@@ -116,10 +116,10 @@ const SleepingTabsPage = (): React.ReactNode => {
         {tabGroup.tabs.map((tab, index2) => (
           <StyledListItem
             key={index2}
-            button
             onClick={event => {
               wakeupTab(tab, event);
             }}
+            sx={{ cursor: 'pointer' }}
           >
             <Icon src={tab.favicon} alt="" />
             <ListItemText
@@ -180,9 +180,7 @@ const NewTodoBtn = () => (
     }}
   >
     <StyledFab
-      component={Link}
-      to={TODO_PATH}
-      target="_blank"
+      {...{ component: Link, to: TODO_PATH, target: '_blank' } as any}
       color="secondary"
       aria-label="Add"
     >
