@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-interface Props {}
-
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
 export default (WrappedComponent: any) => {
-  const TooltipHelper = (props: Props) => {
+  const TooltipHelper = (props: Record<string, any>) => {
     // counts down until tooltip appears/hides
     const tooltipShowTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const tooltipHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);

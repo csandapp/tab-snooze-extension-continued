@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
+// @ts-expect-error no type declarations available
 import sanitizeHtml from 'sanitize-html';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -20,10 +21,6 @@ import todoFavicon1 from './images/todo_favicon_1.png';
 import todoFavicon2 from './images/todo_favicon_2.png';
 import todoFavicon3 from './images/todo_favicon_3.png';
 
-interface StyledProps {
-  color: string;
-  isplaceholder?: string;
-}
 
 export const TODO_COLORS = [
   { favicon: todoFavicon0, hex: '#F2B32A' },
@@ -47,12 +44,12 @@ function TodoPage(): React.ReactNode {
 
   // Parse initial state from URL (lazy initializer to avoid re-computation)
   const [text, setText] = useState<string>(() => {
-    const { text } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { text } = queryString.parse(location.search) as Record<string, string | undefined>;
     return text ? text.replace(/_/g, ' ') : '';
   });
 
   const [colorIndex, setColorIndex] = useState<number>(() => {
-    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { color: colorIndexStr } = queryString.parse(location.search) as Record<string, string | undefined>;
     return colorIndexStr ? parseInt(colorIndexStr) : randomColorIndex();
   });
 
@@ -75,7 +72,7 @@ function TodoPage(): React.ReactNode {
 
   // Sync initial color to URL if it wasn't in the URL
   useEffect(() => {
-    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { color: colorIndexStr } = queryString.parse(location.search) as Record<string, string | undefined>;
     if (!colorIndexStr) {
       updateAddressBar(text, colorIndex);
     }
@@ -129,7 +126,7 @@ function TodoPage(): React.ReactNode {
       } else {
         event.preventDefault();
         todoTextElement.focus();
-        document.execCommand('selectAll', false, null);
+        document.execCommand('selectAll', false, undefined);
       }
     }
 
@@ -182,7 +179,7 @@ function TodoPage(): React.ReactNode {
             innerRef={todoTextRef}
             dir="auto"
             html={text}
-            onChange={event => setTextAndColor(event.target.value, colorIndex)}
+            onChange={(event: any) => setTextAndColor(event.target.value, colorIndex)}
             // goes to dom, so is written as string
             isplaceholder={text === '' ? 'true' : 'false'}
           />
@@ -194,10 +191,10 @@ function TodoPage(): React.ReactNode {
             />
             <BigIconButton
               icon={snoozeIcon}
-              onClick={toggleSnoozePanel}
+              onClick={toggleSnoozePanel as any}
             />
             <Popper
-              id={snoozePanelOpen ? 'simple-popper' : null}
+              id={snoozePanelOpen ? 'simple-popper' : undefined}
               open={snoozePanelOpen}
               placement="top-start"
               anchorEl={snoozeBtnEl.current}
@@ -212,7 +209,7 @@ function TodoPage(): React.ReactNode {
                   <Paper
                     style={{ borderRadius: 5, overflow: 'hidden' }}
                   >
-                    <SnoozePanel hideFooter />
+                    <SnoozePanel hideFooter={true} />
                   </Paper>
                 </Grow>
               )}
@@ -238,7 +235,7 @@ const BigIconButton = (props: {
   </IconButton>
 );
 
-const Root = styled.div`
+const Root = styled.div<{ color: string }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -254,7 +251,7 @@ const Root = styled.div`
 
   transition: all 1s !important;
 
-  background-color: ${(props: StyledProps) => props.color};
+  background-color: ${props => props.color};
 `;
 
 const TodoText = styled(ContentEditable)`
@@ -283,7 +280,7 @@ const TodoText = styled(ContentEditable)`
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  ${(props: StyledProps) =>
+  ${(props: any) =>
     props.isplaceholder === 'true' &&
     css`
       :after {

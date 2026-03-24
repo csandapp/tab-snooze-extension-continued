@@ -36,18 +36,25 @@ const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
 const AsyncDateSelector = lazy(() => import('./DateSelector'));
 
 interface Props {
-  hideFooter: boolean;
-  // Props passed by TooltipHelper
-  tooltipVisible: boolean;
-  tooltipText: string | null | undefined;
-  preventTooltip: () => void;
-  onTooltipAreaMouseEnter: (s: string) => void;
-  onTooltipAreaMouseLeave: () => void;
+  hideFooter?: boolean;
+  // Props injected by TooltipHelper HOC
+  tooltipVisible?: boolean;
+  tooltipText?: string | null;
+  preventTooltip?: () => void;
+  onTooltipAreaMouseEnter?: (s: string) => void;
+  onTooltipAreaMouseLeave?: () => void;
 }
 
 
 export function SnoozePanel(props: Props): React.ReactNode {
-  const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
+  const {
+    hideFooter = false,
+    tooltipVisible = false,
+    tooltipText,
+    preventTooltip = () => {},
+    onTooltipAreaMouseEnter = () => {},
+    onTooltipAreaMouseLeave = () => {},
+  } = props;
 
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<string | null>(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
