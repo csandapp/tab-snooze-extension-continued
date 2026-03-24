@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from 'styled-components';
 import Zoom from '@mui/material/Zoom';
 
@@ -8,49 +8,39 @@ interface Props {
   noAnimation?: boolean;
 }
 
-interface StyledProps {
-  active?: boolean;
-  theme: {
-    snoozePanel: {
-      bgColor: string;
-    };
-  };
-}
-
 export default function SnoozeModal(props: Props): React.ReactNode {
   const { visible, noAnimation, children } = props;
 
   return (
-    <Overlay active={visible ? "true" : undefined}>
+    <Overlay $active={visible}>
       {/* mountOnEnter so to render fast and open the popup fast */}
       <Zoom
         in={visible}
         timeout={{ enter: noAnimation ? 0 : 300, exit: 300 }}
-        direction="up"
         mountOnEnter
       >
-        <Modal visible={visible}>{children}</Modal>
+        <Modal>{children}</Modal>
       </Zoom>
     </Overlay>
   );
 }
 
-const Overlay = styled.div`
+const Overlay = styled.div<{ $active?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  pointer-events: ${(props: StyledProps) => (props.active ? 'auto' : 'none')};
+  pointer-events: ${props => (props.$active ? 'auto' : 'none')};
   background-color: rgba(0, 0, 0, 0.2);
 
   padding: 10px;
   transition: opacity 300ms;
-  opacity: ${(props: StyledProps) => (props.active ? 1 : 0)};
+  opacity: ${props => (props.$active ? 1 : 0)};
 `;
 
 const Modal = styled.div`
-  background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
+  background-color: ${props => props.theme.snoozePanel.bgColor};
   border-radius: 5px;
   padding: 10px;
   /* margin: 10px; */

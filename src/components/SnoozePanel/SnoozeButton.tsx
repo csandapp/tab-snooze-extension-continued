@@ -1,25 +1,7 @@
 import React from 'react';
-import styled, { css, withTheme } from 'styled-components';
+import styled, { css, withTheme, type DefaultTheme } from 'styled-components';
 import ProCornerRibbon from './ProCornerRibbon';
 import Collapse from '@mui/material/Collapse';
-
-// Theme type definition
-interface Theme {
-  primary: string;
-  snoozePanel: {
-    bgColor: string;
-    hoverColor: string;
-    buttonTextColor: string;
-    whiteIcons: boolean;
-  };
-}
-
-interface StyledProps {
-  theme: Theme;
-  focused?: boolean;
-  pressed?: boolean;
-  hide?: boolean;
-}
 
 export interface Props {
   id: string;
@@ -33,7 +15,7 @@ export interface Props {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   // passed by withTheme:
-  theme?: Theme;
+  theme?: DefaultTheme;
 }
 
 const SNOOZE_CLICK_EFFECT_TIME = 400;
@@ -75,7 +57,8 @@ const SnoozeButton: React.FC<Props> = (props: Props): React.ReactNode => {  // D
 }
 
 export default withTheme(SnoozeButton) as React.ComponentType<Props>;
-const Button = styled.button`
+
+const Button = styled.button<{ $pressed?: boolean; $focused?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,13 +72,13 @@ const Button = styled.button`
   border: none;
   cursor: pointer;
   outline: inherit;
-  background-color: ${(props: StyledProps) => props.theme.snoozePanel.bgColor};
-  
+  background-color: ${props => props.theme.snoozePanel.bgColor};
+
   /* overflow: hidden; */ /* Removing overflow hidden to debug/fix clipping */
   transition: background-color 0.1s;
 
   :hover {
-    background-color: ${(props: StyledProps) => props.theme.snoozePanel.hoverColor};
+    background-color: ${props => props.theme.snoozePanel.hoverColor};
   }
 
   /* Ensure children don't block the background */
@@ -108,19 +91,19 @@ const Button = styled.button`
     pointer-events: none;
   }
 
-  ${(props: StyledProps) =>
+  ${props =>
     props.$focused &&
     css`
       background-color: ${props.theme.snoozePanel.hoverColor};
     `}
 
-  ${(props: StyledProps) =>
+  ${props =>
     props.$pressed &&
     css`
       /* To add transition, u need to transition the image too */
       transition: background-color ${SNOOZE_CLICK_EFFECT_TIME}ms;
       background-color: ${props.theme.primary} !important;
-      
+
       ${Icon} {
         transform: scale(1.3);
       }
@@ -131,9 +114,9 @@ const IconWrapper = styled.div`
   position: relative;
 `;
 
-const Icon = styled.img`
+const Icon = styled.img<{ hide?: string }>`
   transition: all ${SNOOZE_CLICK_EFFECT_TIME}ms;
-  opacity: ${(props: StyledProps) => (props.hide ? 0 : 1)};
+  opacity: ${props => (props.hide ? 0 : 1)};
 `;
 
 const OverlayIcon = styled(Icon)`
@@ -144,15 +127,15 @@ const OverlayIcon = styled(Icon)`
   top: 0;
 `;
 
-const Title = styled.div`
+const Title = styled.div<{ $pressed?: boolean }>`
   margin-top: 12px;
   font-size: 15px;
-  color: ${(props: StyledProps) => props.theme.snoozePanel.buttonTextColor};
+  color: ${props => props.theme.snoozePanel.buttonTextColor};
   font-weight: 500;
   transition: color ${SNOOZE_CLICK_EFFECT_TIME}ms;
   /* height: 16px; */
 
-  ${(props: StyledProps) =>
+  ${props =>
     props.$pressed &&
     css`
       color: #fff;
