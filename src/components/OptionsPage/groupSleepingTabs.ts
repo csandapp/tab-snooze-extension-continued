@@ -18,7 +18,7 @@ export async function getSleepingTabByWakeupGroups(
   const snoozedTabs = await getSnoozedTabs();
   const timeRanges = await getWakeupTimeRanges();
 
-  const visibleTabGroups = [];
+  const visibleTabGroups: TabGroup[] = [];
 
   timeRanges.forEach(timeRange => {
     const tabsInRange = [];

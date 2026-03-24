@@ -21,6 +21,7 @@ const HOURS = indexLabels(getHoursInDay(), 0.5);
 interface OptionsProps {
   value: any;
   onChange: (value: any) => void;
+  style?: React.CSSProperties;
 }
 
 export const PeriodOptions = (props: OptionsProps) => (
@@ -87,7 +88,7 @@ const DayName = styled.div`
   font-size: 20px;
 `;
 
-function indexLabels(array, step = 1) {
+function indexLabels(array: string[], step = 1) {
   const items = [];
   for (let i = 0; i < array.length; i++)
     items.push({ value: i * step, label: array[i] });

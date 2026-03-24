@@ -29,7 +29,7 @@ export default (props: SelectProps): React.ReactNode => {
       onChange={event => {
         const selectedIndex = parseInt(event.target.value);
         const selectedOption = props.options[selectedIndex];
-        props.onChange(selectedOption.value);
+        props.onChange?.(selectedOption.value);
       }}
     >
       {props.options.map((option, index) => (
