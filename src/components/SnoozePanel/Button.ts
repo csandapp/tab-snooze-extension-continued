@@ -1,26 +1,23 @@
 import styled, { css } from 'styled-components';
 import Color from 'color';
 
-interface StyledProps {
+interface ButtonProps {
   color?: string;
-  theme: { primary: string };
   raised?: boolean;
   disabled?: boolean;
   icon?: string;
 }
 
-export default styled.button.attrs(
-  (props: StyledProps) => ({
+export default styled.button.attrs<ButtonProps>(
+  props => ({
     color: props.color || props.theme.primary,
   }),
-)`
+)<ButtonProps>`
   display: inline-block;
   border: none;
   cursor: pointer;
   outline: inherit;
-  background-color: ${(
-    props: StyledProps,
-  ) => props.color};
+  background-color: ${props => props.color};
   padding: 12px 14px;
   border-radius: 5px;
   color: #fff;
@@ -32,25 +29,19 @@ export default styled.button.attrs(
     vertical-align: center;
   }
 
-  ${(
-    props: StyledProps,
-  ) => props.raised &&
-    css`
+  ${props => props.raised &&
+    css<ButtonProps>`
       box-shadow: 0 3px 0 0
-        ${(props: StyledProps) => Color(
-          props.color,
-        ).darken(0.3).hex()};
+        ${p => Color(p.color).darken(0.3).hex()};
     `}
 
-  ${(props: StyledProps) => props.disabled &&
+  ${props => props.disabled &&
     css`
       pointer-events: none;
       opacity: 0.6;
     `}
 
-  ${(
-    props: StyledProps,
-  ) => props.icon &&
+  ${props => props.icon &&
     css`
       background-image: url('${props.icon}');
       background-position: 12px center;
@@ -60,14 +51,10 @@ export default styled.button.attrs(
 
   transition: all 0.12s;
   :hover {
-    background-color: ${(
-      props: StyledProps,
-    ) => Color(props.color).darken(0.1).hex()};
+    background-color: ${props => Color(props.color).darken(0.1).hex()};
   }
   :active {
     transform: scale(0.95);
-    background-color: ${(
-      props: StyledProps,
-    ) => Color(props.color).darken(0.3).hex()};
+    background-color: ${props => Color(props.color).darken(0.3).hex()};
   }
 `;
