@@ -38,7 +38,7 @@ const AsyncWhatsNewDialog = React.lazy(() =>
 );
 
 const Router = () => (
-  <HashRouter hashType="noslash">
+  <HashRouter>
     <Suspense fallback={<div style={{ padding: '10px', textAlign: 'center' }}>Loading...</div>}>
       <Routes>
         {/* Default route - redirect to popup */}
