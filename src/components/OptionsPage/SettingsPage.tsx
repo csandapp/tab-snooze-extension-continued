@@ -62,11 +62,6 @@ interface ChromeCommand {
   shortcut: string;
 }
 
-interface StyledProps {
-  locked?: boolean;
-  small?: boolean;
-}
-
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -135,10 +130,7 @@ const SettingsPage = (): React.ReactNode => {
     return (
       <ListItem
         key={options.key}
-        button={options.href != null}
-        component={options.href && 'a'}
-        href={options.href}
-        target={options.href && '_blank'}
+        {...(options.href ? { component: 'a', href: options.href, target: '_blank' } as any : {})}
       >
         {options.icon && <ListItemIcon>{options.icon}</ListItemIcon>}
         <ListItemText
@@ -432,13 +424,15 @@ const SettingsPage = (): React.ReactNode => {
                     <span style={{ marginRight: 10 }}>in</span>
                     <SettingsSelect
                       small="true"
+                      value={2}
+                      onChange={() => {}}
                       options={[{ value: 2, label: '2' }]}
-                      // {...bindSettings(options.stateKey)}
                     />
                     <SettingsSelect
                       small="true"
+                      value="days"
+                      onChange={() => {}}
                       options={[{ value: 'days', label: period }]}
-                      // {...bindSettings(options.stateKey)}
                     />
                   </Fragment>
                 ),
@@ -549,8 +543,8 @@ const LogInButton = styled(Button).attrs({
   margin-right: 13px;
 `;
 
-const LockedContent = styled.div`
-  ${(props: StyledProps) =>
+const LockedContent = styled.div<{ locked?: boolean }>`
+  ${props =>
     props.locked &&
     css`
       pointer-events: none;
@@ -560,8 +554,8 @@ const LockedContent = styled.div`
 `;
 
 const SettingsSelect = styled(Select).attrs({
-  component: 'select',
-})`
+  component: 'select' as any,
+})<{ small?: string }>`
   background-color: #f1f3f4;
   border: none;
   border-radius: 4px;
@@ -572,7 +566,7 @@ const SettingsSelect = styled(Select).attrs({
   line-height: inherit;
   outline: none;
   padding-left: 5px;
-  width: ${(props: StyledProps) => (props.small ? 94 : 200)}px;
+  width: ${props => (props.small ? 94 : 200)}px;
   height: 40px;
   margin-right: 12px;
   :hover {

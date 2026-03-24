@@ -8,11 +8,13 @@ const StyledNativeSelect = muiStyled(NativeSelect)(({ theme }) => ({
   lineHeight: 'initial',
 }));
 
-interface SelectProps {
+export interface SelectProps {
   component?: React.ComponentType<any>;
-  value: any;
-  onChange: (value: string) => void;
-  options: Array<{ label: string; value: string }>;
+  value?: any;
+  onChange?: (value: any) => void;
+  options: Array<{ label: string; value: any }>;
+  autoFocus?: boolean;
+  style?: React.CSSProperties;
 }
 
 export default (props: SelectProps): React.ReactNode => {
