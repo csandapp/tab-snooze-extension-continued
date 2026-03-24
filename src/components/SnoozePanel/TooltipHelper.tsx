@@ -8,8 +8,8 @@ const TOOLTIP_HIDE_TIMEOUT = 100;
 export default (WrappedComponent: any) => {
   const TooltipHelper = (props: Props) => {
     // counts down until tooltip appears/hides
-    const tooltipShowTimeout = useRef(null);
-    const tooltipHideTimeout = useRef(null);
+    const tooltipShowTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const tooltipHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   
     const [ tooltipVisibleState, setTooltipVisibleState ] = useState(false);
     const [ tooltipTextState, setTooltipTextState ] = useState("");
