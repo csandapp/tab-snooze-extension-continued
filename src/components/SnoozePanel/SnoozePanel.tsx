@@ -95,7 +95,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
-  const onSnoozeButtonClicked = useCallback((event: any, snoozeOption: SnoozeOption) => {
+  const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
       return;
@@ -113,7 +113,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       delayedSnoozeActiveTab({
         type: snoozeOption.id,
         wakeupTime,
-        closeTab: !(event as any).altKey,
+        closeTab: !event.altKey,
       });
     } else {
       // either period or date selector opens as dialog
@@ -128,7 +128,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
     }
 
     let nextFocusedIndex = focusedButtonIndex;
-    const key = keycode(event as any) as string | undefined;
+    const key = keycode(event.nativeEvent) as string | undefined;
     const mappedOptionIndex =
       key ? SNOOZE_SHORTCUT_KEYS[key.toUpperCase()] : undefined;
     const numpadKey = parseInt(key || '');
@@ -205,7 +205,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
         proBadge: !isProUser && Boolean(snoozeOpt.isProFeature),
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev as any, snoozeOpt),
+        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
         onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
         onMouseLeave: () => onTooltipAreaMouseLeave(),
       })

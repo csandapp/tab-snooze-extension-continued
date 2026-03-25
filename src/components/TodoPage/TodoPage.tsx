@@ -99,7 +99,7 @@ function TodoPage(): React.ReactNode {
     setTextAndColor(text, (colorIndex + 1) % TODO_COLORS.length);
   }, [text, colorIndex, setTextAndColor]);
 
-  const toggleSnoozePanel = useCallback((event: any) => {
+  const toggleSnoozePanel = useCallback((event: React.MouseEvent) => {
     snoozeBtnEl.current = event.currentTarget;
     setSnoozePanelOpen(prev => !prev);
   }, []);
@@ -191,7 +191,7 @@ function TodoPage(): React.ReactNode {
             />
             <BigIconButton
               icon={snoozeIcon}
-              onClick={toggleSnoozePanel as any}
+              onClick={toggleSnoozePanel}
             />
             <Popper
               id={snoozePanelOpen ? 'simple-popper' : undefined}
@@ -222,7 +222,7 @@ function TodoPage(): React.ReactNode {
 }
 
 const BigIconButton = (props: {
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
   icon: string;
   forwardRef?: any;
 }) => (
