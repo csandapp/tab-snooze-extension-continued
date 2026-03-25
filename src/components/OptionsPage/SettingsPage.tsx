@@ -429,13 +429,13 @@ const SettingsPage = (): React.ReactNode => {
                   <Fragment>
                     <span style={{ marginRight: 10 }}>in</span>
                     <SettingsSelect
-                      small="true"
+                      small
                       value={2}
                       onChange={() => {}}
                       options={[{ value: 2, label: '2' }]}
                     />
                     <SettingsSelect
-                      small="true"
+                      small
                       value="days"
                       onChange={() => {}}
                       options={[{ value: 'days', label: period }]}
@@ -561,7 +561,7 @@ const LockedContent = styled.div<{ locked?: boolean }>`
 
 const SettingsSelect = styled(Select).attrs({
   component: 'select' as const,
-})<{ small?: string }>`
+})<{ small?: boolean }>`
   background-color: #f1f3f4;
   border: none;
   border-radius: 4px;
