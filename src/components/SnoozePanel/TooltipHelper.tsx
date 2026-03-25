@@ -3,8 +3,8 @@ import React, { useRef, useState, useEffect } from 'react';
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
-export default (WrappedComponent: any) => {
-  const TooltipHelper = (props: Record<string, any>) => {
+export default <P extends Record<string, any>>(WrappedComponent: React.ComponentType<P>) => {
+  const TooltipHelper = (props: Omit<P, 'tooltipVisible' | 'tooltipText' | 'preventTooltip' | 'onTooltipAreaMouseEnter' | 'onTooltipAreaMouseLeave'>) => {
     // counts down until tooltip appears/hides
     const tooltipShowTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const tooltipHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -56,13 +56,17 @@ export default (WrappedComponent: any) => {
       }
     }
 
-  return (
+  const injectedProps = {
+      tooltipVisible: tooltipVisibleState,
+      tooltipText: tooltipTextState,
+      preventTooltip,
+      onTooltipAreaMouseEnter,
+      onTooltipAreaMouseLeave,
+    };
+
+    return (
       <WrappedComponent
-        tooltipVisible={tooltipVisibleState}
-        tooltipText={tooltipTextState}
-        preventTooltip={preventTooltip}
-        onTooltipAreaMouseEnter={onTooltipAreaMouseEnter}
-        onTooltipAreaMouseLeave={onTooltipAreaMouseLeave}
+        {...(injectedProps as any)}
         {...props}
       />
     );
