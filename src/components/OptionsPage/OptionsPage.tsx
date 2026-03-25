@@ -103,7 +103,7 @@ const Main = styled.div`
   width: 600px;
 `;
 
-const NavButton = styled(Button)<{ as?: React.ElementType; to?: string }>`
+const NavButton = styled(Button)<{ component?: React.ElementType; to?: string }>`
   margin-left: 10px !important;
   // &.active {
   //  background-color: #0000001f !important;
