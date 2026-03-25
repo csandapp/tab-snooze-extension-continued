@@ -57,11 +57,6 @@ import {
 import { isProUser } from '../../core/license';
 import Button from '../SnoozePanel/Button';
 
-interface ChromeCommand {
-  description: string;
-  shortcut: string;
-}
-
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -69,7 +64,7 @@ const StyledList = muiStyled(List)(({ theme }) => ({
 
 const SettingsPage = (): React.ReactNode => {
   const [settingsState, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS);
-  const [commandsState, setCommandsState] = useState<Array<ChromeCommand>>([]);
+  const [commandsState, setCommandsState] = useState<Array<chrome.commands.Command>>([]);
   const isPro: boolean = true; // useState(true);
 
   useEffect(() => {
@@ -90,7 +85,7 @@ const SettingsPage = (): React.ReactNode => {
     const isPro = true; // await isProUser();
 
     setSettingsState(settings);
-    setCommandsState((commands || []) as ChromeCommand[]);
+    setCommandsState(commands || []);
     // setIsPro(isProValue);  // make everyone a pro user for now
   };
 
@@ -107,13 +102,13 @@ const SettingsPage = (): React.ReactNode => {
     return {
       [valueProp]: value,
       onChange: (eventOrValue: any) => {
-        const nextSettings: Record<string, any> = { ...currentSettings };
-        nextSettings[stateKey] = eventOrValue.target
+        const newValue = eventOrValue.target
           ? eventOrValue.target[valueProp]
           : eventOrValue;
+        const nextSettings: Settings = { ...currentSettings, [stateKey]: newValue };
 
-        saveSettings(nextSettings as Settings);
-        setSettingsState(nextSettings as Settings);
+        saveSettings(nextSettings);
+        setSettingsState(nextSettings);
       },
     };
   };
@@ -459,7 +454,7 @@ const SettingsPage = (): React.ReactNode => {
             // Hack! for some reason the main command (open popup)
             // gets an empty description... so we add it here
             title: command.description || 'Snooze active tab',
-            shortcut: isPro ? command.shortcut : '',
+            shortcut: isPro ? (command.shortcut || '') : '',
             locked: !isPro,
           })
         )}
