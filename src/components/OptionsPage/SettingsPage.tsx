@@ -127,11 +127,8 @@ const SettingsPage = (): React.ReactNode => {
     href?: string;
     key?: string;
   }) => {
-    return (
-      <ListItem
-        key={options.key}
-        {...(options.href ? { component: 'a', href: options.href, target: '_blank' } as any : {})}
-      >
+    const content = (
+      <>
         {options.icon && <ListItemIcon>{options.icon}</ListItemIcon>}
         <ListItemText
           primary={options.title}
@@ -143,6 +140,20 @@ const SettingsPage = (): React.ReactNode => {
             {options.component}
           </LockedContent>
         </ListItemSecondaryAction>
+      </>
+    );
+
+    if (options.href) {
+      return (
+        <ListItem key={options.key} component="a" href={options.href} target="_blank">
+          {content}
+        </ListItem>
+      );
+    }
+
+    return (
+      <ListItem key={options.key}>
+        {content}
       </ListItem>
     );
   };
@@ -554,7 +565,7 @@ const LockedContent = styled.div<{ locked?: boolean }>`
 `;
 
 const SettingsSelect = styled(Select).attrs({
-  component: 'select' as any,
+  component: 'select' as const,
 })<{ small?: string }>`
   background-color: #f1f3f4;
   border: none;

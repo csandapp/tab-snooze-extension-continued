@@ -9,7 +9,7 @@ const StyledNativeSelect = muiStyled(NativeSelect)(({ theme }) => ({
 }));
 
 export interface SelectProps {
-  component?: React.ComponentType<any>;
+  component?: React.ElementType;
   value?: any;
   onChange?: (value: any) => void;
   options: Array<{ label: string; value: any }>;
@@ -26,7 +26,7 @@ export default (props: SelectProps): React.ReactNode => {
       value={props.options.findIndex(
         opt => opt.value === props.value
       )}
-      onChange={event => {
+      onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedIndex = parseInt(event.target.value);
         const selectedOption = props.options[selectedIndex];
         props.onChange?.(selectedOption.value);

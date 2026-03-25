@@ -43,7 +43,7 @@ const StyledDeleteButton = muiStyled(IconButton)(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
-const StyledFab = muiStyled(Fab)(({ theme }) => ({
+const StyledFab = muiStyled(Fab)<{ component?: React.ElementType; to?: string; target?: string }>(({ theme }) => ({
   zIndex: 100,
   position: 'fixed',
   bottom: theme.spacing(3),
@@ -180,7 +180,9 @@ const NewTodoBtn = () => (
     }}
   >
     <StyledFab
-      {...{ component: Link, to: TODO_PATH, target: '_blank' } as any}
+      component={Link}
+      to={TODO_PATH}
+      target="_blank"
       color="secondary"
       aria-label="Add"
     >
