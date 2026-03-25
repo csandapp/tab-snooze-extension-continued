@@ -1,6 +1,6 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
-import type { SnoozePeriod, SnoozeConfig } from '@/types';
+import type { SnoozePeriod, SnoozeConfig, SnoozeType } from '@/types';
 
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import styled from 'styled-components';
@@ -56,7 +56,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
     onTooltipAreaMouseLeave = () => {},
   } = props;
 
-  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<string | null>(null);
+  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<SnoozeType | null>(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
   const [isProUser, setIsProUser] = useState(true);
@@ -111,7 +111,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       const wakeupTime = snoozeOption.when.getTime();
 
       delayedSnoozeActiveTab({
-        type: snoozeOption.id as any,
+        type: snoozeOption.id,
         wakeupTime,
         closeTab: !(event as any).altKey,
       });
@@ -175,8 +175,9 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
+    if (!selectedSnoozeOptionId) return;
     delayedSnoozeActiveTab({
-      type: (selectedSnoozeOptionId || '') as any,
+      type: selectedSnoozeOptionId,
       wakeupTime: date.getTime(),
       closeTab: true,
     });
@@ -187,9 +188,10 @@ export function SnoozePanel(props: Props): React.ReactNode {
       // createTab(getUpgradeUrl());
       return;
     }
+    if (!selectedSnoozeOptionId) return;
 
     delayedSnoozeActiveTab({
-      type: (selectedSnoozeOptionId || '') as any,
+      type: selectedSnoozeOptionId,
       period,
       closeTab: true,
     });

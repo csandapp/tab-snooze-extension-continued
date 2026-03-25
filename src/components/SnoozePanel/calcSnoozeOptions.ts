@@ -1,5 +1,5 @@
 import moment from 'moment';
-import type { Settings } from '@/types';
+import type { Settings, SnoozeType } from '@/types';
 
 // Import all the icons at the top
 import coffeeIcon from './icons/coffee.svg';
@@ -21,11 +21,11 @@ import refreshWhiteIcon from './icons/refresh_white.svg';
 import calendarIcon from './icons/calendar.svg';
 import calendarWhiteIcon from './icons/calendar_white.svg';
 
-export const SNOOZE_TYPE_REPEATED = 'periodically';
-export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
+export const SNOOZE_TYPE_REPEATED: SnoozeType = 'periodically';
+export const SNOOZE_TYPE_SPECIFIC_DATE: SnoozeType = 'specific_date';
 
 export interface SnoozeOption {
-  id: string;
+  id: SnoozeType;
   title: string;
   icon: string;
   activeIcon: string;

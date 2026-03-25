@@ -36,7 +36,7 @@ export type SnoozeType =
   | 'next_week'
   | 'in_a_month'
   | 'someday'
-  | 'repeated'
+  | 'periodically'
   | 'specific_date';
 
 export interface SnoozedTab {
