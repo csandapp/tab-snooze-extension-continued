@@ -1,5 +1,4 @@
-// src/__tests__/setupTests.test.js
-import { describe, it, expect } from 'vitest'
+// src/__tests__/setupTests.test.ts
 
 describe('Test Setup', () => {
   it('should be able to run tests', () => {

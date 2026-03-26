@@ -71,7 +71,6 @@ export default defineConfig({
   define: {
     'global': 'globalThis',
     'process.env.NODE_ENV': '"production"',
-    'chrome': 'chrome'
   },
 
   // Configure for Chrome extension development
@@ -92,7 +91,7 @@ export default defineConfig({
   // Test configuration
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/__tests__/setupTests.js'],
+    setupFiles: ['./src/__tests__/setupTests.ts'],
     globals: true,
     // Mock Chrome APIs for testing
     deps: {
