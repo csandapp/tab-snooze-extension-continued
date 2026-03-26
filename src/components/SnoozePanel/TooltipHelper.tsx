@@ -64,10 +64,11 @@ export default <P extends Record<string, any>>(WrappedComponent: React.Component
       onTooltipAreaMouseLeave,
     };
 
+    const combinedProps = { ...injectedProps, ...props } as unknown as P;
+
     return (
       <WrappedComponent
-        {...(injectedProps as any)}
-        {...props}
+        {...combinedProps}
       />
     );
   }

@@ -101,8 +101,8 @@ const SettingsPage = (): React.ReactNode => {
 
     return {
       [valueProp]: value,
-      onChange: (eventOrValue: any) => {
-        const newValue = eventOrValue.target
+      onChange: (eventOrValue: { target?: { [key: string]: any } } | string | number | boolean) => {
+        const newValue = typeof eventOrValue === 'object' && eventOrValue !== null && 'target' in eventOrValue && eventOrValue.target
           ? eventOrValue.target[valueProp]
           : eventOrValue;
         const nextSettings: Settings = { ...currentSettings, [stateKey]: newValue };
@@ -172,7 +172,7 @@ const SettingsPage = (): React.ReactNode => {
     description?: string;
     stateKey: keyof Settings;
     locked?: boolean;
-    options: Array<{ label: string; value: any }>;
+    options: Array<{ label: string; value: string | number }>;
   }) => {
     return renderGeneralSetting({
       ...options,

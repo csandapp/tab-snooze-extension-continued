@@ -7,14 +7,6 @@ interface Props {
   buttons: Array<SnoozeButtonProps>;
 }
 
-interface StyledProps {
-  theme: {
-    snoozePanel: {
-      border: string;
-    };
-  };
-}
-
 const SnoozeButtonsGrid = (props: Props): React.ReactNode => {
   const { buttons } = props;
   return (
@@ -34,7 +26,7 @@ const ButtonsGrid = styled.div`
   align-items: stretch;
   justify-content: stretch;
   grid-gap: 1px;
-  background-color: ${(props: StyledProps) => props.theme.snoozePanel.border};
+  background-color: ${props => props.theme.snoozePanel.border};
 `;
 
 export default SnoozeButtonsGrid;

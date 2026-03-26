@@ -130,7 +130,7 @@ const Navbar = ({
     </NavButton>
     <HourOptions
       value={hour}
-      onChange={onHourChange}
+      onChange={v => onHourChange(v as number)}
       style={{ marginLeft: 6 }}
     />
   </NavbarDiv>

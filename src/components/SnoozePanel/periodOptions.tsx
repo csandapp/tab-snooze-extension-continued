@@ -18,17 +18,27 @@ const MONTHS = indexLabels(moment.monthsShort());
 const DAYS = indexLabels(ordinalNumbers(31));
 const HOURS = indexLabels(getHoursInDay(), 0.5);
 
-interface OptionsProps {
-  value: any;
-  onChange: (value: any) => void;
+interface SelectOptionsProps {
+  value: string | number;
+  onChange: (value: string | number) => void;
   style?: React.CSSProperties;
 }
 
-export const PeriodOptions = (props: OptionsProps) => (
+interface WeekdayOptionsProps {
+  value: boolean[];
+  onChange: (value: boolean[]) => void;
+}
+
+interface DateOptionsProps {
+  value: { day: number; month: number };
+  onChange: (value: { day: number; month: number }) => void;
+}
+
+export const PeriodOptions = (props: SelectOptionsProps) => (
   <Select options={PERIOD_TYPES} autoFocus {...props} />
 );
 
-export const WeekdayOptions = ({ value, onChange }: OptionsProps) => (
+export const WeekdayOptions = ({ value, onChange }: WeekdayOptionsProps) => (
   <Row>
     {WEEKDAYS.map((weekday, index) => (
       <WeekdayOption key={index}>
@@ -51,29 +61,29 @@ export const WeekdayOptions = ({ value, onChange }: OptionsProps) => (
   </Row>
 );
 
-export const DayOptions = (props: OptionsProps) => (
+export const DayOptions = (props: SelectOptionsProps) => (
   <Select options={DAYS} {...props} />
 );
 
-export const HourOptions = (props: OptionsProps) => (
+export const HourOptions = (props: SelectOptionsProps) => (
   <Select options={HOURS} {...props} />
 );
 
 export const DateOptions = ({
   value: { day, month },
   onChange,
-}: OptionsProps) => (
+}: DateOptionsProps) => (
   <Row>
     <Select
       options={MONTHS}
       value={month}
-      onChange={month => onChange({ day, month })}
+      onChange={month => onChange({ day, month: month as number })}
       style={{ marginRight: 16 }}
     />
     <Select
       options={DAYS}
       value={day}
-      onChange={day => onChange({ day, month })}
+      onChange={day => onChange({ day: day as number, month })}
     />
   </Row>
 );

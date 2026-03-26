@@ -1,7 +1,7 @@
 
 import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import styled, { css } from 'styled-components';
-import ContentEditable from 'react-contenteditable';
+import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_PATH } from '../../paths';
 import Fade from '@mui/material/Fade';
@@ -37,9 +37,9 @@ function TodoPage(): React.ReactNode {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const todoTextRef = useRef<any>(null);
-  const bodyRef = useRef<any>(null);
-  const snoozeBtnEl = useRef<any>(null);
+  const todoTextRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const snoozeBtnEl = useRef<HTMLButtonElement>(null);
   const updateUrlTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Parse initial state from URL (lazy initializer to avoid re-computation)
@@ -100,11 +100,11 @@ function TodoPage(): React.ReactNode {
   }, [text, colorIndex, setTextAndColor]);
 
   const toggleSnoozePanel = useCallback((event: React.MouseEvent) => {
-    snoozeBtnEl.current = event.currentTarget;
+    snoozeBtnEl.current = event.currentTarget as HTMLButtonElement;
     setSnoozePanelOpen(prev => !prev);
   }, []);
 
-  const onKeyDown = useCallback((event: any) => {
+  const onKeyDown = useCallback((event: React.KeyboardEvent) => {
     const ESC = event.keyCode === 27;
     const TAB = event.keyCode === 9;
     const RETURN = event.keyCode === 13;
@@ -121,21 +121,21 @@ function TodoPage(): React.ReactNode {
       if (isTextBoxFocused) {
         if (!event.ctrlKey && !event.altKey && !event.metaKey) {
           event.preventDefault();
-          todoTextElement.blur();
+          todoTextElement?.blur();
         }
       } else {
         event.preventDefault();
-        todoTextElement.focus();
+        todoTextElement?.focus();
         document.execCommand('selectAll', false, undefined);
       }
     }
 
     if (ESC && isTextBoxFocused) {
-      todoTextElement.blur();
+      todoTextElement?.blur();
     }
   }, [changeColor]);
 
-  const onPageClick = useCallback((event: any) => {
+  const onPageClick = useCallback((event: React.MouseEvent) => {
     // close panel only if click was directly on Root element or text element.
     // ignore clicks on buttons, and the panel itself
     if (
@@ -179,7 +179,7 @@ function TodoPage(): React.ReactNode {
             innerRef={todoTextRef}
             dir="auto"
             html={text}
-            onChange={(event: any) => setTextAndColor(event.target.value, colorIndex)}
+            onChange={(event: ContentEditableEvent) => setTextAndColor(event.target.value, colorIndex)}
             // goes to dom, so is written as string
             isplaceholder={text === '' ? 'true' : 'false'}
           />
@@ -224,7 +224,7 @@ function TodoPage(): React.ReactNode {
 const BigIconButton = (props: {
   onClick: (event: React.MouseEvent) => void;
   icon: string;
-  forwardRef?: any;
+  forwardRef?: React.Ref<HTMLButtonElement>;
 }) => (
   <IconButton
     ref={props.forwardRef}
@@ -254,7 +254,7 @@ const Root = styled.div<{ color: string }>`
   background-color: ${props => props.color};
 `;
 
-const TodoText = styled(ContentEditable)`
+const TodoText = styled(ContentEditable)<{ isplaceholder?: string }>`
   cursor: text;
   color: white;
   max-width: 85%;
@@ -280,7 +280,7 @@ const TodoText = styled(ContentEditable)`
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  ${(props: any) =>
+  ${props =>
     props.isplaceholder === 'true' &&
     css`
       :after {

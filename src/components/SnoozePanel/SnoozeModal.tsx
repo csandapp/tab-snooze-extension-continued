@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Zoom from '@mui/material/Zoom';
 
 interface Props {
-  children: any;
+  children: React.ReactNode;
   visible: boolean;
   noAnimation?: boolean;
 }

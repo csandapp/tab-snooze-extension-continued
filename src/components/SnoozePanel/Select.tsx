@@ -10,9 +10,9 @@ const StyledNativeSelect = muiStyled(NativeSelect)(({ theme }) => ({
 
 export interface SelectProps {
   component?: React.ElementType;
-  value?: any;
-  onChange?: (value: any) => void;
-  options: Array<{ label: string; value: any }>;
+  value?: string | number;
+  onChange?: (value: string | number) => void;
+  options: Array<{ label: string; value: string | number }>;
   autoFocus?: boolean;
   style?: React.CSSProperties;
 }

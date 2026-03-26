@@ -78,7 +78,7 @@ const SleepingTabsPage = (): React.ReactNode => {
   //   // track(EVENTS.SLEEPING_TABS_VIEW);
   // }
 
-  const deleteTab = (tab: SnoozedTab, event: any) => {
+  const deleteTab = (tab: SnoozedTab, event: React.MouseEvent) => {
     // so that openTab() won't be called
     event.stopPropagation();
 
@@ -93,11 +93,11 @@ const SleepingTabsPage = (): React.ReactNode => {
     }, 150);
   }
 
-  const wakeupTab = (tab: SnoozedTab, event: any) => {
+  const wakeupTab = (tab: SnoozedTab, event: React.MouseEvent) => {
     // animate tab out
 
     const makeTabActive = !(
-      event.which === 2 ||
+      event.nativeEvent.which === 2 ||
       event.button === 4 ||
       event.metaKey
     );

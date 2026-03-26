@@ -97,7 +97,7 @@ const PeriodSelector = (props: Props): React.ReactNode => {
     <SnoozeModal visible={visible}>
       <Root>
         <Title>Wake up this tab</Title>
-        <PeriodOptions value={periodType} onChange={setPeriodType} />
+        <PeriodOptions value={periodType} onChange={v => setPeriodType(v as PeriodType)} />
 
         <Collapse in={periodType === 'weekly'}>
           <Fragment>
@@ -109,7 +109,7 @@ const PeriodSelector = (props: Props): React.ReactNode => {
         <Collapse in={periodType === 'monthly'}>
           <Fragment>
             <Title>on this day</Title>
-            <DayOptions value={selectedDay} onChange={setSelectedDay} />
+            <DayOptions value={selectedDay} onChange={v => setSelectedDay(v as number)} />
           </Fragment>
         </Collapse>
 
@@ -132,7 +132,7 @@ const PeriodSelector = (props: Props): React.ReactNode => {
         </Collapse>
 
         <Title>at this hour</Title>
-        <HourOptions value={selectedHour} onChange={setSelectedHour} />
+        <HourOptions value={selectedHour} onChange={v => setSelectedHour(v as number)} />
 
         <Spacer />
         <SaveButton onMouseDown={onSnoozeClicked}>
