@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
-import flow from 'esbuild-plugin-flow'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import manifest from './public/manifest.json'
 
@@ -11,13 +10,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        presets: [
-          ['@babel/preset-flow', { all: true }]
-        ]
-      }
-    }),
+    react(),
     crx({ manifest }),
     tsconfigPaths()
   ],
@@ -39,9 +32,7 @@ export default defineConfig({
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
-        '.jsx': 'jsx',
       },
-      plugins: [flow(/\.(js|jsx)$/, true)]
     }
   },
 
@@ -103,8 +94,6 @@ export default defineConfig({
       exclude: [
         'node_modules/**',
         'src/__tests__/**',
-        '**/*.test.js',
-        '**/*.test.jsx',
         '**/*.test.ts',
         '**/*.test.tsx',
         'vite.config.ts',
