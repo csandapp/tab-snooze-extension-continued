@@ -1,4 +1,4 @@
-// src/__tests__/setup.ts
+// src/__tests__/setupTests.ts
 import '@testing-library/jest-dom'
 
 // Mock Chrome APIs
@@ -78,8 +78,8 @@ const mockChrome = {
 }
 
 // Make chrome API available globally
-Object.defineProperty(globalThis, 'chrome', { value: mockChrome, writable: true })
-Object.defineProperty(window, 'chrome', { value: mockChrome, writable: true })
+Object.defineProperty(globalThis, 'chrome', { value: mockChrome, writable: true, configurable: true })
+Object.defineProperty(window, 'chrome', { value: mockChrome, writable: true, configurable: true })
 
 // Mock other globals that might be needed
-;(globalThis as Record<string, unknown>).browser = mockChrome
+Object.defineProperty(globalThis, 'browser', { value: mockChrome, writable: true, configurable: true })

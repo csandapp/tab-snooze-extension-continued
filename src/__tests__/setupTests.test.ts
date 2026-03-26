@@ -1,5 +1,4 @@
 // src/__tests__/setupTests.test.ts
-import { describe, it, expect } from 'vitest'
 
 describe('Test Setup', () => {
   it('should be able to run tests', () => {
