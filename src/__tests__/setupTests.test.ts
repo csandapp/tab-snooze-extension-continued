@@ -1,4 +1,4 @@
-// src/__tests__/setupTests.test.js
+// src/__tests__/setupTests.test.ts
 import { describe, it, expect } from 'vitest'
 
 describe('Test Setup', () => {
