@@ -1,12 +1,11 @@
-// @flow
-import type { WakeupTimeRange } from './wakeupTimeRanges';
 import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { openTabs } from '../../core/wakeup';
 import { MSG_DELETE_SNOOZED_TABS } from '../../core/messages';
-import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
+import { getSleepingTabByWakeupGroups, type TabGroup } from './groupSleepingTabs';
+import type { SnoozedTab } from '@/types';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -23,13 +22,6 @@ import { Link } from 'react-router-dom';
 import { TODO_PATH } from '../../paths';
 // import { track, EVENTS } from '../../core/analytics';
 
-// A tab group represents a collection of tabs that are in the same
-// wakeup time range
-type TabGroup = {
-  timeRange: WakeupTimeRange,
-  tabs: Array<SnoozedTab>,
-};
-type Props = {};
 
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
@@ -51,14 +43,14 @@ const StyledDeleteButton = muiStyled(IconButton)(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
-const StyledFab = muiStyled(Fab)(({ theme }) => ({
+const StyledFab = muiStyled(Fab)<{ component?: React.ElementType; to?: string; target?: string }>(({ theme }) => ({
   zIndex: 100,
   position: 'fixed',
   bottom: theme.spacing(3),
   right: theme.spacing(3),
 }));
 
-const SleepingTabsPage = (props: Props): React.Node => {
+const SleepingTabsPage = (): React.ReactNode => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
   const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
   
@@ -70,7 +62,6 @@ const SleepingTabsPage = (props: Props): React.Node => {
   useEffect(() => {
     refreshSnoozedTabs();
     
-    // Satisfy Flow that Promise is incompatible with undefined in the return value
     const storageListener = () => {
       refreshSnoozedTabs();
     };
@@ -87,7 +78,7 @@ const SleepingTabsPage = (props: Props): React.Node => {
   //   // track(EVENTS.SLEEPING_TABS_VIEW);
   // }
 
-  const deleteTab = (tab: SnoozedTab, event: any) => {
+  const deleteTab = (tab: SnoozedTab, event: React.MouseEvent) => {
     // so that openTab() won't be called
     event.stopPropagation();
 
@@ -102,11 +93,11 @@ const SleepingTabsPage = (props: Props): React.Node => {
     }, 150);
   }
 
-  const wakeupTab = (tab: SnoozedTab, event: any) => {
+  const wakeupTab = (tab: SnoozedTab, event: React.MouseEvent) => {
     // animate tab out
 
     const makeTabActive = !(
-      event.which === 2 ||
+      event.nativeEvent.which === 2 ||
       event.button === 4 ||
       event.metaKey
     );
@@ -125,10 +116,10 @@ const SleepingTabsPage = (props: Props): React.Node => {
         {tabGroup.tabs.map((tab, index2) => (
           <StyledListItem
             key={index2}
-            button
             onClick={event => {
               wakeupTab(tab, event);
             }}
+            sx={{ cursor: 'pointer' }}
           >
             <Icon src={tab.favicon} alt="" />
             <ListItemText

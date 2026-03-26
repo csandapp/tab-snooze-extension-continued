@@ -1,4 +1,3 @@
-// @flow
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { CHROME_WEB_STORE_REVIEW, CURR_DEVELOPER_DONATE_URL, ORIGINAL_DEVLOPER_DONATE_URL, GITHUB_REPO_URL } from '../../paths';
@@ -11,7 +10,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import loveImage from './images/love.png';
 import chromeWebStoreImage from './images/chrome_web_store.png';
 
-export default function SupportTSDialog(): React.Node {
+export default function SupportTSDialog(): React.ReactNode {
   const handleDontShowAgain = async () => {
     await saveSettings({ showSupportReminders: false });
     window.close();

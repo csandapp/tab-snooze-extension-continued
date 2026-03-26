@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import NativeSelect from '@mui/material/NativeSelect';
 import { styled as muiStyled } from '@mui/material/styles';
@@ -9,12 +8,16 @@ const StyledNativeSelect = muiStyled(NativeSelect)(({ theme }) => ({
   lineHeight: 'initial',
 }));
 
-export default (props: {
-  component: any, // ReactElement
-  value: any,
-  onChange: any => void,
-  options: Array<{ label: string, value: string }>,
-}): React.Node => {
+export interface SelectProps {
+  component?: React.ElementType;
+  value?: string | number;
+  onChange?: (value: string | number) => void;
+  options: Array<{ label: string; value: string | number }>;
+  autoFocus?: boolean;
+  style?: React.CSSProperties;
+}
+
+export default (props: SelectProps): React.ReactNode => {
   const SelectComp = props.component || StyledNativeSelect;
   
   return (
@@ -23,10 +26,10 @@ export default (props: {
       value={props.options.findIndex(
         opt => opt.value === props.value
       )}
-      onChange={event => {
+      onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedIndex = parseInt(event.target.value);
         const selectedOption = props.options[selectedIndex];
-        props.onChange(selectedOption.value);
+        props.onChange?.(selectedOption.value);
       }}
     >
       {props.options.map((option, index) => (

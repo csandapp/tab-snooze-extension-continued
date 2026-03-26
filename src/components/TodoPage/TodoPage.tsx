@@ -1,8 +1,7 @@
-// @flow
 
 import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import styled, { css } from 'styled-components';
-import ContentEditable from 'react-contenteditable';
+import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
 import queryString from 'query-string';
 import { TODO_PATH } from '../../paths';
 import Fade from '@mui/material/Fade';
@@ -11,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import SnoozePanel from '../SnoozePanel';
+// @ts-expect-error no type declarations available
 import sanitizeHtml from 'sanitize-html';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -21,10 +21,6 @@ import todoFavicon1 from './images/todo_favicon_1.png';
 import todoFavicon2 from './images/todo_favicon_2.png';
 import todoFavicon3 from './images/todo_favicon_3.png';
 
-type StyledProps = {
-  color: string,
-  isplaceholder?: string
-};
 
 export const TODO_COLORS = [
   { favicon: todoFavicon0, hex: '#F2B32A' },
@@ -37,23 +33,23 @@ function randomColorIndex() {
   return Math.floor(Math.random() * TODO_COLORS.length);
 }
 
-function TodoPage(): React.Node {
+function TodoPage(): React.ReactNode {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const todoTextRef = useRef<any>(null);
-  const bodyRef = useRef<any>(null);
-  const snoozeBtnEl = useRef<any>(null);
-  const updateUrlTimer = useRef<?TimeoutID>(null);
+  const todoTextRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const snoozeBtnEl = useRef<HTMLButtonElement>(null);
+  const updateUrlTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Parse initial state from URL (lazy initializer to avoid re-computation)
   const [text, setText] = useState<string>(() => {
-    const { text } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { text } = queryString.parse(location.search) as Record<string, string | undefined>;
     return text ? text.replace(/_/g, ' ') : '';
   });
 
   const [colorIndex, setColorIndex] = useState<number>(() => {
-    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { color: colorIndexStr } = queryString.parse(location.search) as Record<string, string | undefined>;
     return colorIndexStr ? parseInt(colorIndexStr) : randomColorIndex();
   });
 
@@ -76,7 +72,7 @@ function TodoPage(): React.Node {
 
   // Sync initial color to URL if it wasn't in the URL
   useEffect(() => {
-    const { color: colorIndexStr } = queryString.parse(location.search, { ignoreQueryPrefix: true });
+    const { color: colorIndexStr } = queryString.parse(location.search) as Record<string, string | undefined>;
     if (!colorIndexStr) {
       updateAddressBar(text, colorIndex);
     }
@@ -103,12 +99,12 @@ function TodoPage(): React.Node {
     setTextAndColor(text, (colorIndex + 1) % TODO_COLORS.length);
   }, [text, colorIndex, setTextAndColor]);
 
-  const toggleSnoozePanel = useCallback((event: any) => {
-    snoozeBtnEl.current = event.currentTarget;
+  const toggleSnoozePanel = useCallback((event: React.MouseEvent) => {
+    snoozeBtnEl.current = event.currentTarget as HTMLButtonElement;
     setSnoozePanelOpen(prev => !prev);
   }, []);
 
-  const onKeyDown = useCallback((event: any) => {
+  const onKeyDown = useCallback((event: React.KeyboardEvent) => {
     const ESC = event.keyCode === 27;
     const TAB = event.keyCode === 9;
     const RETURN = event.keyCode === 13;
@@ -125,21 +121,21 @@ function TodoPage(): React.Node {
       if (isTextBoxFocused) {
         if (!event.ctrlKey && !event.altKey && !event.metaKey) {
           event.preventDefault();
-          todoTextElement.blur();
+          todoTextElement?.blur();
         }
       } else {
         event.preventDefault();
-        todoTextElement.focus();
-        document.execCommand('selectAll', false, null);
+        todoTextElement?.focus();
+        document.execCommand('selectAll', false, undefined);
       }
     }
 
     if (ESC && isTextBoxFocused) {
-      todoTextElement.blur();
+      todoTextElement?.blur();
     }
   }, [changeColor]);
 
-  const onPageClick = useCallback((event: any) => {
+  const onPageClick = useCallback((event: React.MouseEvent) => {
     // close panel only if click was directly on Root element or text element.
     // ignore clicks on buttons, and the panel itself
     if (
@@ -183,7 +179,7 @@ function TodoPage(): React.Node {
             innerRef={todoTextRef}
             dir="auto"
             html={text}
-            onChange={event => setTextAndColor(event.target.value, colorIndex)}
+            onChange={(event: ContentEditableEvent) => setTextAndColor(event.target.value, colorIndex)}
             // goes to dom, so is written as string
             isplaceholder={text === '' ? 'true' : 'false'}
           />
@@ -198,7 +194,7 @@ function TodoPage(): React.Node {
               onClick={toggleSnoozePanel}
             />
             <Popper
-              id={snoozePanelOpen ? 'simple-popper' : null}
+              id={snoozePanelOpen ? 'simple-popper' : undefined}
               open={snoozePanelOpen}
               placement="top-start"
               anchorEl={snoozeBtnEl.current}
@@ -213,7 +209,7 @@ function TodoPage(): React.Node {
                   <Paper
                     style={{ borderRadius: 5, overflow: 'hidden' }}
                   >
-                    <SnoozePanel hideFooter />
+                    <SnoozePanel hideFooter={true} />
                   </Paper>
                 </Grow>
               )}
@@ -226,9 +222,9 @@ function TodoPage(): React.Node {
 }
 
 const BigIconButton = (props: {
-  onClick: () => void,
-  icon: string,
-  forwardRef?: any,
+  onClick: (event: React.MouseEvent) => void;
+  icon: string;
+  forwardRef?: React.Ref<HTMLButtonElement>;
 }) => (
   <IconButton
     ref={props.forwardRef}
@@ -239,7 +235,7 @@ const BigIconButton = (props: {
   </IconButton>
 );
 
-const Root = styled.div`
+const Root = styled.div<{ color: string }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -255,10 +251,10 @@ const Root = styled.div`
 
   transition: all 1s !important;
 
-  background-color: ${(props: StyledProps) => props.color};
+  background-color: ${props => props.color};
 `;
 
-const TodoText = styled(ContentEditable)`
+const TodoText = styled(ContentEditable)<{ isplaceholder?: string }>`
   cursor: text;
   color: white;
   max-width: 85%;
@@ -284,7 +280,7 @@ const TodoText = styled(ContentEditable)`
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  ${(props: StyledProps) =>
+  ${props =>
     props.isplaceholder === 'true' &&
     css`
       :after {

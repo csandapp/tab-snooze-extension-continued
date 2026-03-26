@@ -1,24 +1,24 @@
-// @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
 import { getSnoozedTabs } from '../../core/storage';
 import moment from 'moment';
 import { getWakeupTimeRanges } from './wakeupTimeRanges';
 import { compareTabs } from '../../core/utils';
+import type { SnoozedTab } from '@/types';
 
 // A tab group represents a collection of tabs that are in the same
 // wakeup time range
-type TabGroup = {
-  timeRange: WakeupTimeRange,
-  tabs: Array<SnoozedTab>,
-};
+export interface TabGroup {
+  timeRange: WakeupTimeRange;
+  tabs: SnoozedTab[];
+}
 
 export async function getSleepingTabByWakeupGroups(
   hidePeriodic: boolean
-): Promise<Array<TabGroup>> {
+): Promise<TabGroup[]> {
   const snoozedTabs = await getSnoozedTabs();
   const timeRanges = await getWakeupTimeRanges();
 
-  const visibleTabGroups = [];
+  const visibleTabGroups: TabGroup[] = [];
 
   timeRanges.forEach(timeRange => {
     const tabsInRange = [];
@@ -40,8 +40,7 @@ export async function getSleepingTabByWakeupGroups(
     // sort tabs in group by date
     tabsInRange.sort(compareTabs);
 
-    // create s
-    var tabGroup: TabGroup = {
+    const tabGroup: TabGroup = {
       timeRange: timeRange,
       tabs: tabsInRange,
     };

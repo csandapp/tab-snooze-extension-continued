@@ -1,12 +1,11 @@
-// @flow
 import moment from 'moment';
 import { getSettings } from '../../core/settings';
 
-export type WakeupTimeRange = {
-  title: string,
-  maxDate: Object,
-  dateFormat?: string,
-};
+export interface WakeupTimeRange {
+  title: string;
+  maxDate: moment.Moment;
+  dateFormat?: string;
+}
 
 export async function getWakeupTimeRanges(): Promise<
   Array<WakeupTimeRange>
@@ -90,7 +89,7 @@ export async function getWakeupTimeRanges(): Promise<
   ];
 }
 
-function futureDay(day: number): moment {
+function futureDay(day: number): moment.Moment {
   const thisWeekDay = moment().day(day);
   const now = moment();
   return now.isBefore(thisWeekDay)

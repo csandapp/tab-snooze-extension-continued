@@ -1,9 +1,8 @@
-// @flow
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import Button from '../SnoozePanel/Button';
 
-export default (props: { combo: string, onClick: () => void }) : React.Node => (
+export default (props: { combo: string; onClick: () => void }): React.ReactNode => (
   <Root onClick={props.onClick}>
     {props.combo
       ? splitKeys(props.combo).map((key, index) => (

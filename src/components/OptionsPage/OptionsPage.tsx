@@ -1,10 +1,9 @@
-// @flow
 import React from 'react';
 import { styled as muiStyled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import Toolbar from '@mui/material/Toolbar';
 import SettingsIcon from '@mui/icons-material/Settings';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -20,12 +19,10 @@ import Tooltip from '@mui/material/Tooltip';
 import navbarLogo from './images/navbar_logo.svg';
 
 // MUI v5 styled components
-const StyledIconButton = muiStyled(IconButton)(({ theme }) => ({
+const StyledIconButton = muiStyled(IconButton)<{ component?: React.ElementType; to?: string; target?: string }>(({ theme }) => ({
   color: '#fff',
   display: 'none',
   marginRight: -10,
-  // TODO $FlowFixMe
-  // $FlowFixMe
   [theme.breakpoints.down(650)]: {
     display: 'block',
   },
@@ -39,7 +36,7 @@ const StyledSettingsIcon = muiStyled(SettingsIcon)({
   marginRight: 10,
 });
 
-function OptionsPage(props: {}): React.Node {
+function OptionsPage(): React.ReactNode {
   const location = useLocation();
   
   return (
@@ -106,17 +103,9 @@ const Main = styled.div`
   width: 600px;
 `;
 
-const NavButton = styled(Button).attrs({
-  activeClassName: 'linkIsActive',
-  replace: true,
-})`
+const NavButton = styled(Button)<{ component?: React.ElementType; to?: string }>`
   margin-left: 10px !important;
-  &.linkIsActive {
-    background-color: #0000001f !important;
-  }
-  ${(props : {active?: boolean}) =>
-    props.active &&
-    css`
-      background-color: #0000001f !important;
-    `}
+  // &.active {
+  //  background-color: #0000001f !important;
+  // }
 `;

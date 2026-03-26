@@ -1,5 +1,5 @@
-// @flow
 import moment from 'moment';
+import type { Settings, SnoozeType } from '@/types';
 
 // Import all the icons at the top
 import coffeeIcon from './icons/coffee.svg';
@@ -21,22 +21,22 @@ import refreshWhiteIcon from './icons/refresh_white.svg';
 import calendarIcon from './icons/calendar.svg';
 import calendarWhiteIcon from './icons/calendar_white.svg';
 
-export const SNOOZE_TYPE_REPEATED = 'periodically';
-export const SNOOZE_TYPE_SPECIFIC_DATE = 'specific_date';
+export const SNOOZE_TYPE_REPEATED: SnoozeType = 'periodically';
+export const SNOOZE_TYPE_SPECIFIC_DATE: SnoozeType = 'specific_date';
 
-export type SnoozeOption = {
-  id: string,
-  title: string,
-  icon: string,
-  activeIcon: string,
-  tooltip: string,
-  when?: Date,
-  isProFeature?: boolean,
-};
+export interface SnoozeOption {
+  id: SnoozeType;
+  title: string;
+  icon: string;
+  activeIcon: string;
+  tooltip: string;
+  when?: Date;
+  isProFeature?: boolean;
+}
 
 export default function calcSnoozeOptions(
   settings: Settings
-): Array<SnoozeOption> {
+): SnoozeOption[] {
   // constants from user settings
   const {
     workdayEnd,
@@ -54,13 +54,13 @@ export default function calcSnoozeOptions(
     moment().day() === weekEndDay ||
     moment().day() === (weekEndDay + 1) % 7;
 
-  const roundDate = (momentDate: moment) =>
+  const roundDate = (momentDate: moment.Moment) =>
     momentDate
       .minutes(0)
       .seconds(0)
       .millisecond(0);
 
-  const dayStart = (momentDate: moment) =>
+  const dayStart = (momentDate: moment.Moment) =>
     roundDate(momentDate.hour(workdayStart));
 
   const laterTodayTime = moment().add(laterTodayHoursDelta, 'hours');

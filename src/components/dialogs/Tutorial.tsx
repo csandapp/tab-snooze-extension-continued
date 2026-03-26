@@ -1,4 +1,3 @@
-// @flow
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Zoom from '@mui/material/Zoom';
@@ -7,7 +6,7 @@ import tutorialNavImage from './images/tutorial_article_nav.svg';
 import tutorialArticleImage from './images/tutorial_article.svg';
 import tutorialBubbleImage from './images/tutorial_bubble.png';
 
-export default function Tutorial(): React.Node  {
+export default function Tutorial(): React.ReactNode  {
   const [ isChatBubbleOpen, setIsChatBubbleOpen ] = useState(false);
   
   useEffect(() => {

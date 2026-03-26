@@ -1,4 +1,4 @@
-// @flow
+import type { SnoozePeriod } from '@/types';
 import React, { Fragment, useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
@@ -13,24 +13,24 @@ import {
 } from './periodOptions';
 import Button from './Button';
 
-type Props = {
-  visible: boolean,
-  onPeriodSelected: SnoozePeriod => void,
-};
+interface Props {
+  visible: boolean;
+  onPeriodSelected: (period: SnoozePeriod) => void;
+}
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
-type State = {
-  periodType: PeriodType,
-  selectedHour: number,
-  selectedMonth: number,
-  selectedDay: number,
-  selectedWeekdays: Array<boolean>,
-};
+interface State {
+  periodType: PeriodType;
+  selectedHour: number;
+  selectedMonth: number;
+  selectedDay: number;
+  selectedWeekdays: Array<boolean>;
+}
 
 
 
-const PeriodSelector = (props: Props): React.Node => {
+const PeriodSelector = (props: Props): React.ReactNode => {
   const { visible, onPeriodSelected } = props;
   
   const [ periodType, setPeriodType ] = useState<PeriodType>('weekly');
@@ -42,7 +42,7 @@ const PeriodSelector = (props: Props): React.Node => {
   );
 
   const onSnoozeClicked = () => {
-    let snoozePeriod: ?SnoozePeriod;
+    let snoozePeriod: SnoozePeriod | undefined;
 
     if (periodType === 'daily') {
       snoozePeriod = {
@@ -97,7 +97,7 @@ const PeriodSelector = (props: Props): React.Node => {
     <SnoozeModal visible={visible}>
       <Root>
         <Title>Wake up this tab</Title>
-        <PeriodOptions value={periodType} onChange={setPeriodType} />
+        <PeriodOptions value={periodType} onChange={v => setPeriodType(v as PeriodType)} />
 
         <Collapse in={periodType === 'weekly'}>
           <Fragment>
@@ -109,7 +109,7 @@ const PeriodSelector = (props: Props): React.Node => {
         <Collapse in={periodType === 'monthly'}>
           <Fragment>
             <Title>on this day</Title>
-            <DayOptions value={selectedDay} onChange={setSelectedDay} />
+            <DayOptions value={selectedDay} onChange={v => setSelectedDay(v as number)} />
           </Fragment>
         </Collapse>
 
@@ -132,7 +132,7 @@ const PeriodSelector = (props: Props): React.Node => {
         </Collapse>
 
         <Title>at this hour</Title>
-        <HourOptions value={selectedHour} onChange={setSelectedHour} />
+        <HourOptions value={selectedHour} onChange={v => setSelectedHour(v as number)} />
 
         <Spacer />
         <SaveButton onMouseDown={onSnoozeClicked}>

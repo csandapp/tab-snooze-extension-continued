@@ -1,16 +1,13 @@
-// @flow
 import React, { useRef, useState, useEffect } from 'react';
-
-type Props = {};
 
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
-export default (WrappedComponent: any) => {
-  const TooltipHelper = (props: Props) => {
+export default <P extends Record<string, any>>(WrappedComponent: React.ComponentType<P>) => {
+  const TooltipHelper = (props: Omit<P, 'tooltipVisible' | 'tooltipText' | 'preventTooltip' | 'onTooltipAreaMouseEnter' | 'onTooltipAreaMouseLeave'>) => {
     // counts down until tooltip appears/hides
-    const tooltipShowTimeout = useRef(null);
-    const tooltipHideTimeout = useRef(null);
+    const tooltipShowTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const tooltipHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   
     const [ tooltipVisibleState, setTooltipVisibleState ] = useState(false);
     const [ tooltipTextState, setTooltipTextState ] = useState("");
@@ -59,14 +56,19 @@ export default (WrappedComponent: any) => {
       }
     }
 
-  return (
+  const injectedProps = {
+      tooltipVisible: tooltipVisibleState,
+      tooltipText: tooltipTextState,
+      preventTooltip,
+      onTooltipAreaMouseEnter,
+      onTooltipAreaMouseLeave,
+    };
+
+    const combinedProps = { ...injectedProps, ...props } as unknown as P;
+
+    return (
       <WrappedComponent
-        tooltipVisible={tooltipVisibleState}
-        tooltipText={tooltipTextState}
-        preventTooltip={preventTooltip}
-        onTooltipAreaMouseEnter={onTooltipAreaMouseEnter}
-        onTooltipAreaMouseLeave={onTooltipAreaMouseLeave}
-        {...props}
+        {...combinedProps}
       />
     );
   }

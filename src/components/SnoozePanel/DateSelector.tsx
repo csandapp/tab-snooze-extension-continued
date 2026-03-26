@@ -1,4 +1,3 @@
-// @flow
 import React, { Fragment, useEffect, useState, useRef } from "react";
 import styled from 'styled-components';
 import moment from 'moment';
@@ -13,11 +12,11 @@ import { getSettings } from '../../core/settings';
 import leftIcon from './icons/left.svg';
 import rightIcon from './icons/right.svg';
 
-type Props = { visible: boolean, onDateSelected: Date => void };
+interface Props { visible: boolean; onDateSelected: (date: Date) => void; }
 
 
 
-const DateSelector = (props: Props): React.Node => {
+const DateSelector = (props: Props): React.ReactNode => {
   const { visible, onDateSelected } = props;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedHour, setSelectedHour] = useState(9);
@@ -101,14 +100,14 @@ const DateSelector = (props: Props): React.Node => {
 export default DateSelector;
 
 
-type NavbarProps = {
-  hour: number,
-  onHourChange: (hour: number) => void,
-  gotoToday: () => void,
-  month: Date,
-  onNextClick: () => void,
-  onPreviousClick: () => void,
-};
+interface NavbarProps {
+  hour: number;
+  onHourChange: (hour: number) => void;
+  gotoToday: () => void;
+  month: Date;
+  onNextClick: () => void;
+  onPreviousClick: () => void;
+}
 
 const Navbar = ({
   hour,
@@ -131,7 +130,7 @@ const Navbar = ({
     </NavButton>
     <HourOptions
       value={hour}
-      onChange={onHourChange}
+      onChange={v => onHourChange(v as number)}
       style={{ marginLeft: 6 }}
     />
   </NavbarDiv>

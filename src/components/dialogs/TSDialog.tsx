@@ -1,6 +1,3 @@
-// @flow
-
-import type { Node } from 'react';
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { Helmet } from 'react-helmet-async';
@@ -8,10 +5,6 @@ import Fade from '@mui/material/Fade';
 import Button from '../SnoozePanel/Button';
 
 import logoImage from './images/logo.svg';
-
-type StyledProps = {
-  noPadding?: boolean,
-};
 
 export default function TSDialog({
   image,
@@ -22,14 +15,14 @@ export default function TSDialog({
   children,
   noPadding
 }: {
-  image: string,
-  title?: string,
-  headline: string | Node,
-  subheader: string | Node,
-  closeBtnText?: ?string,
-  children: Node,
-  noPadding?: boolean
-}): React.Node {
+  image: string;
+  title?: string;
+  headline: string | React.ReactNode;
+  subheader: string | React.ReactNode;
+  closeBtnText?: string | null | undefined;
+  children: React.ReactNode;
+  noPadding?: boolean;
+}): React.ReactNode {
   return (
     <Fragment>
       <Helmet>
@@ -72,8 +65,8 @@ const Root = styled.div`
     no-repeat bottom right; */
 `;
 
-const Content = styled.div`
-  padding: ${(props: StyledProps) => (props.noPadding ? 0 : PADDING)}px;
+const Content = styled.div<{ noPadding?: boolean }>`
+  padding: ${props => (props.noPadding ? 0 : PADDING)}px;
   padding-top: 60px;
 
   display: flex;

@@ -1,6 +1,6 @@
-// @flow
 import type { SnoozeOption } from './calcSnoozeOptions';
 import type { Props as SnoozeButtonProps } from './SnoozeButton';
+import type { SnoozePeriod, SnoozeConfig, SnoozeType } from '@/types';
 
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import styled from 'styled-components';
@@ -35,21 +35,31 @@ import {
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
 const AsyncDateSelector = lazy(() => import('./DateSelector'));
 
-type Props = {
-  hideFooter: boolean,
-  // Props passed by TooltipHelper
-  tooltipVisible: boolean,
-  tooltipText: ?string,
-  preventTooltip: () => void,
-  onTooltipAreaMouseEnter: string => void,
-  onTooltipAreaMouseLeave: () => void,
-};
+interface SnoozePanelOwnProps {
+  hideFooter?: boolean;
+}
 
+interface TooltipInjectedProps {
+  tooltipVisible: boolean;
+  tooltipText: string | null;
+  preventTooltip: () => void;
+  onTooltipAreaMouseEnter: (s: string) => void;
+  onTooltipAreaMouseLeave: () => void;
+}
 
-export function SnoozePanel(props: Props): React.Node {
-  const { hideFooter, tooltipVisible, tooltipText, preventTooltip, onTooltipAreaMouseEnter, onTooltipAreaMouseLeave } = props;
+type Props = SnoozePanelOwnProps & TooltipInjectedProps;
 
-  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState(null);
+export function SnoozePanel(props: Props): React.ReactNode {
+  const {
+    hideFooter = false,
+    tooltipVisible,
+    tooltipText,
+    preventTooltip,
+    onTooltipAreaMouseEnter,
+    onTooltipAreaMouseLeave,
+  } = props;
+
+  const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<SnoozeType | null>(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
   const [isProUser, setIsProUser] = useState(true);
@@ -58,7 +68,7 @@ export function SnoozePanel(props: Props): React.Node {
 
   useEffect(() => {
     let cancelled = false;
-    let timeoutId;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const loadData = async () => {
       try {
@@ -88,7 +98,7 @@ export function SnoozePanel(props: Props): React.Node {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
-  const onSnoozeButtonClicked = useCallback((event: Event, snoozeOption: SnoozeOption) => {
+  const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
       return;
@@ -106,7 +116,7 @@ export function SnoozePanel(props: Props): React.Node {
       delayedSnoozeActiveTab({
         type: snoozeOption.id,
         wakeupTime,
-        closeTab: !(event: any).altKey,
+        closeTab: !event.altKey,
       });
     } else {
       // either period or date selector opens as dialog
@@ -114,17 +124,17 @@ export function SnoozePanel(props: Props): React.Node {
     }
   }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
-  const onKeyPress = useCallback((event: KeyboardEvent) => {
+  const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (isOverFreePlanLimit) {
       // ignore shortcuts when Upgrade dialog is visible
       return;
     }
 
     let nextFocusedIndex = focusedButtonIndex;
-    const key = keycode(event);
+    const key = keycode(event.nativeEvent) as string | undefined;
     const mappedOptionIndex =
-      key && SNOOZE_SHORTCUT_KEYS[key.toUpperCase()];
-    const numpadKey = parseInt(key);
+      key ? SNOOZE_SHORTCUT_KEYS[key.toUpperCase()] : undefined;
+    const numpadKey = parseInt(key || '');
 
     if (mappedOptionIndex != null) {
       onSnoozeButtonClicked(
@@ -168,8 +178,9 @@ export function SnoozePanel(props: Props): React.Node {
 
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
+    if (!selectedSnoozeOptionId) return;
     delayedSnoozeActiveTab({
-      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      type: selectedSnoozeOptionId,
       wakeupTime: date.getTime(),
       closeTab: true,
     });
@@ -180,23 +191,24 @@ export function SnoozePanel(props: Props): React.Node {
       // createTab(getUpgradeUrl());
       return;
     }
+    if (!selectedSnoozeOptionId) return;
 
     delayedSnoozeActiveTab({
-      type: selectedSnoozeOptionId || '', // '' is for Flow to shutup
+      type: selectedSnoozeOptionId,
       period,
       closeTab: true,
     });
   }, [selectedSnoozeOptionId, isProUser]);
 
   // decide whether or not to use callback here...
-  const getSnoozeButtons = (): Array<SnoozeButtonProps> => {
+  const getSnoozeButtons = () => {
     return snoozeOptions.map(
       (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
         proBadge: !isProUser && Boolean(snoozeOpt.isProFeature),
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: Event) => onSnoozeButtonClicked(ev, snoozeOpt),
+        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
         onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
         onMouseLeave: () => onTooltipAreaMouseLeave(),
       })
@@ -212,7 +224,7 @@ export function SnoozePanel(props: Props): React.Node {
   return (
     <Root
       onKeyDown={onKeyPress}
-      tabIndex="0"
+      tabIndex={0}
       ref={ref => {
         // autofocus Root so we get key press events
         if (ref) ref.focus();
@@ -259,7 +271,7 @@ export function SnoozePanel(props: Props): React.Node {
   );
 }
 
-const SNOOZE_SHORTCUT_KEYS: { [any]: number } = {
+const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
   L: 0,
   E: 1,
   T: 2,
@@ -311,14 +323,14 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
     }
 
     if (config.closeTab) {
-      chrome.tabs.remove(activeTab.id);
+      chrome.tabs.remove(activeTab.id!);
     }
     window.close();
   }, 1100);
 }
 
 
-let cachedSnoozeAudio: ?HTMLAudioElement = null;
+let cachedSnoozeAudio: HTMLAudioElement | null = null;
 
 function getSnoozeAudio(): HTMLAudioElement {
   if (!cachedSnoozeAudio) {

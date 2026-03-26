@@ -1,5 +1,5 @@
-// @flow
 import type { WakeupTimeRange } from './wakeupTimeRanges';
+import type { SnoozedTab } from '@/types';
 import moment from 'moment';
 import { ordinalNum } from '../../core/utils';
 import React, { Fragment } from 'react';
@@ -8,7 +8,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 export function formatWakeupDescription(
   timeRange: WakeupTimeRange,
   tab: SnoozedTab
-): React.Node {
+): React.ReactNode {
   const wakeupDateText = formatWakeupTime(timeRange, tab);
 
   return tab.period ? (
