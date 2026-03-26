@@ -78,10 +78,8 @@ const mockChrome = {
 }
 
 // Make chrome API available globally
-global.chrome = mockChrome as unknown as typeof chrome
-window.chrome = mockChrome as unknown as typeof chrome
+Object.defineProperty(globalThis, 'chrome', { value: mockChrome, writable: true })
+Object.defineProperty(window, 'chrome', { value: mockChrome, writable: true })
 
 // Mock other globals that might be needed
-;(global as Record<string, unknown>).browser = mockChrome
-
-chrome = mockChrome as unknown as typeof chrome
+;(globalThis as Record<string, unknown>).browser = mockChrome
