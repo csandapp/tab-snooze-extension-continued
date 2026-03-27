@@ -89,7 +89,7 @@ const SettingsPage = (): React.ReactNode => {
 
     return {
       [valueProp]: value,
-      onChange: (eventOrValue: { target?: { [key: string]: any } } | string | number | boolean) => {
+      onChange: (eventOrValue: { target?: { [key: string]: unknown } } | string | number | boolean) => {
         const newValue = typeof eventOrValue === 'object' && eventOrValue !== null && 'target' in eventOrValue && eventOrValue.target
           ? eventOrValue.target[valueProp]
           : eventOrValue;
