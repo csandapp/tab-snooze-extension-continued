@@ -3,8 +3,8 @@
  * Background Page - a page that opens in the background
  * without a view.
  */
-import { repeatLastSnooze, snoozeTab } from './snooze';
-import { MSG_SNOOZE_TAB, MSG_DELETE_SNOOZED_TABS } from './messages';
+import { repeatLastSnooze, snoozeTab, snoozeTabs } from './snooze';
+import { MSG_SNOOZE_TAB, MSG_SNOOZE_TABS, MSG_DELETE_SNOOZED_TABS } from './messages';
 import {
   registerEventListeners as registerWakeupEventListeners,
   scheduleWakeupAlarm,
@@ -35,7 +35,10 @@ import { getSettings, saveSettings } from './settings';
 import { saveRecentlyWokenTabs } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
-// This ensures tabs can retry if SW crashed mid-wakeup.
+// This clears stale processing state from previous SW instances.
+// If SW crashed mid-wakeup, tabs will either:
+// - Already be created (create happened before crash) → no action needed
+// - Still be in storage (crash before create) → will wake on next alarm
 saveRecentlyWokenTabs([]);
 
 /**
@@ -127,6 +130,18 @@ export function runBackgroundScript() {
       return true; // keep channel open for async sendResponse
     }
 
+    if (message.action === MSG_SNOOZE_TABS) {
+      const { tabs, config } = message;
+      console.log(`📨 [SW] Received snoozeTabs message for ${tabs?.length} tab(s)`);
+      snoozeTabs(tabs, config)
+        .then(() => sendResponse({ success: true }))
+        .catch(error => {
+          console.error('snoozeTabs message handler failed:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // keep channel open for async sendResponse
+    }
+
     if (message.action === MSG_DELETE_SNOOZED_TABS) {
       const { tabsToDelete } = message;
       console.log(`📨 [SW] Received deleteSnoozedTabs message for ${tabsToDelete?.length} tab(s)`);
@@ -194,7 +209,7 @@ async function extensionMain() {
    * are certain it will be called **first thing** after an update.
    */
 
-  // Set 1 mintue delay for Chrome to load after startup before
+  // Set 1 minute delay for Chrome to load after startup before
   // waking up tabs so chrome is not stuck
   await scheduleWakeupAlarm('1min');
 
