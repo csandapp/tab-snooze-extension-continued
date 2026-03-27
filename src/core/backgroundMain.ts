@@ -171,6 +171,7 @@ export async function ensureOffscreenDocument() {
       } catch (error: unknown) {
         // Handle the case where document was created by another call despite our check
         if (error instanceof Error && error.message.includes('Only a single offscreen document')) {
+          // expected — another call already created the document
         } else {
           console.error("Error creating offscreen document:", error);
           throw error;
