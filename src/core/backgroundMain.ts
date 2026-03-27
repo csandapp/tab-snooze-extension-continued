@@ -35,7 +35,10 @@ import { getSettings, saveSettings } from './settings';
 import { saveRecentlyWokenTabs } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
-// This ensures tabs can retry if SW crashed mid-wakeup.
+// This clears stale processing state from previous SW instances.
+// If SW crashed mid-wakeup, tabs will either:
+// - Already be created (create happened before crash) → no action needed
+// - Still be in storage (crash before create) → will wake on next alarm
 saveRecentlyWokenTabs([]);
 
 /**
