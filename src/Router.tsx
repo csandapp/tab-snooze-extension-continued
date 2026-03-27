@@ -9,7 +9,6 @@ import {
   TODO_PATH,
   FIRST_SNOOZE_PATH,
   SUPPORT_TS_PATH,
-  // BETA_PATH,
   TUTORIAL_PATH,
   WHATS_NEW_PATH,
 } from './paths';
@@ -27,9 +26,6 @@ const AsyncFirstSnoozeDialog = React.lazy(() =>
 const AsyncSupportTSDialog = React.lazy(() =>
   import('./components/dialogs/SupportTSDialog')
 );
-// const AsyncBetaDialog = React.lazy(() =>
-//   import('./components/dialogs/BetaDialog')
-// );
 const AsyncTutorial = React.lazy(() =>
   import('./components/dialogs/Tutorial')
 );
@@ -55,7 +51,6 @@ const Router = () => (
           element={<AsyncFirstSnoozeDialog />}
         />
         <Route path={SUPPORT_TS_PATH} element={<AsyncSupportTSDialog />} />
-        {/* <Route path={BETA_PATH} element={<AsyncBetaDialog />} /> */}
         <Route path={TUTORIAL_PATH} element={<AsyncTutorial />} />
         <Route path={WHATS_NEW_PATH} element={<AsyncWhatsNewDialog />} />
       </Routes>
