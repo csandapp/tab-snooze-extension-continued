@@ -1,4 +1,3 @@
-// // @flow
 // import mixpanel from 'mixpanel-browser';
 // import { getSnoozedTabs } from './storage';
 // import { APP_VERSION } from './utils';
