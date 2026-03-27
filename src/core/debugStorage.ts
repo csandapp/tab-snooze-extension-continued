@@ -1,4 +1,3 @@
-// // @flow
 // import { getSnoozedTabs, STORAGE_KEY_BACKUPS } from './storage';
 
 // window.tabSnoozeDebug_printTabs = async function() {
