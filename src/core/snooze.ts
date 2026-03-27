@@ -16,7 +16,8 @@ export async function snoozeTab(
   tab: chrome.tabs.Tab,
   config: SnoozeConfig
 ) {
-  let { wakeupTime, period, type, closeTab = true } = config;
+  let { wakeupTime } = config;
+  const { period, type, closeTab = true } = config;
 
   if (period) {
     const nextOccurrenceDate = calcNextOccurrenceForPeriod(period);
@@ -113,7 +114,7 @@ export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
   }
 
   // Update sleep end for the next date
-  let newWakeupDate = calcNextOccurrenceForPeriod(snoozedTab.period);
+  const newWakeupDate = calcNextOccurrenceForPeriod(snoozedTab.period);
 
   console.log('Re-snoozing tab until ' + newWakeupDate.toString());
 

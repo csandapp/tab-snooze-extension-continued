@@ -152,7 +152,7 @@ export async function notifyUserAboutNewTabs(
   //   faviconURI = 'images/extension_icon_128.png';
   // }
 
-  let faviconURI = chrome.runtime.getURL('images/extension_icon_128.png');
+  const faviconURI = chrome.runtime.getURL('images/extension_icon_128.png');
 
   // Desktop notification
   const createdNotifId = await chrome.notifications.create('', {

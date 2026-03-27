@@ -153,7 +153,7 @@ export async function wakeupDeleteAndReschedule({
   // Reschedule repeated tabs that succeeded — failed periodic tabs stay as-is for retry
   const periodicTabs = successfulTabs.filter(tab => tab.period);
   console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Found ${periodicTabs.length} periodic tabs to reschedule`);
-  for (let tab of periodicTabs) {
+  for (const tab of periodicTabs) {
     console.log(`🔁 [${SERVICE_WORKER_INSTANCE_ID}] wakeupDeleteAndReschedule() - Rescheduling periodic tab: ${tab.url}`);
     try {
       await resnoozePeriodicTab(tab);
@@ -179,8 +179,8 @@ export async function handleScheduledWakeup(): Promise<void> {
 
   try {
     const settings = await getSettings();
-    let snoozedTabs = await getSnoozedTabs();
-    let now = new Date();
+    const snoozedTabs = await getSnoozedTabs();
+    const now = new Date();
 
     // ****** Fixing a bug in production ***** //
     // ****** THIS SHOULD NOT HAPPEN ***** //
@@ -205,7 +205,7 @@ export async function handleScheduledWakeup(): Promise<void> {
     const recentlyWokenKeys = await getRecentlyWokenTabs();
 
     // Filter tabs: due now AND not already being processed
-    let readySleepingTabs = snoozedTabs.filter(
+    const readySleepingTabs = snoozedTabs.filter(
       snoozedTab =>
         new Date(snoozedTab.when) <= now &&
         !recentlyWokenKeys.includes(getTabKey(snoozedTab))

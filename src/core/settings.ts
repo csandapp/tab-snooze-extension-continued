@@ -34,7 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
-  let { settings } = await chrome.storage.local.get(
+  const { settings } = await chrome.storage.local.get(
     STORAGE_KEY_SETTINGS
   );
 
