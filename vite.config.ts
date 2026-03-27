@@ -86,7 +86,11 @@ export default defineConfig({
     globals: true,
     // Mock Chrome APIs for testing
     deps: {
-      inline: ['@testing-library/jest-dom']
+      optimizer: {
+        web: {
+          include: ['@testing-library/jest-dom']
+        }
+      }
     },
     coverage: {
       provider: 'v8',

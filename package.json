@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^8.57.1",
     "@typescript-eslint/parser": "^8.57.1",
     "@vitejs/plugin-react": "^4.6.0",
-    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^15.15.0",
@@ -62,6 +62,6 @@
     "vite": "^7.0.4",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.2"
   }
 }
