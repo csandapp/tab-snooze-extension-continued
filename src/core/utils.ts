@@ -68,7 +68,7 @@ export function createTabs(
 }
 
 // Attach affiliate tracking ID for amazon product links
-function attachAffiliationTag(url: string): string {
+function _attachAffiliationTag(url: string): string {
   if (!url.includes('amazon.')) {
     return url; // as is
   }

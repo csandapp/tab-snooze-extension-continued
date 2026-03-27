@@ -20,7 +20,7 @@ interface Props {
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
-interface State {
+interface _State {
   periodType: PeriodType;
   selectedHour: number;
   selectedMonth: number;
