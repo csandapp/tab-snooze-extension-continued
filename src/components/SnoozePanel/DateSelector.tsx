@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import moment from 'moment';
 import SnoozeModal from './SnoozeModal';

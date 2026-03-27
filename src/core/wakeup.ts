@@ -3,7 +3,6 @@ import { getSnoozedTabs, addSnoozedTabs, removeSnoozedTabs, getRecentlyWokenTabs
 import {
   createTabs,
   notifyUserAboutNewTabs,
-  areTabsEqual,
   getFirstTabToWakeup,
 } from './utils';
 

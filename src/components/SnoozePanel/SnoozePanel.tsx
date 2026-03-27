@@ -1,5 +1,5 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
-import type { Props as SnoozeButtonProps } from './SnoozeButton';
+// SnoozeButtonProps type available from './SnoozeButton' if needed
 import type { SnoozePeriod, SnoozeConfig, SnoozeType } from '@/types';
 
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
