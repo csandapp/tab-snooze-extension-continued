@@ -179,7 +179,7 @@ export async function handleScheduledWakeup(): Promise<void> {
 
   try {
     const settings = await getSettings();
-    const snoozedTabs = await getSnoozedTabs();
+    let snoozedTabs = await getSnoozedTabs();
     const now = new Date();
 
     // ****** Fixing a bug in production ***** //
