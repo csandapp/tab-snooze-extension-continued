@@ -191,6 +191,23 @@ export async function getActiveTab(): Promise<chrome.tabs.Tab> {
   return tabs[0];
 }
 
+export async function getCurrentWindowTabs(): Promise<chrome.tabs.Tab[]> {
+  return chrome.tabs.query({ currentWindow: true });
+}
+
+export async function getHighlightedTabs(): Promise<chrome.tabs.Tab[]> {
+  return chrome.tabs.query({ highlighted: true, currentWindow: true });
+}
+
+export function isSnoozeableTab(tab: chrome.tabs.Tab): boolean {
+  const url = tab.url || '';
+  return (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('file://')
+  );
+}
+
 /*
     e.g. input
     {

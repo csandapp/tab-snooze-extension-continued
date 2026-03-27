@@ -78,6 +78,47 @@ export async function snoozeTab(
   //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
 }
 
+export async function snoozeTabs(
+  tabs: chrome.tabs.Tab[],
+  config: SnoozeConfig
+) {
+  let { wakeupTime, period, type } = config;
+
+  if (period) {
+    const nextOccurrenceDate = calcNextOccurrenceForPeriod(period);
+    wakeupTime = nextOccurrenceDate.getTime();
+  }
+
+  if (!wakeupTime) {
+    throw new Error('No wakeup date and no period given');
+  }
+
+  const groupId = `group-${Date.now()}`;
+  const now = Date.now();
+
+  console.log(
+    `Snoozing ${tabs.length} tabs until ${new Date(wakeupTime).toString()} (group: ${groupId})`
+  );
+
+  const snoozedTabs: SnoozedTab[] = tabs.map(tab => ({
+    url: tab.url!,
+    title: tab.title!,
+    favicon: tab.favIconUrl || '',
+    type,
+    sleepStart: now,
+    period,
+    when: wakeupTime!,
+    groupId,
+  }));
+
+  await addSnoozedTabs(snoozedTabs);
+  await scheduleWakeupAlarm('auto');
+
+  let { totalSnoozeCount } = await getSettings();
+  totalSnoozeCount += tabs.length;
+  await saveSettings({ totalSnoozeCount });
+}
+
 export async function snoozeActiveTab(config: SnoozeConfig) {
   const activeTab = await getActiveTab();
   return snoozeTab(activeTab, config);
