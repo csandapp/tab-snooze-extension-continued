@@ -52,7 +52,7 @@ const StyledFab = muiStyled(Fab)<{ component?: React.ElementType; to?: string; t
 
 const SleepingTabsPage = (): React.ReactNode => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
-  const [ hidePeriodicState, _setHidePeriodicState ] = useState(false);
+  const [ hidePeriodicState ] = useState(false);
   
   const refreshSnoozedTabs = useCallback(async () => {
     const groups: Array<TabGroup> = await getSleepingTabByWakeupGroups(hidePeriodicState);

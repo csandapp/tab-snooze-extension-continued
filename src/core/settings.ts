@@ -54,14 +54,6 @@ export async function saveSettings(
   });
 }
 
-async function _resetSettings() {
-  chrome.storage.local.remove(STORAGE_KEY_SETTINGS);
-}
-
-async function _printSettings() {
-  const settings = await getSettings();
-  console.table(settings);
-}
 
 // exposeFunctionForDebug([
 //   getSettings,

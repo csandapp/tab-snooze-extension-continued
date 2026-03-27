@@ -59,7 +59,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
   useEffect(() => {
     let cancelled = false;
-    let _timeoutId: ReturnType<typeof setTimeout>;
 
     const loadData = async () => {
       try {
@@ -249,8 +248,6 @@ const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
   P: 8,
   D: 8,
 };
-const _CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
-
 // give time for animation & sound to finish before snoozing (closing) tab
 async function delayedSnoozeActiveTab(config: SnoozeConfig) {
   // Capture active tab NOW in popup context where chrome.tabs.query
