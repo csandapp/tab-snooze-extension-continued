@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Settings } from '@/types';
 import { styled as muiStyled } from '@mui/material/styles';
 import { Helmet } from 'react-helmet-async';
@@ -13,7 +13,6 @@ import SunIcon from '@mui/icons-material/WbSunny';
 import WeekendIcon from '@mui/icons-material/Weekend';
 import WorkIcon from '@mui/icons-material/Work';
 import SomedayIcon from '@mui/icons-material/BeachAccess';
-import EditIcon from '@mui/icons-material/Edit';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 
 import StarIcon from '@mui/icons-material/Star';
@@ -24,11 +23,7 @@ import MailIcon from '@mui/icons-material/Mail';
 
 import MoonIcon from '@mui/icons-material/Brightness2';
 // import UserIcon from '@mui/icons-material/AccountCircle';
-import CloudIcon from '@mui/icons-material/Cloud';
 import BadgeIcon from '@mui/icons-material/Looks5';
-import AlarmIcon from '@mui/icons-material/Alarm';
-import DarkIcon from '@mui/icons-material/InvertColors';
-import LocationIcon from '@mui/icons-material/LocationOn';
 import CafeIcon from '@mui/icons-material/LocalCafe';
 import NotificationIcon from '@mui/icons-material/Notifications';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -39,7 +34,6 @@ import { getSettings, saveSettings, DEFAULT_SETTINGS } from '../../core/settings
 import moment from 'moment';
 import KeyCombo from './KeyCombo';
 import {
-  // getUpgradeUrl,
   CHROME_SETTINGS_SHORTCUTS,
   CHROME_WEB_STORE_REVIEW,
   CURR_DEVELOPER_DONATE_URL,
@@ -53,9 +47,6 @@ import {
   BADGE_TOTAL_SNOOZED,
   BADGE_DUE_TODAY,
 } from '../../core/badge';
-// import ProBadge from './ProBadge';
-import { isProUser } from '../../core/license';
-import Button from '../SnoozePanel/Button';
 
 // MUI v5 styled components
 const StyledList = muiStyled(List)(({ theme }) => ({
@@ -65,7 +56,6 @@ const StyledList = muiStyled(List)(({ theme }) => ({
 const SettingsPage = (): React.ReactNode => {
   const [settingsState, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS);
   const [commandsState, setCommandsState] = useState<Array<chrome.commands.Command>>([]);
-  const isPro: boolean = true; // useState(true);
 
   useEffect(() => {
     loadSettings();
@@ -82,11 +72,9 @@ const SettingsPage = (): React.ReactNode => {
     const settings: Settings = await getSettings();
     // shortcut settings are loaded from chrome api
     const commands = await chrome.commands.getAll();
-    const isPro = true; // await isProUser();
 
     setSettingsState(settings);
     setCommandsState(commands || []);
-    // setIsPro(isProValue);  // make everyone a pro user for now
   };
 
   const bindSettings = (stateKey: keyof Settings, valueProp: string = 'value') => {
@@ -236,49 +224,6 @@ const SettingsPage = (): React.ReactNode => {
         <title>Settings - Tab Snooze</title>
       </Helmet>
       <StyledList>
-        {!isPro && (
-          <Fragment>
-            <Header>Cloud Sync</Header>
-            {/* <ListItem>
-                <ListItemIcon>
-                  <UserIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Fragment>
-                      Not Logged In <ProBadge />
-                    </Fragment>
-                  }
-                  secondary="Log in to backup & sync your tabs across devices"
-                />
-              </ListItem> */}
-            <ListItem>
-              <ListItemIcon>
-                <CloudIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Fragment>
-                    {/* Tabs Sync & Backup <ProBadge /> */}
-                  </Fragment>
-                }
-                secondary="Disabled"
-              />
-              <ListItemSecondaryAction>
-                <LogInButton
-                  as="a"
-                  // href={getUpgradeUrl()}
-                  target="_blank"
-                >
-                  Signup / Login
-                </LogInButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-            {/* wake up tabs on "active device" / "original device" */}
-            {/* this computer is HOME */}
-          </Fragment>
-        )}
-
         <Header>General</Header>
         {renderCheckboxSetting({
           icon: <AudioIcon />,
@@ -320,51 +265,8 @@ const SettingsPage = (): React.ReactNode => {
             },
           ],
         })}
-        {!isPro &&
-          renderDropdownSetting({
-            icon: <AlarmIcon />,
-            title: (
-              <Fragment>
-                {/* Smart wakeup <ProBadge /> */}
-              </Fragment>
-            ),
-            description: 'Ask before waking up too many tabs',
-            stateKey: 'badge', // TODO: MUST CHANGE THIS
-            locked: !isPro,
-            options: [4, 5, 6, 7].map(num => ({
-              label: 'Disabled', // `${num} tabs`,
-              value: num,
-            })),
-          })}
-        {!isPro &&
-          renderGeneralSetting({
-            icon: <DarkIcon />,
-            title: (
-              <Fragment>
-                {/* Dark Mode <ProBadge /> */}
-              </Fragment>
-            ),
-            locked: !isPro,
-            description:
-              'Switch on the elegant Tab Snooze dark theme',
-            component: <Switch checked={false} />,
-          })}
 
         <Header>Preset Snooze Options</Header>
-
-        {!isPro &&
-          renderGeneralSetting({
-            icon: <LocationIcon />,
-            title: (
-              <Fragment>
-                {/* Location Snooze <ProBadge /> */}
-              </Fragment>
-            ),
-            locked: !isPro,
-            description:
-              'Snooze tabs to open when you get on your Home/Work device',
-            component: <Switch checked={false} />,
-          })}
         {renderDropdownSetting({
           icon: <SunIcon />,
           title: 'Tomorrow starts at',
@@ -414,39 +316,7 @@ const SettingsPage = (): React.ReactNode => {
           })),
         })}
 
-        {!isPro && (
-          <Fragment>
-            <Header>
-              {/* Custom Snooze Options <ProBadge /> */}
-            </Header>
-            {['Hours', 'Days', 'Weeks'].map((period, index) =>
-              renderGeneralSetting({
-                key: String(index),
-                icon: <EditIcon />,
-                title: `Custom Snooze Option ${index + 1}`,
-                locked: true,
-                component: (
-                  <Fragment>
-                    <span style={{ marginRight: 10 }}>in</span>
-                    <SettingsSelect
-                      small
-                      value={2}
-                      onChange={() => {}}
-                      options={[{ value: 2, label: '2' }]}
-                    />
-                    <SettingsSelect
-                      small
-                      value="days"
-                      onChange={() => {}}
-                      options={[{ value: 'days', label: period }]}
-                    />
-                  </Fragment>
-                ),
-              })
-            )}
-          </Fragment>
-        )}
-        <Header>Keyboard Shortcuts {!isPro /* && <ProBadge />*/}</Header>
+        <Header>Keyboard Shortcuts</Header>
         {commandsState.map((command, index) =>
           renderShortcutSetting({
             key: '' + index,
@@ -454,8 +324,7 @@ const SettingsPage = (): React.ReactNode => {
             // Hack! for some reason the main command (open popup)
             // gets an empty description... so we add it here
             title: command.description || 'Snooze active tab',
-            shortcut: isPro ? (command.shortcut || '') : '',
-            locked: !isPro,
+            shortcut: command.shortcut || '',
           })
         )}
         <EditShortcutsInstructions />
@@ -538,15 +407,6 @@ const Header = styled(ListSubheader).attrs({ disableSticky: true })`
   /* display: flex; */
   /* align-items: center; */
   margin-top: 10px;
-`;
-
-const LogInButton = styled(Button).attrs({
-  color: '#eee',
-  // raised: true,
-})`
-  padding: 8px 18px;
-  color: #555;
-  margin-right: 13px;
 `;
 
 const LockedContent = styled.div<{ locked?: boolean }>`

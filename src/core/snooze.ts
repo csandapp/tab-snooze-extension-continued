@@ -10,7 +10,6 @@ import { getSettings, saveSettings } from './settings';
 import { scheduleWakeupAlarm } from './wakeup';
 
 import { FIRST_SNOOZE_PATH } from '../paths';
-import { incrementWeeklyUsage } from './license';
 import type { SnoozedTab, SnoozeConfig } from '../types';
 
 export async function snoozeTab(
@@ -62,8 +61,6 @@ export async function snoozeTab(
   await saveSettings({
     totalSnoozeCount,
   });
-
-  await incrementWeeklyUsage();
 
   // open share / rate dialog
   if (totalSnoozeCount === 1) {

@@ -30,6 +30,3 @@ export const CURR_DEVELOPER_DONATE_URL = "https://ko-fi.com/csandapp"
 export const GITHUB_REPO_URL = "https://github.com/csandapp/tab-snooze-extension-continued"
 export const SUPPORT_EMAIL_URL = "mailto:csandapp@gmail.com"
 
-// export const getTrackUninstallUrl = () =>
-//   addTrackingIdToUrl(TRACK_UNINSTALL_URL);
-// export const getUpgradeUrl = () => addTrackingIdToUrl(UPGRADE_URL);
