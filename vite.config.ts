@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
-import flow from 'esbuild-plugin-flow'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import manifest from './public/manifest.json'
 
@@ -11,22 +10,14 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        presets: [
-          ['@babel/preset-flow', { all: true }]
-        ]
-      }
-    }),
+    react(),
     crx({ manifest }),
     tsconfigPaths()
   ],
 
   esbuild: {
     target: 'chrome109',
-    loader: 'jsx',
-    include: /\.(js|jsx|ts|tsx)$/,
-    exclude: []
+    jsx: 'automatic',
   },
 
   optimizeDeps: {
@@ -41,9 +32,7 @@ export default defineConfig({
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
-        '.jsx': 'jsx'
       },
-      plugins: [flow(/\.(js|jsx)$/, true)]
     }
   },
 
@@ -55,7 +44,7 @@ export default defineConfig({
     minify: false, // Keep unminified for Chrome Web Store review
     rollupOptions: {
       input: {
-        offscreen: resolve(__dirname, 'src/core/offscreen.js'),
+        offscreen: resolve(__dirname, 'src/core/offscreen.ts'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
@@ -73,7 +62,6 @@ export default defineConfig({
   define: {
     'global': 'globalThis',
     'process.env.NODE_ENV': '"production"',
-    'chrome': 'chrome'
   },
 
   // Configure for Chrome extension development
@@ -94,7 +82,7 @@ export default defineConfig({
   // Test configuration
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/__tests__/setupTests.js'],
+    setupFiles: ['./src/__tests__/setupTests.ts'],
     globals: true,
     // Mock Chrome APIs for testing
     deps: {
@@ -106,14 +94,12 @@ export default defineConfig({
       exclude: [
         'node_modules/**',
         'src/__tests__/**',
-        '**/*.test.js',
-        '**/*.test.jsx',
         '**/*.test.ts',
         '**/*.test.tsx',
         'vite.config.ts',
         'public/**',
         'build/**',
-        'src/setupChromeMock.js'
+        'src/setupChromeMock.ts'
       ]
     }
   }

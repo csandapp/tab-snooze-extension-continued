@@ -41,7 +41,6 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@babel/preset-flow": "^7.27.1",
     "@crxjs/vite-plugin": "^2.0.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -53,7 +52,6 @@
     "@typescript-eslint/parser": "^8.57.1",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/coverage-v8": "^2.1.9",
-    "esbuild-plugin-flow": "^0.3.2",
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "^26.1.0",
