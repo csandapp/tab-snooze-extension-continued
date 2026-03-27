@@ -26,7 +26,7 @@ Manifest V3 extension built around a Service Worker background script.
 
 ### Entry Points
 
-- `index.html` — Single SPA container; all UI routes use hash routing (`#popup`, `#options/settings`, etc.)
+- `index.html` — Single SPA container; all UI routes use hash routing (`#/popup`, `#/options/settings`, etc.)
 - `src/core/backgroundMain.ts` — Service Worker entry (registers all listeners synchronously per MV3 requirement)
 - `public/offscreen.html` + `src/core/offscreen.ts` — Isolated document for audio playback (Service Workers have no DOM)
 
