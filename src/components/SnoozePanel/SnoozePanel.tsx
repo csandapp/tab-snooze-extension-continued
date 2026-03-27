@@ -12,11 +12,7 @@ import calcSnoozeOptions, {
 import SnoozeButtonsGrid from './SnoozeButtonsGrid';
 import { MSG_SNOOZE_TAB } from '../../core/messages';
 import TooltipHelper from './TooltipHelper';
-import UpgradeDialog from './UpgradeDialog';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
-import {
-  isOverFreeWeeklyQuota
-} from '../../core/license';
 import SnoozeFooter from './SnoozeFooter';
 import {
   loadAudio,
@@ -24,12 +20,9 @@ import {
 } from '../../core/audio';
 import keycode from 'keycode';
 import {
-  countConsecutiveSnoozes,
   IS_BETA,
-  createTab,
   getActiveTab,
 } from '../../core/utils';
-// import { getUpgradeUrl } from '../../paths';
 
 // code splitting these big components
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
@@ -62,9 +55,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
   const [selectedSnoozeOptionId, setSelectedSnoozeOptionId] = useState<SnoozeType | null>(null);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
-  const [isProUser, setIsProUser] = useState(true);
   const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
-  const [isOverFreePlanLimit, setIsOverFreePlanLimit] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,15 +67,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
         
         if (!cancelled) {
           setSnoozeOptions(calcSnoozeOptions(settings));
-          setIsProUser(true);
         }
-
-        timeoutId = setTimeout(async () => {
-          const isOverFreePlanLimit = await isOverFreeWeeklyQuota();
-          if (!cancelled) {
-            setIsOverFreePlanLimit(isOverFreePlanLimit);
-          }
-        }, 300);
       } catch (error) {
         console.error('Failed to load data:', error);
       }
@@ -95,7 +78,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
     return () => {
       cancelled = true;
-      if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
   const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
@@ -125,11 +107,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
   }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
 
   const onKeyPress = useCallback((event: React.KeyboardEvent) => {
-    if (isOverFreePlanLimit) {
-      // ignore shortcuts when Upgrade dialog is visible
-      return;
-    }
-
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event.nativeEvent) as string | undefined;
     const mappedOptionIndex =
@@ -174,7 +151,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
     }
 
     setFocusedButtonIndex( nextFocusedIndex);
-  }, [focusedButtonIndex, snoozeOptions, isOverFreePlanLimit, onSnoozeButtonClicked]);
+  }, [focusedButtonIndex, snoozeOptions, onSnoozeButtonClicked]);
 
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
@@ -187,10 +164,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
   }, [selectedSnoozeOptionId]);
 
   const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) => {
-    if (!isProUser) {
-      // createTab(getUpgradeUrl());
-      return;
-    }
     if (!selectedSnoozeOptionId) return;
 
     delayedSnoozeActiveTab({
@@ -198,14 +171,13 @@ export function SnoozePanel(props: Props): React.ReactNode {
       period,
       closeTab: true,
     });
-  }, [selectedSnoozeOptionId, isProUser]);
+  }, [selectedSnoozeOptionId]);
 
   // decide whether or not to use callback here...
   const getSnoozeButtons = () => {
     return snoozeOptions.map(
       (snoozeOpt: SnoozeOption, index) => ({
         ...snoozeOpt,
-        proBadge: !isProUser && Boolean(snoozeOpt.isProFeature),
         focused: focusedButtonIndex === index,
         pressed: selectedSnoozeOptionId === snoozeOpt.id,
         onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
@@ -236,7 +208,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
           visible: tooltipVisible || hideFooter,
           text: tooltipText ?? "",
         }}
-        upgradeBadge={!isProUser}
         betaBadge={IS_BETA}
       />
       {selectedSnoozeOptionId === SNOOZE_TYPE_REPEATED && (
@@ -261,12 +232,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
           />
         </Suspense>
       )}
-      <UpgradeDialog
-        onDismiss={() =>
-          setIsOverFreePlanLimit(false)
-        }
-        visible={isOverFreePlanLimit}
-      />
     </Root>
   );
 }

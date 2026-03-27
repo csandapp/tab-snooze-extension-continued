@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css, withTheme, type DefaultTheme } from 'styled-components';
-import ProCornerRibbon from './ProCornerRibbon';
 import Collapse from '@mui/material/Collapse';
 
 export interface Props {
@@ -10,7 +9,6 @@ export interface Props {
   activeIcon: string;
   focused: boolean;
   pressed: boolean;
-  proBadge: boolean;
   onClick: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -27,7 +25,6 @@ const SnoozeButton: React.FC<Props> = (props: Props): React.ReactNode => {  // D
     activeIcon,
     focused,
     pressed,
-    proBadge,
     onClick,
     onMouseLeave,
     onMouseEnter,
@@ -51,7 +48,6 @@ const SnoozeButton: React.FC<Props> = (props: Props): React.ReactNode => {  // D
       <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
         <Title $pressed={pressed}>{title}</Title>
       </Collapse>
-      {proBadge && <ProCornerRibbon white={pressed ? true : undefined} />}
     </Button>
   );
 }

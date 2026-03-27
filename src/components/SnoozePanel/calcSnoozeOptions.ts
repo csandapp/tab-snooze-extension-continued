@@ -31,7 +31,6 @@ export interface SnoozeOption {
   activeIcon: string;
   tooltip: string;
   when?: Date;
-  isProFeature?: boolean;
 }
 
 export default function calcSnoozeOptions(
@@ -148,7 +147,6 @@ export default function calcSnoozeOptions(
       icon: refreshIcon,
       activeIcon: refreshWhiteIcon,
       tooltip: 'Open this tab on a periodic basis',
-      isProFeature: true,
     },
     {
       id: SNOOZE_TYPE_SPECIFIC_DATE,

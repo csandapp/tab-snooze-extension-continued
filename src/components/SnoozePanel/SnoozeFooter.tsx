@@ -7,7 +7,6 @@ import {
   SLEEPING_TABS_PATH,
   TODO_PATH,
   SETTINGS_PATH,
-  // getUpgradeUrl,
   BETA_PATH,
 } from '../../paths';
 import { getSnoozedTabs } from '../../core/storage';
@@ -18,11 +17,10 @@ interface SnoozeFooterProps {
     visible: boolean;
     text: string | null;
   };
-  upgradeBadge: boolean;
   betaBadge: boolean;
 }
 
-export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: SnoozeFooterProps) : React.ReactNode {
+export default function SnoozeFooter({ tooltip, betaBadge }: SnoozeFooterProps) : React.ReactNode {
   const [sleepingTabsCount, setSleepingTabsCount] = useState(0);
 
   useEffect(() => {
@@ -63,16 +61,6 @@ export default function SnoozeFooter({ tooltip, upgradeBadge, betaBadge }: Snooz
           <SleepingCountBadge>{sleepingTabsCount}</SleepingCountBadge>
           Sleeping Tabs
         </SleepingTabsBtn>
-        
-        {!betaBadge && upgradeBadge && (
-          <BadgeButton
-            as="a"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <UpgradeBadge>Upgrade</UpgradeBadge>
-          </BadgeButton>
-        )}
         
         {betaBadge && (
           <BadgeButton onClick={handleBetaClick}>
@@ -173,17 +161,13 @@ const BadgeButton = styled(FooterBtn)`
   padding: 0 14px;
 `;
 
-const UpgradeBadge = styled.div`
+const BetaBadge = styled.div`
   background-color: ${props => props.theme.primary};
   padding: 8px 10px;
   border-radius: 5px;
   color: #fff;
-  /* color: ${props => props.theme.snoozePanel.bgColor}; */
   font-weight: 700;
   font-size: 16px;
-`;
-
-const BetaBadge = styled(UpgradeBadge)`
   background-color: ${props => props.theme.beta};
   padding-right: 15px;
   padding-left: 15px;
