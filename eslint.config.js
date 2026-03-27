@@ -19,6 +19,24 @@ export default tseslint.config(
     rules: {
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      "@typescript-eslint/no-unused-vars": ["error", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      }],
+    },
+  },
+  {
+    files: ["**/__tests__/**", "**/setupChromeMock.*"],
+    rules: {
+      "no-global-assign": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+    },
+  },
+  {
+    files: ["**/setupChromeMock.ts"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
   {
