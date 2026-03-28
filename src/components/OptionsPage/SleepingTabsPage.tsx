@@ -1,10 +1,10 @@
-import React, { useEffect, useState, Fragment, useCallback } from 'react';
+import React, { useEffect, useState, Fragment, useCallback, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { openTabs } from '../../core/wakeup';
 import { getSnoozedTabs } from '../../core/storage';
-import { MSG_DELETE_SNOOZED_TABS } from '../../core/messages';
+import { MSG_DELETE_SNOOZED_TABS, MSG_IMPORT_SNOOZED_TABS } from '../../core/messages';
 import { getSleepingTabByWakeupGroups, type TabGroup } from './groupSleepingTabs';
 import type { SnoozedTab } from '@/types';
 import { formatWakeupDescription } from './formatWakeupDescription';
@@ -15,6 +15,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
 import HotelIcon from '@mui/icons-material/Hotel';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import Zoom from '@mui/material/Zoom';
@@ -53,6 +54,19 @@ const StyledFab = muiStyled(Fab)<{ component?: React.ElementType; to?: string; t
   right: theme.spacing(3),
 }));
 
+const isValidSnoozedTab = (tab: unknown): tab is SnoozedTab => {
+  if (typeof tab !== 'object' || tab === null) return false;
+  const t = tab as Record<string, unknown>;
+  return (
+    typeof t.url === 'string' &&
+    typeof t.title === 'string' &&
+    typeof t.type === 'string' &&
+    typeof t.favicon === 'string' &&
+    typeof t.when === 'number' &&
+    typeof t.sleepStart === 'number'
+  );
+};
+
 const exportSnoozedTabs = async () => {
   const tabs = await getSnoozedTabs();
   const json = JSON.stringify(tabs, null, 2);
@@ -69,7 +83,39 @@ const exportSnoozedTabs = async () => {
 const SleepingTabsPage = (): React.ReactNode => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
   const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const importSnoozedTabs = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const parsed: unknown = JSON.parse(e.target?.result as string);
+        if (!Array.isArray(parsed)) {
+          alert('Invalid backup file: expected a JSON array.');
+          return;
+        }
+        const validTabs = parsed.filter(isValidSnoozedTab);
+        if (validTabs.length === 0) {
+          alert('No valid snoozed tabs found in the file.');
+          return;
+        }
+        await chrome.runtime.sendMessage({
+          action: MSG_IMPORT_SNOOZED_TABS,
+          tabs: validTabs,
+        });
+      } catch {
+        alert('Failed to parse the backup file. Please select a valid JSON file.');
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset so the same file can be re-selected
+    event.target.value = '';
+  };
+
   const refreshSnoozedTabs = useCallback(async () => {
     const groups: Array<TabGroup> = await getSleepingTabByWakeupGroups(hidePeriodicState);
     setVisibleTabGroupsState(groups);
@@ -179,14 +225,31 @@ const SleepingTabsPage = (): React.ReactNode => {
         <SectionTitle>
           {visibleTabGroupsState.flatMap(g => g.tabs).length || '0'} Sleeping Tabs
         </SectionTitle>
-        <Button
-          variant="outlined"
-          startIcon={<FileDownloadIcon />}
-          onClick={exportSnoozedTabs}
-          sx={{ color: 'primary.main', borderColor: 'primary.main' }}
-        >
-          Export
-        </Button>
+        <ButtonGroup>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={importSnoozedTabs}
+            style={{ display: 'none' }}
+          />
+          <Button
+            variant="outlined"
+            startIcon={<FileUploadIcon />}
+            onClick={() => fileInputRef.current?.click()}
+            sx={{ color: 'primary.main', borderColor: 'primary.main' }}
+          >
+            Import
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<FileDownloadIcon />}
+            onClick={exportSnoozedTabs}
+            sx={{ color: 'primary.main', borderColor: 'primary.main' }}
+          >
+            Export
+          </Button>
+        </ButtonGroup>
       </SectionHeader>
       {visibleTabGroupsState.length > 0 ? (
         <StyledList>
@@ -236,6 +299,11 @@ const SectionHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px 0;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
 const SectionTitle = styled.h2`
