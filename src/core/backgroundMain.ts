@@ -4,7 +4,7 @@
  * without a view.
  */
 import { repeatLastSnooze, snoozeTab } from './snooze';
-import { MSG_SNOOZE_TAB, MSG_DELETE_SNOOZED_TABS } from './messages';
+import { MSG_SNOOZE_TAB, MSG_DELETE_SNOOZED_TABS, MSG_IMPORT_SNOOZED_TABS } from './messages';
 import {
   registerEventListeners as registerWakeupEventListeners,
   scheduleWakeupAlarm,
@@ -32,7 +32,7 @@ import {
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { getSettings, saveSettings } from './settings';
-import { saveRecentlyWokenTabs } from './storage';
+import { addSnoozedTabs, saveRecentlyWokenTabs } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
 // This clears stale processing state from previous SW instances,
@@ -138,6 +138,19 @@ export function runBackgroundScript() {
         .then(() => sendResponse({ success: true }))
         .catch(error => {
           console.error('deleteSnoozedTabs message handler failed:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // keep channel open for async sendResponse
+    }
+
+    if (message.action === MSG_IMPORT_SNOOZED_TABS) {
+      const { tabs } = message;
+      console.log(`📨 [SW] Received importSnoozedTabs message for ${tabs?.length} tab(s)`);
+      addSnoozedTabs(tabs)
+        .then(() => scheduleWakeupAlarm('auto'))
+        .then(() => sendResponse({ success: true }))
+        .catch(error => {
+          console.error('importSnoozedTabs message handler failed:', error);
           sendResponse({ success: false, error: error.message });
         });
       return true; // keep channel open for async sendResponse
