@@ -19,7 +19,6 @@ import type { SnoozedTab } from '../types';
 
 // import bugsnag from '../bugsnag';
 
-
 const WAKEUP_TABS_ALARM_NAME = 'WAKEUP_TABS_ALARM';
 const KEEPALIVE_CHECK_ALARM_NAME = 'KEEPALIVE_CHECK';
 
@@ -350,7 +349,7 @@ export function registerEventListeners(): void {
     if (newState === 'active') {
       console.log(`💻 [${SERVICE_WORKER_INSTANCE_ID}] System active after idle time`);
 
-      // Give 1 mintue for Wifi to connect after login,
+      // Give 1 minute for Wifi to connect after login,
       // otherwise created tabs will fail to connect and break
       scheduleWakeupAlarm('1min');
     } else {
