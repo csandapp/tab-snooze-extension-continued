@@ -35,7 +35,11 @@ import { getSettings, saveSettings } from './settings';
 import { saveRecentlyWokenTabs } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
-// This ensures tabs can retry if SW crashed mid-wakeup.
+// This clears stale processing state from previous SW instances,
+// this ensures tabs can retry if SW crashed mid-wakeup.
+// If SW crashed mid-wakeup, tabs will either:
+// - Already be created (create happened before crash) → no action needed
+// - Still be in storage (crash before create) → will wake on next alarm
 saveRecentlyWokenTabs([]);
 
 /**
@@ -194,7 +198,7 @@ async function extensionMain() {
    * are certain it will be called **first thing** after an update.
    */
 
-  // Set 1 mintue delay for Chrome to load after startup before
+  // Set 1 minute delay for Chrome to load after startup before
   // waking up tabs so chrome is not stuck
   await scheduleWakeupAlarm('1min');
 
