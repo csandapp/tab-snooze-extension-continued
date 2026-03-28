@@ -102,6 +102,9 @@ export function runBackgroundScript() {
   chrome.commands.onCommand.addListener(command => {
     // create a new todo window!, and focus on it
     if (command === COMMAND_NEW_TODO) {
+      const now = Date.now();
+      if (now - lastNewTodoTime < 1000) return;
+      lastNewTodoTime = now;
       createTab(TODO_PATH);
     }
 
@@ -144,6 +147,9 @@ export function runBackgroundScript() {
     }
   });
 }
+
+// Debounce timestamp for COMMAND_NEW_TODO to prevent duplicate tabs from rapid keypresses
+let lastNewTodoTime = 0;
 
 // Lock to prevent concurrent offscreen document creation
 let offscreenDocumentPromise: Promise<void> | null = null;
