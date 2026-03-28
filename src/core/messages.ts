@@ -2,4 +2,5 @@
 // Used by popup/options → service worker, and SW → offscreen document.
 export const MSG_SNOOZE_TAB = 'snoozeTab';
 export const MSG_DELETE_SNOOZED_TABS = 'deleteSnoozedTabs';
+export const MSG_IMPORT_SNOOZED_TABS = 'importSnoozedTabs';
 export const MSG_PLAY_AUDIO = 'playAudio';
