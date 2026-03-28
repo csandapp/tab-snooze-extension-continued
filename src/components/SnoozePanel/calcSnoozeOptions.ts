@@ -74,7 +74,11 @@ export default function calcSnoozeOptions(
     ? dayStart(moment()) // if its very late, tomorrow = today.
     : dayStart(moment().add(1, 'days'));
   const weekendTime = isWeekend
-    ? dayStart(moment().day(7 + weekEndDay)) // choose next weekend
+    ? dayStart(
+        moment().day() < weekEndDay
+          ? moment().day(weekEndDay) // Sunday → this Saturday (6 days away)
+          : moment().day(7 + weekEndDay) // Saturday → next Saturday (7 days away)
+      )
     : dayStart(moment().day(weekEndDay));
   const nextWeekTime = dayStart(moment().day(weekStartDay + 7)); // next day which start the week
   const inAMonthTime = dayStart(moment().add(1, 'months'));
