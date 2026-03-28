@@ -73,8 +73,9 @@ export default function calcSnoozeOptions(
   const tomorrowTime = isVeryLateAtNight
     ? dayStart(moment()) // if its very late, tomorrow = today.
     : dayStart(moment().add(1, 'days'));
+  const nextWeekendDay = moment().day() === weekEndDay ? 7 + weekEndDay : weekEndDay;
   const weekendTime = isWeekend
-    ? dayStart(moment().day(7 + weekEndDay)) // choose next weekend
+    ? dayStart(moment().day(nextWeekendDay))
     : dayStart(moment().day(weekEndDay));
   const nextWeekTime = dayStart(moment().day(weekStartDay + 7)); // next day which start the week
   const inAMonthTime = dayStart(moment().add(1, 'months'));
