@@ -63,16 +63,7 @@ export default defineConfig({
     minify: false, // Keep unminified for Chrome Web Store review
     rollupOptions: {
       input: {
-        offscreen: resolve(__dirname, 'src/core/offscreen.ts'),
-      },
-      output: {
-        entryFileNames: (chunkInfo) => {
-          // Place offscreen script in assets directory
-          if (chunkInfo.name === 'offscreen') {
-            return 'assets/offscreen.js';
-          }
-          return 'assets/[name]-[hash].js';
-        },
+        offscreen: resolve(__dirname, 'offscreen.html'),
       },
     },
   },
