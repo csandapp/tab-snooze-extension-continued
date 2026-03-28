@@ -42,7 +42,7 @@ export async function getSnoozedTabs(): Promise<SnoozedTab[]> {
 
 export function addSnoozedTabs(
   tabsToAdd: SnoozedTab[]
-): Promise<void> {
+): Promise<{ added: number }> {
   return withStorageLock(async () => {
     const tabs = await getSnoozedTabs();
     const newTabs = tabsToAdd.filter(toAdd => !includesTab(tabs, toAdd));
@@ -52,6 +52,7 @@ export function addSnoozedTabs(
     } else if (tabsToAdd.length > 0) {
       console.log(`⏭️ All ${tabsToAdd.length} tab(s) already in storage, skipping add`);
     }
+    return { added: newTabs.length };
   });
 }
 

@@ -147,8 +147,8 @@ export function runBackgroundScript() {
       const { tabs } = message;
       console.log(`📨 [SW] Received importSnoozedTabs message for ${tabs?.length} tab(s)`);
       addSnoozedTabs(tabs)
-        .then(() => scheduleWakeupAlarm('auto'))
-        .then(() => sendResponse({ success: true }))
+        .then(({ added }) => scheduleWakeupAlarm('auto').then(() => added))
+        .then(added => sendResponse({ success: true, added }))
         .catch(error => {
           console.error('importSnoozedTabs message handler failed:', error);
           sendResponse({ success: false, error: error.message });
