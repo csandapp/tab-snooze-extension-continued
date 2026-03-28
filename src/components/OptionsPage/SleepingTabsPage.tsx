@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { openTabs } from '../../core/wakeup';
+import { getSnoozedTabs } from '../../core/storage';
 import { MSG_DELETE_SNOOZED_TABS } from '../../core/messages';
 import { getSleepingTabByWakeupGroups, type TabGroup } from './groupSleepingTabs';
 import type { SnoozedTab } from '@/types';
@@ -13,7 +14,9 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
 import HotelIcon from '@mui/icons-material/Hotel';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Button from '@mui/material/Button';
 import Zoom from '@mui/material/Zoom';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -49,6 +52,19 @@ const StyledFab = muiStyled(Fab)<{ component?: React.ElementType; to?: string; t
   bottom: theme.spacing(3),
   right: theme.spacing(3),
 }));
+
+const exportSnoozedTabs = async () => {
+  const tabs = await getSnoozedTabs();
+  const json = JSON.stringify(tabs, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  a.href = url;
+  a.download = `tab-snooze-backup-${timestamp}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 const SleepingTabsPage = (): React.ReactNode => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
@@ -159,6 +175,19 @@ const SleepingTabsPage = (): React.ReactNode => {
       <Helmet>
         <title>Sleeping Tabs - Tab Snooze</title>
       </Helmet>
+      <SectionHeader>
+        <SectionTitle>
+          {visibleTabGroupsState.flatMap(g => g.tabs).length || '0'} Sleeping Tabs
+        </SectionTitle>
+        <Button
+          variant="outlined"
+          startIcon={<FileDownloadIcon />}
+          onClick={exportSnoozedTabs}
+          sx={{ color: 'primary.main', borderColor: 'primary.main' }}
+        >
+          Export
+        </Button>
+      </SectionHeader>
       {visibleTabGroupsState.length > 0 ? (
         <StyledList>
           {visibleTabGroupsState.map(renderTabGroup)}
@@ -201,6 +230,24 @@ const NoTabsPlaceholder = () => (
 const Root = styled.div`
   padding-bottom: 50px;
 `;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 0;
+`;
+
+const SectionTitle = styled.h2`
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #4A4A4A;
+  margin: 0;
+`;
+
 
 const Placeholder = styled.div`
   display: flex;
