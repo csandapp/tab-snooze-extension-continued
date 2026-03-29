@@ -47,7 +47,6 @@ export interface SnoozedTab {
   when: number;
   sleepStart: number;
   period?: SnoozePeriod;
-  groupId?: string;
 }
 
 export interface SnoozeConfig {

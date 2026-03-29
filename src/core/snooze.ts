@@ -24,7 +24,6 @@ function resolveWakeupTime(config: SnoozeConfig): Date | null {
 function buildSnoozedTab(
   tab: chrome.tabs.Tab,
   wakeupTime: Date,
-  groupId?: string
 ): Omit<SnoozedTab, 'type' | 'period'> {
   return {
     url: tab.url!,
@@ -32,7 +31,6 @@ function buildSnoozedTab(
     favicon: tab.favIconUrl || '',
     sleepStart: Date.now(),
     when: wakeupTime.getTime(),
-    groupId,
   };
 }
 
@@ -40,58 +38,7 @@ export async function snoozeTab(
   tab: chrome.tabs.Tab,
   config: SnoozeConfig
 ) {
-  const { type, period, closeTab = true } = config;
-
-  const wakeupDate = resolveWakeupTime(config);
-  if (!wakeupDate) {
-    throw new Error('No wakeup date and no period given');
-  }
-
-  // Uncomment for debugging only:
-  // wakeupTime = Date.now() + 1000 * 10;
-
-  console.log(
-    'Snoozing tab until ' + wakeupDate.toString()
-  );
-
-  // The info to store about this tab
-  const snoozedTab: SnoozedTab = {
-    ...buildSnoozedTab(tab, wakeupDate),
-    type,
-    period,
-  };
-
-  // Store & persist snoozed tab for later
-  // addSnoozedTabs handles dedup internally (prevents duplicates when rapidly re-snoozing)
-  await addSnoozedTabs([snoozedTab]);
-
-  // Schedule a wake-up for the Chrome extension on snoozed time
-  await scheduleWakeupAlarm('auto');
-
-  // usage tracking
-  // trackTabSnooze(snoozedTab);
-
-  let { totalSnoozeCount } = await getSettings();
-  totalSnoozeCount++;
-
-  await saveSettings({
-    totalSnoozeCount,
-  });
-
-  // open share / rate dialog
-  if (totalSnoozeCount === 1) {
-    createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
-  }
-
-
-  // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
-  // the flow of this code before finish. so close tab at the end.
-  if (closeTab) {
-    chrome.tabs.remove(tab.id!);
-  }
-
-  // Add tab to history
-  //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
+  return snoozeTabs([tab], config);
 }
 
 export async function snoozeTabs(
@@ -100,35 +47,43 @@ export async function snoozeTabs(
 ) {
   if (tabs.length === 0) return;
 
-  const { type, period } = config;
+  const { type, period, closeTab = true } = config;
 
   const wakeupDate = resolveWakeupTime(config);
   if (!wakeupDate) {
     throw new Error('No wakeup date and no period given');
   }
 
-  const groupId = `group-${Date.now()}`;
-
-  console.log(
-    `Snoozing ${tabs.length} tabs until ${wakeupDate.toString()} (group: ${groupId})`
-  );
+  console.log(`Snoozing ${tabs.length} tab(s) until ${wakeupDate.toString()}`);
 
   const snoozedTabs: SnoozedTab[] = tabs.map(tab => ({
-    ...buildSnoozedTab(tab, wakeupDate, groupId),
+    ...buildSnoozedTab(tab, wakeupDate),
     type,
     period,
   }));
 
+  // Store & schedule — addSnoozedTabs handles dedup internally
   await addSnoozedTabs(snoozedTabs);
   await scheduleWakeupAlarm('auto');
 
+  // usage tracking
+  // tabs.forEach(t => trackTabSnooze(t));
+
   let { totalSnoozeCount } = await getSettings();
+
+  // Open first-snooze dialog before incrementing
+  if (totalSnoozeCount === 0) {
+    createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
+  }
+
   totalSnoozeCount += tabs.length;
   await saveSettings({ totalSnoozeCount });
 
-  // Intentionally omits closeTab and first-snooze dialog:
-  // - The caller (popup) handles closing tabs after the message response
-  // - Multi-tab snooze is never a user's first snooze (requires multiple tabs)
+  // ORDER MATTERS! Closing tabs will close the snooze popup and may terminate
+  // execution early, so always close last.
+  if (closeTab) {
+    tabs.forEach(tab => chrome.tabs.remove(tab.id!));
+  }
 }
 
 export async function snoozeActiveTab(config: SnoozeConfig) {
