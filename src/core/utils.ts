@@ -191,6 +191,14 @@ export async function getActiveTab(): Promise<chrome.tabs.Tab> {
   return tabs[0];
 }
 
+export async function getCurrentWindowTabs(): Promise<chrome.tabs.Tab[]> {
+  return chrome.tabs.query({ currentWindow: true });
+}
+
+export async function getHighlightedTabs(): Promise<chrome.tabs.Tab[]> {
+  return chrome.tabs.query({ highlighted: true, currentWindow: true });
+}
+
 /*
     e.g. input
     {

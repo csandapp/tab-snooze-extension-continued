@@ -16,66 +16,62 @@ export async function snoozeTab(
   tab: chrome.tabs.Tab,
   config: SnoozeConfig
 ) {
-  let { wakeupTime, period, type, closeTab = true } = config;
+  return snoozeTabs([tab], config);
+}
 
-  if (period) {
-    const nextOccurrenceDate = calcNextOccurrenceForPeriod(period);
-    wakeupTime = nextOccurrenceDate.getTime();
+export async function snoozeTabs(
+  tabs: chrome.tabs.Tab[],
+  config: SnoozeConfig
+) {
+  if (tabs.length === 0) return;
+
+  const { type, period, closeTab = true } = config;
+
+  let wakeupDate: Date | null = null;
+  if (config.period) {
+    wakeupDate = calcNextOccurrenceForPeriod(config.period);
+  } else if (config.wakeupTime) {
+    wakeupDate = new Date(config.wakeupTime);
   }
 
-  if (!wakeupTime) {
+  if (!wakeupDate) {
     throw new Error('No wakeup date and no period given');
   }
 
-  // Uncomment for debugging only:
-  // wakeupTime = Date.now() + 1000 * 10;
+  console.log(`Snoozing ${tabs.length} tab(s) until ${wakeupDate.toString()}`);
 
-  console.log(
-    'Snoozing tab until ' + new Date(wakeupTime).toString()
-  );
-
-  // The info to store about this tab
-  const snoozedTab: SnoozedTab = {
+  const snoozedTabs: SnoozedTab[] = tabs.map(tab => ({
     url: tab.url!,
     title: tab.title!,
     favicon: tab.favIconUrl || '',
-    type,
     sleepStart: Date.now(),
+    when: wakeupDate.getTime(),
+    type,
     period,
-    when: wakeupTime, // convert to number since storage can't handle Date
-  };
+  }));
 
-  // Store & persist snoozed tab for later
-  // addSnoozedTabs handles dedup internally (prevents duplicates when rapidly re-snoozing)
-  await addSnoozedTabs([snoozedTab]);
-
-  // Schedule a wake-up for the Chrome extension on snoozed time
+  // Store & schedule — addSnoozedTabs handles dedup internally
+  await addSnoozedTabs(snoozedTabs);
   await scheduleWakeupAlarm('auto');
 
   // usage tracking
-  // trackTabSnooze(snoozedTab);
+  // tabs.forEach(t => trackTabSnooze(t));
 
   let { totalSnoozeCount } = await getSettings();
-  totalSnoozeCount++;
 
-  await saveSettings({
-    totalSnoozeCount,
-  });
-
-  // open share / rate dialog
-  if (totalSnoozeCount === 1) {
+  // Open first-snooze dialog before incrementing
+  if (totalSnoozeCount === 0) {
     createCenteredWindow(FIRST_SNOOZE_PATH, 830, 485);
   }
 
+  totalSnoozeCount += tabs.length;
+  await saveSettings({ totalSnoozeCount });
 
-  // ORDER MATTERS!  Closing a tab will close the snooze popup, and might terminate
-  // the flow of this code before finish. so close tab at the end.
+  // ORDER MATTERS! Closing tabs will close the snooze popup and may terminate
+  // execution early, so always close last.
   if (closeTab) {
-    chrome.tabs.remove(tab.id!);
+    tabs.forEach(tab => chrome.tabs.remove(tab.id!));
   }
-
-  // Add tab to history
-  //   addTabToHistory(snoozedTabInfo, onAddedToHistory);
 }
 
 export async function snoozeActiveTab(config: SnoozeConfig) {
