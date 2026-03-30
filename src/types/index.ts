@@ -28,16 +28,19 @@ export type SnoozePeriod =
   | { type: 'monthly'; hour: number; day: number }
   | { type: 'yearly'; hour: number; date: [number, number] };
 
-export type SnoozeType =
-  | 'later'
-  | 'evening'
-  | 'tomorrow'
-  | 'weekend'
-  | 'next_week'
-  | 'in_a_month'
-  | 'someday'
-  | 'periodically'
-  | 'specific_date';
+export const SNOOZE_TYPES = [
+  'later',
+  'evening',
+  'tomorrow',
+  'weekend',
+  'next_week',
+  'in_a_month',
+  'someday',
+  'periodically',
+  'specific_date',
+] as const;
+
+export type SnoozeType = typeof SNOOZE_TYPES[number];
 
 export interface SnoozedTab {
   title: string;
