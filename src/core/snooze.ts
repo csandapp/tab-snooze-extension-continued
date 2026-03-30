@@ -12,28 +12,6 @@ import { scheduleWakeupAlarm } from './wakeup';
 import { FIRST_SNOOZE_PATH } from '../paths';
 import type { SnoozedTab, SnoozeConfig } from '../types';
 
-/** Convert a SnoozeConfig's period or wakeupTime into a resolved Date. */
-function resolveWakeupTime(config: SnoozeConfig): Date | null {
-  if (config.period) {
-    return calcNextOccurrenceForPeriod(config.period);
-  }
-  return config.wakeupTime ? new Date(config.wakeupTime) : null;
-}
-
-/** Build the shared fields of a SnoozedTab from a chrome tab and resolved wakeup time. */
-function buildSnoozedTab(
-  tab: chrome.tabs.Tab,
-  wakeupTime: Date,
-): Omit<SnoozedTab, 'type' | 'period'> {
-  return {
-    url: tab.url!,
-    title: tab.title!,
-    favicon: tab.favIconUrl || '',
-    sleepStart: Date.now(),
-    when: wakeupTime.getTime(),
-  };
-}
-
 export async function snoozeTab(
   tab: chrome.tabs.Tab,
   config: SnoozeConfig
@@ -49,7 +27,10 @@ export async function snoozeTabs(
 
   const { type, period, closeTab = true } = config;
 
-  const wakeupDate = resolveWakeupTime(config);
+  const wakeupDate = config.period
+    ? calcNextOccurrenceForPeriod(config.period)
+    : config.wakeupTime ? new Date(config.wakeupTime) : null;
+
   if (!wakeupDate) {
     throw new Error('No wakeup date and no period given');
   }
@@ -57,7 +38,11 @@ export async function snoozeTabs(
   console.log(`Snoozing ${tabs.length} tab(s) until ${wakeupDate.toString()}`);
 
   const snoozedTabs: SnoozedTab[] = tabs.map(tab => ({
-    ...buildSnoozedTab(tab, wakeupDate),
+    url: tab.url!,
+    title: tab.title!,
+    favicon: tab.favIconUrl || '',
+    sleepStart: Date.now(),
+    when: wakeupDate.getTime(),
     type,
     period,
   }));
