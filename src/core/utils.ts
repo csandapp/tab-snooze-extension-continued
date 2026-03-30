@@ -199,15 +199,6 @@ export async function getHighlightedTabs(): Promise<chrome.tabs.Tab[]> {
   return chrome.tabs.query({ highlighted: true, currentWindow: true });
 }
 
-export function isSnoozeableTab(tab: chrome.tabs.Tab): boolean {
-  const url = tab.url || '';
-  return (
-    url.startsWith('http://') ||
-    url.startsWith('https://') ||
-    url.startsWith('file://')
-  );
-}
-
 /*
     e.g. input
     {
