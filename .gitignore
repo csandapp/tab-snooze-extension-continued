@@ -5,6 +5,7 @@
 
 # Build outputs
 /build
+/dev-build
 /dist
 *.zip
 
