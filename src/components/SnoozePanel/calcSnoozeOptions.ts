@@ -49,6 +49,7 @@ export default function calcSnoozeOptions(
   const isVeryLateAtNight = moment().hour() <= 3;
   const isNightTime =
     moment().hour() >= workdayEnd || moment().hour() < 3;
+  // isWeekend covers both days: the first day (e.g. Saturday) and the second (e.g. Sunday)
   const isWeekend =
     moment().day() === weekEndDay ||
     moment().day() === (weekEndDay + 1) % 7;
@@ -73,10 +74,11 @@ export default function calcSnoozeOptions(
   const tomorrowTime = isVeryLateAtNight
     ? dayStart(moment()) // if its very late, tomorrow = today.
     : dayStart(moment().add(1, 'days'));
-  const nextWeekendDay = moment().day() === weekEndDay ? 7 + weekEndDay : weekEndDay;
-  const weekendTime = isWeekend
-    ? dayStart(moment().day(nextWeekendDay))
-    : dayStart(moment().day(weekEndDay));
+  // Use >= so that any day at or past weekEndDay (e.g. Saturday when weekend starts Friday)
+  // correctly targets next weekend rather than going backwards within the current week.
+  const weekendTime = moment().day() >= weekEndDay
+    ? dayStart(moment().day(weekEndDay + 7)) // at or past weekend start → next weekend
+    : dayStart(moment().day(weekEndDay));     // before weekend start → this upcoming weekend
   const nextWeekTime = dayStart(moment().day(weekStartDay + 7)); // next day which start the week
   const inAMonthTime = dayStart(moment().add(1, 'months'));
   const somedayTime = dayStart(
