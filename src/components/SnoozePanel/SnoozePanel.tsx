@@ -10,7 +10,7 @@ import calcSnoozeOptions, {
   SNOOZE_TYPE_SPECIFIC_DATE,
 } from './calcSnoozeOptions';
 import SnoozeButtonsGrid from './SnoozeButtonsGrid';
-import { MSG_SNOOZE_TAB } from '../../core/messages';
+import { MSG_SNOOZE_TABS } from '../../core/messages';
 import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import SnoozeFooter from './SnoozeFooter';
@@ -260,12 +260,12 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
   // Send snooze request to service worker (single writer for snoozedTabs).
   // Wait for confirmation before closing the tab to prevent data loss.
   const snoozePromise = chrome.runtime.sendMessage({
-    action: MSG_SNOOZE_TAB,
-    tab: {
+    action: MSG_SNOOZE_TABS,
+    tabs: [{
       url: activeTab.url,
       title: activeTab.title,
       favIconUrl: activeTab.favIconUrl,
-    },
+    }],
     config: {
       ...config,
       // Don't close tab automatically, we close it ourselves below.
