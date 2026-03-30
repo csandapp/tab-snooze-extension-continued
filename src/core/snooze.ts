@@ -27,9 +27,12 @@ export async function snoozeTabs(
 
   const { type, period, closeTab = true } = config;
 
-  const wakeupDate = config.period
-    ? calcNextOccurrenceForPeriod(config.period)
-    : config.wakeupTime ? new Date(config.wakeupTime) : null;
+  let wakeupDate: Date | null = null;
+  if (config.period) {
+    wakeupDate = calcNextOccurrenceForPeriod(config.period);
+  } else if (config.wakeupTime) {
+    wakeupDate = new Date(config.wakeupTime);
+  }
 
   if (!wakeupDate) {
     throw new Error('No wakeup date and no period given');
