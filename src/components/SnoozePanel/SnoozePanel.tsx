@@ -43,7 +43,7 @@ interface TooltipInjectedProps {
 type Props = SnoozePanelOwnProps & TooltipInjectedProps;
 
 const HIGHLIGHTED_TABS_HINT =
-  'Ctrl+click or Shift+click tabs in the browser to select multiple, then snooze them all at once';
+  'Shift+Click or Ctrl/Cmd+Click tabs to select multiple tabs';
 
 export function SnoozePanel(props: Props): React.ReactNode {
   const {
@@ -220,7 +220,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
         if (ref) ref.focus();
       }}
     >
-      <SnoozeButtonsGrid buttons={snoozeButtons} />
       <ModeSelector>
         <ModeOption
           $active={snoozeMode === 'active-tab'}
@@ -228,23 +227,24 @@ export function SnoozePanel(props: Props): React.ReactNode {
         >
           This tab
         </ModeOption>
-        <ModeSeparator>·</ModeSeparator>
         <ModeOption
           $active={snoozeMode === 'window'}
           onClick={() => setSnoozeMode('window')}
         >
           This window{windowTabCount > 0 ? ` (${windowTabCount})` : ''}
         </ModeOption>
-        <ModeSeparator>·</ModeSeparator>
         <ModeOption
           $active={snoozeMode === 'highlighted'}
           $disabled={!hasMultipleHighlighted}
           onClick={() => hasMultipleHighlighted && setSnoozeMode('highlighted')}
-          title={!hasMultipleHighlighted ? HIGHLIGHTED_TABS_HINT : undefined}
+          onMouseEnter={() => !hasMultipleHighlighted && onTooltipAreaMouseEnter(HIGHLIGHTED_TABS_HINT)}
+          onMouseLeave={() => onTooltipAreaMouseLeave()}
         >
           {hasMultipleHighlighted ? `${highlightedTabCount} selected tabs` : 'Selected tabs'}
         </ModeOption>
       </ModeSelector>
+
+      <SnoozeButtonsGrid buttons={snoozeButtons} />
       <SnoozeFooter
         tooltip={{
           visible: tooltipVisible || hideFooter,
@@ -405,27 +405,22 @@ const Root = styled.div`
 
 const ModeSelector = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 0;
-  border-top: 1px solid ${props => props.theme.snoozePanel.border};
-  font-size: 13px;
+  align-items: stretch;
+  height: 56px;
+  border-bottom: 1px solid ${props => props.theme.snoozePanel.border};
 `;
 
 const ModeOption = styled.button<{ $active?: boolean; $disabled?: boolean }>`
+  flex: 1;
   border: none;
-  background: none;
-  padding: 2px 4px;
-  font-size: 13px;
+  background-color: ${props => props.$active ? props.theme.snoozePanel.hoverColor : 'transparent'};
+  font-size: 17px;
   cursor: ${props => props.$disabled ? 'default' : 'pointer'};
-  font-weight: ${props => props.$active ? 700 : 400};
+  font-weight: ${props => props.$active ? 500 : 400};
   opacity: ${props => props.$disabled ? 0.4 : 1};
   color: ${props => props.theme.snoozePanel.footerTextColor};
-`;
 
-const ModeSeparator = styled.span`
-  color: ${props => props.theme.snoozePanel.footerTextColor};
-  opacity: 0.4;
-  pointer-events: none;
+  &:hover {
+    background-color: ${props => !props.$disabled && !props.$active && props.theme.snoozePanel.hoverColor};
+  }
 `;

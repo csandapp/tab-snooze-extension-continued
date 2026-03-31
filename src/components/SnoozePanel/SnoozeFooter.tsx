@@ -106,6 +106,7 @@ const SnoozeTooltip = styled.div<{ $visible?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   background-color: ${props => props.theme.snoozePanel.bgColor};
   color: ${props => props.theme.snoozePanel.footerTextColor};
   /* font-weight: 500; */
