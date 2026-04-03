@@ -219,6 +219,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
         <ModeOption
           $active={snoozeMode === SnoozeMode.Highlighted}
           $disabled={!hasMultipleHighlighted}
+          aria-disabled={!hasMultipleHighlighted}
           onClick={() => hasMultipleHighlighted && setSnoozeMode(SnoozeMode.Highlighted)}
           onMouseEnter={() => !hasMultipleHighlighted && onTooltipAreaMouseEnter(HIGHLIGHTED_TABS_HINT)}
           onMouseLeave={onTooltipAreaMouseLeave}
