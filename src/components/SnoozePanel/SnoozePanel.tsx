@@ -107,8 +107,16 @@ export function SnoozePanel(props: Props): React.ReactNode {
     // Give the snooze animation & sound time to finish before closing tabs
     const snoozePromise = chrome.runtime.sendMessage({
       action: MSG_SNOOZE_TABS,
-      tabs: tabs.map(t => ({ url: t.url, title: t.title, favIconUrl: t.favIconUrl })),
-      config: { ...config, closeTab: false },
+      tabs: tabs.map(t => ({
+        url: t.url,
+        title: t.title,
+        favIconUrl: t.favIconUrl,
+      })),
+      config: {
+        ...config,
+        // Don't close tabs automatically, we close them ourselves below.
+        closeTab: false,
+      },
     }).catch(error => {
       console.error('Failed to send snooze message to SW:', error);
       return { success: false };
@@ -119,6 +127,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
     setTimeout(async () => {
       const response = await snoozePromise;
       if (!response?.success) {
+        // Snooze failed — keep tabs open so the user doesn't lose them
         console.error('Snooze was not confirmed by service worker, keeping tabs open');
         window.close();
         return;
