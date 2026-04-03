@@ -101,46 +101,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
     };
   }, []);
 
-  const performSnooze = useCallback(async (config: SnoozeConfig) => {
-    const tabs = await fetchTabsForMode(snoozeMode);
-
-    // Give the snooze animation & sound time to finish before closing tabs
-    const snoozePromise = chrome.runtime.sendMessage({
-      action: MSG_SNOOZE_TABS,
-      tabs: tabs.map(t => ({
-        url: t.url,
-        title: t.title,
-        favIconUrl: t.favIconUrl,
-      })),
-      config: {
-        ...config,
-        // Don't close tabs automatically, we close them ourselves below.
-        closeTab: false,
-      },
-    }).catch(error => {
-      console.error('Failed to send snooze message to SW:', error);
-      return { success: false };
-    });
-
-    playSnoozeSound();
-
-    setTimeout(async () => {
-      const response = await snoozePromise;
-      if (!response?.success) {
-        // Snooze failed — keep tabs open so the user doesn't lose them
-        console.error('Snooze was not confirmed by service worker, keeping tabs open');
-        window.close();
-        return;
-      }
-
-      if (config.closeTab) {
-        const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
-        if (ids.length > 0) chrome.tabs.remove(ids);
-      }
-      window.close();
-    }, 1100);
-  }, [snoozeMode]);
-
   const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
@@ -154,7 +114,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
     if (snoozeOption.when != null) {
       const wakeupTime = snoozeOption.when.getTime();
-      performSnooze({
+      performSnooze(snoozeMode, {
         type: snoozeOption.id,
         wakeupTime,
         closeTab: !event.altKey,
@@ -163,7 +123,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       // either period or date selector opens as dialog
       setTimeout(() => setSelectorDialogOpen(true), 400);
     }
-  }, [selectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen, performSnooze]);
+  }, [selectedSnoozeOptionId, preventTooltip, snoozeMode]);
 
   const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     let nextFocusedIndex = focusedButtonIndex;
@@ -208,21 +168,21 @@ export function SnoozePanel(props: Props): React.ReactNode {
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
     if (!selectedSnoozeOptionId) return;
-    performSnooze({
+    performSnooze(snoozeMode, {
       type: selectedSnoozeOptionId,
       wakeupTime: date.getTime(),
       closeTab: true,
     });
-  }, [selectedSnoozeOptionId, performSnooze]);
+  }, [selectedSnoozeOptionId, snoozeMode]);
 
   const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) => {
     if (!selectedSnoozeOptionId) return;
-    performSnooze({
+    performSnooze(snoozeMode, {
       type: selectedSnoozeOptionId,
       period,
       closeTab: true,
     });
-  }, [selectedSnoozeOptionId, performSnooze]);
+  }, [selectedSnoozeOptionId, snoozeMode]);
 
   const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => ({
     ...snoozeOpt,
@@ -329,6 +289,46 @@ function getSnoozeAudio(): HTMLAudioElement {
     cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
   }
   return cachedSnoozeAudio;
+}
+
+async function performSnooze(snoozeMode: SnoozeMode, config: SnoozeConfig) {
+  const tabs = await fetchTabsForMode(snoozeMode);
+
+  // Give the snooze animation & sound time to finish before closing tabs
+  const snoozePromise = chrome.runtime.sendMessage({
+    action: MSG_SNOOZE_TABS,
+    tabs: tabs.map(t => ({
+      url: t.url,
+      title: t.title,
+      favIconUrl: t.favIconUrl,
+    })),
+    config: {
+      ...config,
+      // Don't close tabs automatically, we close them ourselves below.
+      closeTab: false,
+    },
+  }).catch(error => {
+    console.error('Failed to send snooze message to SW:', error);
+    return { success: false };
+  });
+
+  playSnoozeSound();
+
+  setTimeout(async () => {
+    const response = await snoozePromise;
+    if (!response?.success) {
+      // Snooze failed — keep tabs open so the user doesn't lose them
+      console.error('Snooze was not confirmed by service worker, keeping tabs open');
+      window.close();
+      return;
+    }
+
+    if (config.closeTab) {
+      const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
+      if (ids.length > 0) chrome.tabs.remove(ids);
+    }
+    window.close();
+  }, 1100);
 }
 
 async function playSnoozeSound() {
