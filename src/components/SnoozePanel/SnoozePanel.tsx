@@ -26,7 +26,11 @@ import {
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
 const AsyncDateSelector = lazy(() => import('./DateSelector'));
 
-type SnoozeMode = 'active-tab' | 'window' | 'highlighted';
+enum SnoozeMode {
+  ActiveTab = 'active-tab',
+  Window = 'window',
+  Highlighted = 'highlighted',
+}
 
 interface SnoozePanelOwnProps {
   hideFooter?: boolean;
@@ -59,7 +63,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
   const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
-  const [snoozeMode, setSnoozeMode] = useState<SnoozeMode>('active-tab');
+  const [snoozeMode, setSnoozeMode] = useState<SnoozeMode>(SnoozeMode.ActiveTab);
   const [windowTabCount, setWindowTabCount] = useState(0);
   const [highlightedTabCount, setHighlightedTabCount] = useState(0);
 
@@ -81,7 +85,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
           setHighlightedTabCount(highlightedTabs.length);
 
           if (highlightedTabs.length > 1) {
-            setSnoozeMode('highlighted');
+            setSnoozeMode(SnoozeMode.Highlighted);
           }
         }
       } catch (error) {
@@ -98,7 +102,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
   }, []);
 
   const performSnooze = useCallback((config: SnoozeConfig) => {
-    if (snoozeMode === 'active-tab') {
+    if (snoozeMode === SnoozeMode.ActiveTab) {
       delayedSnoozeActiveTab(config);
     } else {
       delayedSnoozeMultipleTabs(snoozeMode, config);
@@ -220,21 +224,21 @@ export function SnoozePanel(props: Props): React.ReactNode {
     >
       <ModeSelector>
         <ModeOption
-          $active={snoozeMode === 'active-tab'}
-          onClick={() => setSnoozeMode('active-tab')}
+          $active={snoozeMode === SnoozeMode.ActiveTab}
+          onClick={() => setSnoozeMode(SnoozeMode.ActiveTab)}
         >
           This tab
         </ModeOption>
         <ModeOption
-          $active={snoozeMode === 'window'}
-          onClick={() => setSnoozeMode('window')}
+          $active={snoozeMode === SnoozeMode.Window}
+          onClick={() => setSnoozeMode(SnoozeMode.Window)}
         >
           This window{windowTabCount > 0 ? ` (${windowTabCount})` : ''}
         </ModeOption>
         <ModeOption
-          $active={snoozeMode === 'highlighted'}
+          $active={snoozeMode === SnoozeMode.Highlighted}
           $disabled={!hasMultipleHighlighted}
-          onClick={() => hasMultipleHighlighted && setSnoozeMode('highlighted')}
+          onClick={() => hasMultipleHighlighted && setSnoozeMode(SnoozeMode.Highlighted)}
           onMouseEnter={() => !hasMultipleHighlighted && onTooltipAreaMouseEnter(HIGHLIGHTED_TABS_HINT)}
           onMouseLeave={() => onTooltipAreaMouseLeave()}
         >
