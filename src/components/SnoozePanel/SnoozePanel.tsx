@@ -224,25 +224,14 @@ export function SnoozePanel(props: Props): React.ReactNode {
     });
   }, [selectedSnoozeOptionId, performSnooze]);
 
-  const getSnoozeButtons = () => {
-    return snoozeOptions.map(
-      (snoozeOpt: SnoozeOption, index) => ({
-        ...snoozeOpt,
-        focused: focusedButtonIndex === index,
-        pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
-        onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
-        onMouseLeave: () => onTooltipAreaMouseLeave(),
-      })
-    );
-  };
-
-  // if snooze options haven't loaded yet, show nothing
-  if (!snoozeOptions) {
-    return null;
-  }
-
-  const snoozeButtons = getSnoozeButtons();
+  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => ({
+    ...snoozeOpt,
+    focused: focusedButtonIndex === index,
+    pressed: selectedSnoozeOptionId === snoozeOpt.id,
+    onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+    onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
+    onMouseLeave: onTooltipAreaMouseLeave,
+  }));
   const hasMultipleHighlighted = highlightedTabCount > 1;
 
   return (
@@ -272,7 +261,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
           $disabled={!hasMultipleHighlighted}
           onClick={() => hasMultipleHighlighted && setSnoozeMode(SnoozeMode.Highlighted)}
           onMouseEnter={() => !hasMultipleHighlighted && onTooltipAreaMouseEnter(HIGHLIGHTED_TABS_HINT)}
-          onMouseLeave={() => onTooltipAreaMouseLeave()}
+          onMouseLeave={onTooltipAreaMouseLeave}
         >
           {hasMultipleHighlighted ? `${highlightedTabCount} selected tabs` : 'Selected tabs'}
         </ModeOption>
@@ -282,7 +271,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       <SnoozeFooter
         tooltip={{
           visible: tooltipVisible || hideFooter,
-          text: tooltipText ?? "",
+          text: tooltipText,
         }}
         betaBadge={IS_BETA}
       />
