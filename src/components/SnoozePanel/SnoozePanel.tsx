@@ -101,12 +101,35 @@ export function SnoozePanel(props: Props): React.ReactNode {
     };
   }, []);
 
-  const performSnooze = useCallback((config: SnoozeConfig) => {
-    if (snoozeMode === SnoozeMode.ActiveTab) {
-      delayedSnoozeActiveTab(config);
-    } else {
-      delayedSnoozeMultipleTabs(snoozeMode, config);
-    }
+  const performSnooze = useCallback(async (config: SnoozeConfig) => {
+    const tabs = await fetchTabsForMode(snoozeMode);
+
+    // Give the snooze animation & sound time to finish before closing tabs
+    const snoozePromise = chrome.runtime.sendMessage({
+      action: MSG_SNOOZE_TABS,
+      tabs: tabs.map(t => ({ url: t.url, title: t.title, favIconUrl: t.favIconUrl })),
+      config: { ...config, closeTab: false },
+    }).catch(error => {
+      console.error('Failed to send snooze message to SW:', error);
+      return { success: false };
+    });
+
+    playSnoozeSound();
+
+    setTimeout(async () => {
+      const response = await snoozePromise;
+      if (!response?.success) {
+        console.error('Snooze was not confirmed by service worker, keeping tabs open');
+        window.close();
+        return;
+      }
+
+      if (config.closeTab) {
+        const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
+        if (ids.length > 0) chrome.tabs.remove(ids);
+      }
+      window.close();
+    }, 1100);
   }, [snoozeMode]);
 
   const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
@@ -293,89 +316,12 @@ const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
   P: 8,
   D: 8,
 };
-// give time for animation & sound to finish before snoozing (closing) tab
-async function delayedSnoozeActiveTab(config: SnoozeConfig) {
-  // Capture active tab NOW in popup context where chrome.tabs.query
-  // reliably returns the correct tab. The SW can't determine this.
-  const activeTab = await getActiveTab();
-
-  // Send snooze request to service worker (single writer for snoozedTabs).
-  // Wait for confirmation before closing the tab to prevent data loss.
-  const snoozePromise = chrome.runtime.sendMessage({
-    action: MSG_SNOOZE_TABS,
-    tabs: [{
-      url: activeTab.url,
-      title: activeTab.title,
-      favIconUrl: activeTab.favIconUrl,
-    }],
-    config: {
-      ...config,
-      // Don't close tab automatically, we close it ourselves below.
-      closeTab: false,
-    },
-  }).catch(error => {
-    console.error('Failed to send snooze message to SW:', error);
-    return { success: false };
-  });
-
-  playSnoozeSound();
-
-  setTimeout(async () => {
-    const response = await snoozePromise;
-    if (!response?.success) {
-      // Snooze failed — keep the tab open so the user doesn't lose it
-      console.error('Snooze was not confirmed by service worker, keeping tab open');
-      window.close();
-      return;
-    }
-
-    if (config.closeTab) {
-      chrome.tabs.remove(activeTab.id!);
-    }
-    window.close();
-  }, 1100);
-}
-
-async function delayedSnoozeMultipleTabs(mode: SnoozeMode, config: SnoozeConfig) {
-  // Re-query at snooze time for a fresh, accurate list. Exclude pinned tabs.
-  const tabs = mode === 'window'
-    ? await getCurrentWindowTabs()
-    : await getHighlightedTabs();
-
-  const snoozePromise = chrome.runtime.sendMessage({
-    action: MSG_SNOOZE_TABS,
-    tabs: tabs.map(t => ({
-      url: t.url,
-      title: t.title,
-      favIconUrl: t.favIconUrl,
-    })),
-    config: {
-      ...config,
-      // Don't close tabs automatically, we close them ourselves below.
-      closeTab: false,
-    },
-  }).catch(error => {
-    console.error('Failed to send snooze message to SW:', error);
-    return { success: false };
-  });
-
-  playSnoozeSound();
-
-  setTimeout(async () => {
-    const response = await snoozePromise;
-    if (!response?.success) {
-      // Snooze failed — keep tabs open so the user doesn't lose them
-      console.error('Snooze was not confirmed by service worker, keeping tabs open');
-      window.close();
-      return;
-    }
-
-    if (config.closeTab) {
-      const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
-      if (ids.length > 0) chrome.tabs.remove(ids);
-    }
-    window.close();
-  }, 1100);
+// Re-query tabs at snooze time for a fresh, accurate list.
+// Queried in popup context where chrome.tabs.query reliably returns correct results.
+async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
+  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
+  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
+  return getHighlightedTabs();
 }
 
 let cachedSnoozeAudio: HTMLAudioElement | null = null;
