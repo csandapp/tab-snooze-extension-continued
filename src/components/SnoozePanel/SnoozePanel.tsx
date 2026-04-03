@@ -77,12 +77,10 @@ export function SnoozePanel(props: Props): React.ReactNode {
         if (!cancelled) {
           setSnoozeOptions(calcSnoozeOptions(settings));
 
-          const nonPinnedWindow = windowTabs.filter(t => !t.pinned);
-          const nonPinnedHighlighted = highlightedTabs.filter(t => !t.pinned);
-          setWindowTabCount(nonPinnedWindow.length);
-          setHighlightedTabCount(nonPinnedHighlighted.length);
+          setWindowTabCount(windowTabs.length);
+          setHighlightedTabCount(highlightedTabs.length);
 
-          if (nonPinnedHighlighted.length > 1) {
+          if (highlightedTabs.length > 1) {
             setSnoozeMode('highlighted');
           }
         }
@@ -339,11 +337,10 @@ async function delayedSnoozeMultipleTabs(mode: SnoozeMode, config: SnoozeConfig)
   const tabs = mode === 'window'
     ? await getCurrentWindowTabs()
     : await getHighlightedTabs();
-  const eligibleTabs = tabs.filter(t => !t.pinned);
 
   const snoozePromise = chrome.runtime.sendMessage({
     action: MSG_SNOOZE_TABS,
-    tabs: eligibleTabs.map(t => ({
+    tabs: tabs.map(t => ({
       url: t.url,
       title: t.title,
       favIconUrl: t.favIconUrl,
@@ -370,7 +367,7 @@ async function delayedSnoozeMultipleTabs(mode: SnoozeMode, config: SnoozeConfig)
     }
 
     if (config.closeTab) {
-      const ids = eligibleTabs.map(t => t.id).filter((id): id is number => id != null);
+      const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
       if (ids.length > 0) chrome.tabs.remove(ids);
     }
     window.close();
