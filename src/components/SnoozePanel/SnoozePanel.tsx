@@ -1,5 +1,4 @@
 import type { SnoozeOption } from './calcSnoozeOptions';
-import type { Props as SnoozeButtonProps } from './SnoozeButton';
 import type { SnoozePeriod, SnoozeConfig, SnoozeType } from '@/types';
 
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
@@ -14,19 +13,24 @@ import { MSG_SNOOZE_TABS } from '../../core/messages';
 import TooltipHelper from './TooltipHelper';
 import { DEFAULT_SETTINGS, getSettings } from '../../core/settings';
 import SnoozeFooter from './SnoozeFooter';
-import {
-  loadAudio,
-  SOUND_SNOOZE,
-} from '../../core/audio';
+import { loadAudio, SOUND_SNOOZE } from '../../core/audio';
 import keycode from 'keycode';
 import {
   IS_BETA,
   getActiveTab,
+  getCurrentWindowTabs,
+  getHighlightedTabs,
 } from '../../core/utils';
 
 // code splitting these big components
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
 const AsyncDateSelector = lazy(() => import('./DateSelector'));
+
+enum SnoozeMode {
+  ActiveTab = 'active-tab',
+  Window = 'window',
+  Highlighted = 'highlighted',
+}
 
 interface SnoozePanelOwnProps {
   hideFooter?: boolean;
@@ -42,6 +46,9 @@ interface TooltipInjectedProps {
 
 type Props = SnoozePanelOwnProps & TooltipInjectedProps;
 
+const HIGHLIGHTED_TABS_HINT =
+  'Shift+Click or Ctrl/Cmd+Click tabs to select multiple tabs';
+
 export function SnoozePanel(props: Props): React.ReactNode {
   const {
     hideFooter = false,
@@ -56,17 +63,30 @@ export function SnoozePanel(props: Props): React.ReactNode {
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(-1);
   const [snoozeOptions, setSnoozeOptions] = useState(calcSnoozeOptions(DEFAULT_SETTINGS));
   const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
+  const [snoozeMode, setSnoozeMode] = useState<SnoozeMode>(SnoozeMode.ActiveTab);
+  const [windowTabCount, setWindowTabCount] = useState(0);
+  const [highlightedTabCount, setHighlightedTabCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    let timeoutId: ReturnType<typeof setTimeout>;
 
     const loadData = async () => {
       try {
-        const settings = await getSettings()
-        
+        const [settings, windowTabs, highlightedTabs] = await Promise.all([
+          getSettings(),
+          getCurrentWindowTabs(),
+          getHighlightedTabs(),
+        ]);
+
         if (!cancelled) {
           setSnoozeOptions(calcSnoozeOptions(settings));
+
+          setWindowTabCount(windowTabs.length);
+          setHighlightedTabCount(highlightedTabs.length);
+
+          if (highlightedTabs.length > 1) {
+            setSnoozeMode(SnoozeMode.Highlighted);
+          }
         }
       } catch (error) {
         console.error('Failed to load data:', error);
@@ -80,22 +100,21 @@ export function SnoozePanel(props: Props): React.ReactNode {
       cancelled = true;
     };
   }, []);
+
   const onSnoozeButtonClicked = useCallback((event: React.MouseEvent | React.KeyboardEvent, snoozeOption: SnoozeOption) => {
     if (selectedSnoozeOptionId != null) {
       // ignore additional selections after first one
       return;
     }
 
-    setSelectedSnoozeOptionId(snoozeOption.id)
+    setSelectedSnoozeOptionId(snoozeOption.id);
 
     // Avoid showing tooltip after user already selected, its distructing
     preventTooltip();
 
     if (snoozeOption.when != null) {
-      // Perform snooze
       const wakeupTime = snoozeOption.when.getTime();
-
-      delayedSnoozeActiveTab({
+      performSnooze(snoozeMode, {
         type: snoozeOption.id,
         wakeupTime,
         closeTab: !event.altKey,
@@ -104,7 +123,7 @@ export function SnoozePanel(props: Props): React.ReactNode {
       // either period or date selector opens as dialog
       setTimeout(() => setSelectorDialogOpen(true), 400);
     }
-  }, [selectedSnoozeOptionId, setSelectedSnoozeOptionId, preventTooltip, setSelectorDialogOpen]);
+  }, [selectedSnoozeOptionId, preventTooltip, snoozeMode]);
 
   const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     let nextFocusedIndex = focusedButtonIndex;
@@ -114,19 +133,14 @@ export function SnoozePanel(props: Props): React.ReactNode {
     const numpadKey = parseInt(key || '');
 
     if (mappedOptionIndex != null) {
-      onSnoozeButtonClicked(
-        event,
-        snoozeOptions[mappedOptionIndex]
-      );
+      onSnoozeButtonClicked(event, snoozeOptions[mappedOptionIndex]);
       nextFocusedIndex = -1;
     } else if (key === 'enter') {
       if (nextFocusedIndex === -1) {
         // select later by default
         nextFocusedIndex = 0;
       }
-
-      const focusedSnoozeOption = snoozeOptions[nextFocusedIndex];
-      onSnoozeButtonClicked(event, focusedSnoozeOption);
+      onSnoozeButtonClicked(event, snoozeOptions[nextFocusedIndex]);
       nextFocusedIndex = -1;
     } else if (
       Number.isInteger(numpadKey) &&
@@ -146,53 +160,40 @@ export function SnoozePanel(props: Props): React.ReactNode {
     } else if (key === 'down' && focusedButtonIndex < 6) {
       nextFocusedIndex += 3;
     } else if (key === 'tab') {
-      nextFocusedIndex =
-        (nextFocusedIndex + 1) % snoozeOptions.length;
+      nextFocusedIndex = (nextFocusedIndex + 1) % snoozeOptions.length;
     }
 
-    setFocusedButtonIndex( nextFocusedIndex);
+    setFocusedButtonIndex(nextFocusedIndex);
   }, [focusedButtonIndex, snoozeOptions, onSnoozeButtonClicked]);
-
 
   const onSnoozeSpecificDateSelected = useCallback((date: Date) => {
     if (!selectedSnoozeOptionId) return;
-    delayedSnoozeActiveTab({
+    performSnooze(snoozeMode, {
       type: selectedSnoozeOptionId,
       wakeupTime: date.getTime(),
       closeTab: true,
     });
-  }, [selectedSnoozeOptionId]);
+  }, [selectedSnoozeOptionId, snoozeMode]);
 
   const onSnoozePeriodSelected = useCallback((period: SnoozePeriod) => {
     if (!selectedSnoozeOptionId) return;
-
-    delayedSnoozeActiveTab({
+    performSnooze(snoozeMode, {
       type: selectedSnoozeOptionId,
       period,
       closeTab: true,
     });
-  }, [selectedSnoozeOptionId]);
+  }, [selectedSnoozeOptionId, snoozeMode]);
 
-  // decide whether or not to use callback here...
-  const getSnoozeButtons = () => {
-    return snoozeOptions.map(
-      (snoozeOpt: SnoozeOption, index) => ({
-        ...snoozeOpt,
-        focused: focusedButtonIndex === index,
-        pressed: selectedSnoozeOptionId === snoozeOpt.id,
-        onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
-        onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
-        onMouseLeave: () => onTooltipAreaMouseLeave(),
-      })
-    );
-  };
+  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => ({
+    ...snoozeOpt,
+    focused: focusedButtonIndex === index,
+    pressed: selectedSnoozeOptionId === snoozeOpt.id,
+    onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+    onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
+    onMouseLeave: onTooltipAreaMouseLeave,
+  }));
+  const hasMultipleHighlighted = highlightedTabCount > 1;
 
-  // if snooze options haven't loaded yet, show nothing
-  if (!snoozeOptions) {
-    return null;
-  }
-
-  const snoozeButtons = getSnoozeButtons();
   return (
     <Root
       onKeyDown={onKeyPress}
@@ -202,11 +203,36 @@ export function SnoozePanel(props: Props): React.ReactNode {
         if (ref) ref.focus();
       }}
     >
+      <ModeSelector>
+        <ModeOption
+          $active={snoozeMode === SnoozeMode.ActiveTab}
+          onClick={() => setSnoozeMode(SnoozeMode.ActiveTab)}
+        >
+          This tab
+        </ModeOption>
+        <ModeOption
+          $active={snoozeMode === SnoozeMode.Window}
+          onClick={() => setSnoozeMode(SnoozeMode.Window)}
+        >
+          This window{windowTabCount > 0 ? ` (${windowTabCount})` : ''}
+        </ModeOption>
+        <ModeOption
+          $active={snoozeMode === SnoozeMode.Highlighted}
+          $disabled={!hasMultipleHighlighted}
+          aria-disabled={!hasMultipleHighlighted}
+          onClick={() => hasMultipleHighlighted && setSnoozeMode(SnoozeMode.Highlighted)}
+          onMouseEnter={() => !hasMultipleHighlighted && onTooltipAreaMouseEnter(HIGHLIGHTED_TABS_HINT)}
+          onMouseLeave={onTooltipAreaMouseLeave}
+        >
+          {hasMultipleHighlighted ? `${highlightedTabCount} selected tabs` : 'Selected tabs'}
+        </ModeOption>
+      </ModeSelector>
+
       <SnoozeButtonsGrid buttons={snoozeButtons} />
       <SnoozeFooter
         tooltip={{
           visible: tooltipVisible || hideFooter,
-          text: tooltipText ?? "",
+          text: tooltipText,
         }}
         betaBadge={IS_BETA}
       />
@@ -249,26 +275,37 @@ const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
   P: 8,
   D: 8,
 };
-const CONSECUTIVE_SNOOZE_TIMEOUT = 20 * 1000; //10s
+// Re-query tabs at snooze time for a fresh, accurate list.
+// Queried in popup context where chrome.tabs.query reliably returns correct results.
+async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
+  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
+  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
+  return getHighlightedTabs();
+}
 
-// give time for animation & sound to finish before snoozing (closing) tab
-async function delayedSnoozeActiveTab(config: SnoozeConfig) {
-  // Capture active tab NOW in popup context where chrome.tabs.query
-  // reliably returns the correct tab. The SW can't determine this.
-  const activeTab = await getActiveTab();
+let cachedSnoozeAudio: HTMLAudioElement | null = null;
 
-  // Send snooze request to service worker (single writer for snoozedTabs).
-  // Wait for confirmation before closing the tab to prevent data loss.
+function getSnoozeAudio(): HTMLAudioElement {
+  if (!cachedSnoozeAudio) {
+    cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
+  }
+  return cachedSnoozeAudio;
+}
+
+async function performSnooze(snoozeMode: SnoozeMode, config: SnoozeConfig) {
+  const tabs = await fetchTabsForMode(snoozeMode);
+
+  // Give the snooze animation & sound time to finish before closing tabs
   const snoozePromise = chrome.runtime.sendMessage({
     action: MSG_SNOOZE_TABS,
-    tabs: [{
-      url: activeTab.url,
-      title: activeTab.title,
-      favIconUrl: activeTab.favIconUrl,
-    }],
+    tabs: tabs.map(t => ({
+      url: t.url,
+      title: t.title,
+      favIconUrl: t.favIconUrl,
+    })),
     config: {
       ...config,
-      // Don't close tab automatically, we close it ourselves below.
+      // Don't close tabs automatically, we close them ourselves below.
       closeTab: false,
     },
   }).catch(error => {
@@ -281,27 +318,18 @@ async function delayedSnoozeActiveTab(config: SnoozeConfig) {
   setTimeout(async () => {
     const response = await snoozePromise;
     if (!response?.success) {
-      // Snooze failed — keep the tab open so the user doesn't lose it
-      console.error('Snooze was not confirmed by service worker, keeping tab open');
+      // Snooze failed — keep tabs open so the user doesn't lose them
+      console.error('Snooze was not confirmed by service worker, keeping tabs open');
       window.close();
       return;
     }
 
     if (config.closeTab) {
-      chrome.tabs.remove(activeTab.id!);
+      const ids = tabs.map(t => t.id).filter((id): id is number => id != null);
+      if (ids.length > 0) chrome.tabs.remove(ids);
     }
     window.close();
   }, 1100);
-}
-
-
-let cachedSnoozeAudio: HTMLAudioElement | null = null;
-
-function getSnoozeAudio(): HTMLAudioElement {
-  if (!cachedSnoozeAudio) {
-    cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
-  }
-  return cachedSnoozeAudio;
 }
 
 async function playSnoozeSound() {
@@ -319,4 +347,26 @@ export default TooltipHelper(SnoozePanel);
 
 const Root = styled.div`
   position: relative;
+`;
+
+const ModeSelector = styled.div`
+  display: flex;
+  align-items: stretch;
+  height: 56px;
+  border-bottom: 1px solid ${props => props.theme.snoozePanel.border};
+`;
+
+const ModeOption = styled.button<{ $active?: boolean; $disabled?: boolean }>`
+  flex: 1;
+  border: none;
+  background-color: ${props => props.$active ? props.theme.snoozePanel.hoverColor : 'transparent'};
+  font-size: 17px;
+  cursor: ${props => props.$disabled ? 'default' : 'pointer'};
+  font-weight: ${props => props.$active ? 500 : 400};
+  opacity: ${props => props.$disabled ? 0.4 : 1};
+  color: ${props => props.theme.snoozePanel.footerTextColor};
+
+  &:hover {
+    background-color: ${props => !props.$disabled && !props.$active && props.theme.snoozePanel.hoverColor};
+  }
 `;

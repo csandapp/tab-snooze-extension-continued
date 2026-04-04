@@ -191,12 +191,14 @@ export async function getActiveTab(): Promise<chrome.tabs.Tab> {
   return tabs[0];
 }
 
+/** Returns non-pinned tabs in the current window. */
 export async function getCurrentWindowTabs(): Promise<chrome.tabs.Tab[]> {
-  return chrome.tabs.query({ currentWindow: true });
+  return chrome.tabs.query({ currentWindow: true, pinned: false });
 }
 
+/** Returns highlighted (multi-selected) non-pinned tabs in the current window. */
 export async function getHighlightedTabs(): Promise<chrome.tabs.Tab[]> {
-  return chrome.tabs.query({ highlighted: true, currentWindow: true });
+  return chrome.tabs.query({ highlighted: true, currentWindow: true, pinned: false });
 }
 
 /*
