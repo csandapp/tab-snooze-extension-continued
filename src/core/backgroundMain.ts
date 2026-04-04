@@ -4,7 +4,8 @@
  * without a view.
  */
 import { repeatLastSnooze, snoozeTabs } from './snooze';
-import { MSG_SNOOZE_TABS, MSG_DELETE_SNOOZED_TABS, MSG_IMPORT_SNOOZED_TABS } from './messages';
+import { MSG_SNOOZE_TABS, MSG_DELETE_SNOOZED_TABS, MSG_IMPORT_SNOOZED_TABS, MSG_PLAY_AUDIO } from './messages';
+import { SOUND_SNOOZE } from './audio';
 import {
   registerEventListeners as registerWakeupEventListeners,
   scheduleWakeupAlarm,
@@ -99,14 +100,21 @@ export function runBackgroundScript() {
     }
   });
 
-  chrome.commands.onCommand.addListener(command => {
+  chrome.commands.onCommand.addListener(async command => {
     // create a new todo window!, and focus on it
     if (command === COMMAND_NEW_TODO) {
       createTab(TODO_PATH);
     }
 
     if (command === COMMAND_REPEAT_LAST_SNOOZE) {
-      repeatLastSnooze();
+      const snoozed = await repeatLastSnooze();
+      if (snoozed) {
+        const settings = await getSettings();
+        if (settings.playSoundEffects) {
+          await ensureOffscreenDocument();
+          chrome.runtime.sendMessage({ action: MSG_PLAY_AUDIO, sound: SOUND_SNOOZE });
+        }
+      }
     }
 
     if (command === COMMAND_OPEN_SLEEPING_TABS) {
