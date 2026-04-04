@@ -128,12 +128,14 @@ export function SnoozePanel(props: Props): React.ReactNode {
   const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event.nativeEvent) as string | undefined;
-    const mappedOptionIndex =
-      key ? SNOOZE_SHORTCUT_KEYS[key.toUpperCase()] : undefined;
+    const upperKey = key?.toUpperCase();
+    const mappedOption = upperKey
+      ? snoozeOptions.find(opt => opt.shortcutKey === upperKey)
+      : undefined;
     const numpadKey = parseInt(key || '');
 
-    if (mappedOptionIndex != null) {
-      onSnoozeButtonClicked(event, snoozeOptions[mappedOptionIndex]);
+    if (mappedOption != null) {
+      onSnoozeButtonClicked(event, mappedOption);
       nextFocusedIndex = -1;
     } else if (key === 'enter') {
       if (nextFocusedIndex === -1) {
@@ -185,22 +187,38 @@ export function SnoozePanel(props: Props): React.ReactNode {
   }, [selectedSnoozeOptionId, snoozeMode]);
 
   const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => {
-    const shortcutKey = SHORTCUT_KEY_BY_INDEX[index];
-    const tooltip = shortcutKey
-      ? `${snoozeOpt.tooltip} · Press ${shortcutKey}`
+    const tooltip = snoozeOpt.shortcutKey
+      ? `${snoozeOpt.tooltip} · Press ${snoozeOpt.shortcutKey}`
       : snoozeOpt.tooltip;
     return {
       ...snoozeOpt,
-      shortcutKey,
       focused: focusedButtonIndex === index,
       pressed: selectedSnoozeOptionId === snoozeOpt.id,
       onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
       onMouseEnter: () => onTooltipAreaMouseEnter(tooltip),
       onMouseLeave: onTooltipAreaMouseLeave,
-    }
+    };
   });
   
   const hasMultipleHighlighted = highlightedTabCount > 1;
+  // decide whether or not to use callback here...
+  const getSnoozeButtons = () => {
+    return snoozeOptions.map(
+      (snoozeOpt: SnoozeOption, index) => {
+        const tooltip = snoozeOpt.shortcutKey
+          ? `${snoozeOpt.tooltip} · Press ${snoozeOpt.shortcutKey}`
+          : snoozeOpt.tooltip;
+        return {
+          ...snoozeOpt,
+          focused: focusedButtonIndex === index,
+          pressed: selectedSnoozeOptionId === snoozeOpt.id,
+          onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+          onMouseEnter: () => onTooltipAreaMouseEnter(tooltip),
+          onMouseLeave: () => onTooltipAreaMouseLeave(),
+        };
+      }
+    );
+  };
 
   return (
     <Root
@@ -270,37 +288,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
   );
 }
 
-const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
-  L: 0,
-  E: 1,
-  T: 2,
-  W: 3,
-  N: 4,
-  I: 5,
-  M: 5,
-  S: 6,
-  R: 7,
-  P: 8,
-  D: 8,
-};
-// Re-query tabs at snooze time for a fresh, accurate list.
-// Queried in popup context where chrome.tabs.query reliably returns correct results.
-async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
-  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
-  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
-  return getHighlightedTabs();
-}
-
-// Reverse map: index → primary shortcut letter (first entry wins for duplicates)
-const SHORTCUT_KEY_BY_INDEX: { [index: number]: string } =
-  Object.entries(SNOOZE_SHORTCUT_KEYS).reduce(
-    (acc, [key, index]) => {
-      if (!(index in acc)) acc[index] = key;
-      return acc;
-    },
-    {} as { [index: number]: string }
-  );
-
 let cachedSnoozeAudio: HTMLAudioElement | null = null;
 
 function getSnoozeAudio(): HTMLAudioElement {
@@ -308,6 +295,14 @@ function getSnoozeAudio(): HTMLAudioElement {
     cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
   }
   return cachedSnoozeAudio;
+}
+
+// Re-query tabs at snooze time for a fresh, accurate list.
+// Queried in popup context where chrome.tabs.query reliably returns correct results.
+async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
+  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
+  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
+  return getHighlightedTabs();
 }
 
 async function performSnooze(snoozeMode: SnoozeMode, config: SnoozeConfig) {
