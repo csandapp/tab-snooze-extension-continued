@@ -184,14 +184,22 @@ export function SnoozePanel(props: Props): React.ReactNode {
     });
   }, [selectedSnoozeOptionId, snoozeMode]);
 
-  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => ({
-    ...snoozeOpt,
-    focused: focusedButtonIndex === index,
-    pressed: selectedSnoozeOptionId === snoozeOpt.id,
-    onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
-    onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
-    onMouseLeave: onTooltipAreaMouseLeave,
-  }));
+  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => {
+    const shortcutKey = SHORTCUT_KEY_BY_INDEX[index];
+    const tooltip = shortcutKey
+      ? `${snoozeOpt.tooltip} · Press ${shortcutKey}`
+      : snoozeOpt.tooltip;
+    return {
+      ...snoozeOpt,
+      shortcutKey,
+      focused: focusedButtonIndex === index,
+      pressed: selectedSnoozeOptionId === snoozeOpt.id,
+      onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+      onMouseEnter: () => onTooltipAreaMouseEnter(tooltip),
+      onMouseLeave: onTooltipAreaMouseLeave,
+    }
+  });
+  
   const hasMultipleHighlighted = highlightedTabCount > 1;
 
   return (
@@ -282,6 +290,16 @@ async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
   if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
   return getHighlightedTabs();
 }
+
+// Reverse map: index → primary shortcut letter (first entry wins for duplicates)
+const SHORTCUT_KEY_BY_INDEX: { [index: number]: string } =
+  Object.entries(SNOOZE_SHORTCUT_KEYS).reduce(
+    (acc, [key, index]) => {
+      if (!(index in acc)) acc[index] = key;
+      return acc;
+    },
+    {} as { [index: number]: string }
+  );
 
 let cachedSnoozeAudio: HTMLAudioElement | null = null;
 
