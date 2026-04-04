@@ -3,7 +3,7 @@ import NativeSelect from '@mui/material/NativeSelect';
 import { styled as muiStyled } from '@mui/material/styles';
 
 // MUI v5 styled component
-const StyledNativeSelect = muiStyled(NativeSelect)(({ theme }) => ({
+const StyledNativeSelect = muiStyled(NativeSelect)(() => ({
   fontSize: '2rem',
   lineHeight: 'initial',
 }));

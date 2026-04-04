@@ -34,7 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
-  let { settings } = await chrome.storage.local.get(
+  const { settings } = await chrome.storage.local.get(
     STORAGE_KEY_SETTINGS
   );
 
@@ -52,15 +52,6 @@ export async function saveSettings(
   return chrome.storage.local.set({
     [STORAGE_KEY_SETTINGS]: mergedSettings,
   });
-}
-
-async function resetSettings() {
-  chrome.storage.local.remove(STORAGE_KEY_SETTINGS);
-}
-
-async function printSettings() {
-  const settings = await getSettings();
-  console.table(settings);
 }
 
 // exposeFunctionForDebug([

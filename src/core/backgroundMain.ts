@@ -24,7 +24,7 @@ import {
   COMMAND_REPEAT_LAST_SNOOZE,
   COMMAND_OPEN_SLEEPING_TABS,
 } from './commands';
-import { createTab, createCenteredWindow, IS_BETA, APP_VERSION } from './utils';
+import { createTab, createCenteredWindow } from './utils';
 // import { track, EVENTS } from './analytics';
 
 import {
@@ -188,6 +188,7 @@ export async function ensureOffscreenDocument() {
       } catch (error: unknown) {
         // Handle the case where document was created by another call despite our check
         if (error instanceof Error && error.message.includes('Only a single offscreen document')) {
+          // intentional — duplicate offscreen document is harmless
         } else {
           console.error("Error creating offscreen document:", error);
           throw error;
