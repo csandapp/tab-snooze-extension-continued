@@ -384,7 +384,7 @@ const EditShortcutsInstructions = () => (
           <MyLink onClick={() => chrome.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })}>
             manually confirmed in Chrome's shortcuts settings
           </MyLink>
-          . You can also use Arrow keys, Numpad, and capital letters (L-Later Today, etc.) in the Snooze Popup.
+          . You can also use Arrow keys and letters (L-Later Today, etc.) in the Snooze Popup.
         </Fragment>
       }
     />

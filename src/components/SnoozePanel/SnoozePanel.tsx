@@ -132,8 +132,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
     const mappedOption = upperKey
       ? snoozeOptions.find(opt => opt.shortcutKey === upperKey)
       : undefined;
-    const numpadKey = parseInt(key || '');
-
     if (mappedOption != null) {
       onSnoozeButtonClicked(event, mappedOption);
       nextFocusedIndex = -1;
@@ -143,13 +141,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
         nextFocusedIndex = 0;
       }
       onSnoozeButtonClicked(event, snoozeOptions[nextFocusedIndex]);
-      nextFocusedIndex = -1;
-    } else if (
-      Number.isInteger(numpadKey) &&
-      1 <= numpadKey &&
-      numpadKey <= 9
-    ) {
-      onSnoozeButtonClicked(event, snoozeOptions[numpadKey - 1]);
       nextFocusedIndex = -1;
     } else if (focusedButtonIndex === -1) {
       nextFocusedIndex = 0;
