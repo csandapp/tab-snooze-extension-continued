@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import type { Settings } from '@/types';
 import { styled as muiStyled } from '@mui/material/styles';
 import { Helmet } from 'react-helmet-async';
@@ -325,6 +325,9 @@ const SettingsPage = (): React.ReactNode => {
             // gets an empty description... so we add it here
             title: command.description || 'Snooze active tab',
             shortcut: command.shortcut || '',
+            description: !command.shortcut && command.name
+              ? `Suggested: ${SUGGESTED_SHORTCUT_KEYS[command.name] ?? ''}`
+              : undefined,
           })
         )}
         <EditShortcutsInstructions />
@@ -372,36 +375,35 @@ const SettingsPage = (): React.ReactNode => {
   );
 };
 
-// const EditShortcutsInstructions = () => (
-//   <ListItem>
-//     <ListItemText
-//       secondary={
-//         <Fragment>
-//           To edit the shortcuts{' '}
-//           <MyLink
-//             onClick={() =>
-//               chrome.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })
-//             }
-//           >
-//             please click here
-//           </MyLink>
-//         </Fragment>
-//       }
-//     />
-//   </ListItem>
-// );
-
-
 const EditShortcutsInstructions = () => (
   <ListItem>
-    <ListItemText secondary="Additionally, you can use Arrow keys, Numpad, and Capital letters (L-Later Today, etc.) in the Snooze Popup" />
+    <ListItemText
+      secondary={
+        <Fragment>
+          Shortcuts may appear pre-filled but must be{' '}
+          <MyLink onClick={() => chrome.tabs.create({ url: CHROME_SETTINGS_SHORTCUTS })}>
+            manually confirmed in Chrome's shortcuts settings
+          </MyLink>
+          . You can also use Arrow keys and letters (L-Later Today, etc.) in the Snooze Popup.
+        </Fragment>
+      }
+    />
   </ListItem>
 );
 
+const SUGGESTED_SHORTCUT_KEYS: Record<string, string> = {
+  '_execute_action': 'Alt+S',
+  'repeat_last_snooze': 'Alt+Shift+S',
+  'open_snoozed_list': 'Alt+J',
+  'new_todo_page': 'Ctrl+Shift+1',
+};
+
 const Root = styled.div``;
-// const MyLink = styled.a`
-//   text-decoration: underline;
-// `;
+
+const MyLink = styled.a`
+  text-decoration: underline;
+  cursor: pointer;
+`;
 
 const Header = styled(ListSubheader).attrs({ disableSticky: true })`
   /* display: flex; */

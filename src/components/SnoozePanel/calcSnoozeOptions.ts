@@ -31,6 +31,7 @@ export interface SnoozeOption {
   activeIcon: string;
   tooltip: string;
   when?: Date;
+  shortcutKey?: string;
 }
 
 export default function calcSnoozeOptions(
@@ -93,6 +94,7 @@ export default function calcSnoozeOptions(
       activeIcon: coffeeWhiteIcon,
       tooltip: `${laterTodayTime.calendar()} (${laterTodayHoursDelta} hours from now)`,
       when: laterTodayTime.toDate(),
+      shortcutKey: 'L',
     },
     {
       id: 'evening',
@@ -101,6 +103,7 @@ export default function calcSnoozeOptions(
       activeIcon: moonWhiteIcon,
       tooltip: thisEveningTime.calendar(),
       when: thisEveningTime.toDate(),
+      shortcutKey: 'E',
     },
     {
       id: 'tomorrow',
@@ -109,6 +112,7 @@ export default function calcSnoozeOptions(
       activeIcon: sunWhiteIcon,
       tooltip: tomorrowTime.calendar(),
       when: tomorrowTime.toDate(),
+      shortcutKey: 'T',
     },
     {
       id: 'weekend',
@@ -117,6 +121,7 @@ export default function calcSnoozeOptions(
       activeIcon: soffaWhiteIcon,
       tooltip: weekendTime.calendar(),
       when: weekendTime.toDate(),
+      shortcutKey: 'W',
     },
     {
       id: 'next_week',
@@ -125,6 +130,7 @@ export default function calcSnoozeOptions(
       activeIcon: briefcaseWhiteIcon,
       tooltip: nextWeekTime.calendar(),
       when: nextWeekTime.toDate(),
+      shortcutKey: 'N',
     },
     {
       id: 'in_a_month',
@@ -133,6 +139,7 @@ export default function calcSnoozeOptions(
       activeIcon: mailboxWhiteIcon,
       tooltip: inAMonthTime.format('LL'),
       when: inAMonthTime.toDate(),
+      shortcutKey: 'M',
     },
     {
       id: 'someday',
@@ -143,6 +150,7 @@ export default function calcSnoozeOptions(
         'LL'
       )} (${somedayMonthsDelta} months from now)`,
       when: somedayTime.toDate(),
+      shortcutKey: 'S',
     },
     {
       id: SNOOZE_TYPE_REPEATED,
@@ -150,6 +158,7 @@ export default function calcSnoozeOptions(
       icon: refreshIcon,
       activeIcon: refreshWhiteIcon,
       tooltip: 'Open this tab on a periodic basis',
+      shortcutKey: 'R',
     },
     {
       id: SNOOZE_TYPE_SPECIFIC_DATE,
@@ -157,6 +166,7 @@ export default function calcSnoozeOptions(
       icon: calendarIcon,
       activeIcon: calendarWhiteIcon,
       tooltip: 'Select a specific date & time',
+      shortcutKey: 'D',
     },
   ];
 }

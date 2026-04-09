@@ -128,12 +128,12 @@ export function SnoozePanel(props: Props): React.ReactNode {
   const onKeyPress = useCallback((event: React.KeyboardEvent) => {
     let nextFocusedIndex = focusedButtonIndex;
     const key = keycode(event.nativeEvent) as string | undefined;
-    const mappedOptionIndex =
-      key ? SNOOZE_SHORTCUT_KEYS[key.toUpperCase()] : undefined;
-    const numpadKey = parseInt(key || '');
-
-    if (mappedOptionIndex != null) {
-      onSnoozeButtonClicked(event, snoozeOptions[mappedOptionIndex]);
+    const upperKey = key?.toUpperCase();
+    const mappedOption = upperKey
+      ? snoozeOptions.find(opt => opt.shortcutKey === upperKey)
+      : undefined;
+    if (mappedOption != null) {
+      onSnoozeButtonClicked(event, mappedOption);
       nextFocusedIndex = -1;
     } else if (key === 'enter') {
       if (nextFocusedIndex === -1) {
@@ -141,13 +141,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
         nextFocusedIndex = 0;
       }
       onSnoozeButtonClicked(event, snoozeOptions[nextFocusedIndex]);
-      nextFocusedIndex = -1;
-    } else if (
-      Number.isInteger(numpadKey) &&
-      1 <= numpadKey &&
-      numpadKey <= 9
-    ) {
-      onSnoozeButtonClicked(event, snoozeOptions[numpadKey - 1]);
       nextFocusedIndex = -1;
     } else if (focusedButtonIndex === -1) {
       nextFocusedIndex = 0;
@@ -184,15 +177,39 @@ export function SnoozePanel(props: Props): React.ReactNode {
     });
   }, [selectedSnoozeOptionId, snoozeMode]);
 
-  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => ({
-    ...snoozeOpt,
-    focused: focusedButtonIndex === index,
-    pressed: selectedSnoozeOptionId === snoozeOpt.id,
-    onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
-    onMouseEnter: () => onTooltipAreaMouseEnter(snoozeOpt.tooltip),
-    onMouseLeave: onTooltipAreaMouseLeave,
-  }));
+  const snoozeButtons = snoozeOptions.map((snoozeOpt: SnoozeOption, index) => {
+    const tooltip = snoozeOpt.shortcutKey
+      ? `${snoozeOpt.tooltip} · Press ${snoozeOpt.shortcutKey}`
+      : snoozeOpt.tooltip;
+    return {
+      ...snoozeOpt,
+      focused: focusedButtonIndex === index,
+      pressed: selectedSnoozeOptionId === snoozeOpt.id,
+      onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+      onMouseEnter: () => onTooltipAreaMouseEnter(tooltip),
+      onMouseLeave: onTooltipAreaMouseLeave,
+    };
+  });
+  
   const hasMultipleHighlighted = highlightedTabCount > 1;
+  // decide whether or not to use callback here...
+  const getSnoozeButtons = () => {
+    return snoozeOptions.map(
+      (snoozeOpt: SnoozeOption, index) => {
+        const tooltip = snoozeOpt.shortcutKey
+          ? `${snoozeOpt.tooltip} · Press ${snoozeOpt.shortcutKey}`
+          : snoozeOpt.tooltip;
+        return {
+          ...snoozeOpt,
+          focused: focusedButtonIndex === index,
+          pressed: selectedSnoozeOptionId === snoozeOpt.id,
+          onClick: (ev: React.MouseEvent) => onSnoozeButtonClicked(ev, snoozeOpt),
+          onMouseEnter: () => onTooltipAreaMouseEnter(tooltip),
+          onMouseLeave: () => onTooltipAreaMouseLeave(),
+        };
+      }
+    );
+  };
 
   return (
     <Root
@@ -262,27 +279,6 @@ export function SnoozePanel(props: Props): React.ReactNode {
   );
 }
 
-const SNOOZE_SHORTCUT_KEYS: { [key: string]: number } = {
-  L: 0,
-  E: 1,
-  T: 2,
-  W: 3,
-  N: 4,
-  I: 5,
-  M: 5,
-  S: 6,
-  R: 7,
-  P: 8,
-  D: 8,
-};
-// Re-query tabs at snooze time for a fresh, accurate list.
-// Queried in popup context where chrome.tabs.query reliably returns correct results.
-async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
-  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
-  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
-  return getHighlightedTabs();
-}
-
 let cachedSnoozeAudio: HTMLAudioElement | null = null;
 
 function getSnoozeAudio(): HTMLAudioElement {
@@ -290,6 +286,14 @@ function getSnoozeAudio(): HTMLAudioElement {
     cachedSnoozeAudio = loadAudio(SOUND_SNOOZE);
   }
   return cachedSnoozeAudio;
+}
+
+// Re-query tabs at snooze time for a fresh, accurate list.
+// Queried in popup context where chrome.tabs.query reliably returns correct results.
+async function fetchTabsForMode(mode: SnoozeMode): Promise<chrome.tabs.Tab[]> {
+  if (mode === SnoozeMode.ActiveTab) return [await getActiveTab()];
+  if (mode === SnoozeMode.Window) return getCurrentWindowTabs();
+  return getHighlightedTabs();
 }
 
 async function performSnooze(snoozeMode: SnoozeMode, config: SnoozeConfig) {

@@ -9,6 +9,7 @@ export interface Props {
   activeIcon: string;
   focused: boolean;
   pressed: boolean;
+  shortcutKey?: string;
   onClick: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -25,11 +26,25 @@ const SnoozeButton: React.FC<Props> = (props: Props): React.ReactNode => {  // D
     activeIcon,
     focused,
     pressed,
+    shortcutKey,
     onClick,
     onMouseLeave,
     onMouseEnter,
     theme,
   } = props;
+
+  const renderTitle = () => {
+    if (!shortcutKey) return title;
+    const idx = title.toUpperCase().indexOf(shortcutKey.toUpperCase());
+    if (idx === -1) return <>{title}</>;
+    return (
+      <>
+        {title.slice(0, idx)}
+        <ShortcutLetter>{title.slice(idx, idx + 1)}</ShortcutLetter>
+        {title.slice(idx + 1)}
+      </>
+    );
+  };
 
   return (
     <Button
@@ -46,7 +61,7 @@ const SnoozeButton: React.FC<Props> = (props: Props): React.ReactNode => {  // D
         )}
       </IconWrapper>
       <Collapse in={!pressed} timeout={SNOOZE_CLICK_EFFECT_TIME}>
-        <Title $pressed={pressed}>{title}</Title>
+        <Title $pressed={pressed}>{renderTitle()}</Title>
       </Collapse>
     </Button>
   );
@@ -121,6 +136,10 @@ const OverlayIcon = styled(Icon)`
   right: 0;
   bottom: 0;
   top: 0;
+`;
+
+const ShortcutLetter = styled.span`
+  font-weight: 700;
 `;
 
 const Title = styled.div<{ $pressed?: boolean }>`
