@@ -117,11 +117,13 @@ const OptionsToolbar = styled(Toolbar)`
 const NavRow = styled.div`
   display: flex;
   align-items: center;
+  min-height: 32px;
 `;
 
 const AlignmentRow = styled.div`
-  font-size: 11px;
-  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  height: 17px;
 `;
 
 const Logo = styled.img`
