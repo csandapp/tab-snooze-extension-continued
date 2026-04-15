@@ -252,7 +252,7 @@ export function SnoozePanel(props: Props): React.Node {
             </SingleTabToggle>
           </TabControls>
         }
-        hint={<HintText>{MULTI_TAB_HINT}</HintText>}
+        hint={MULTI_TAB_HINT}
       />
       <SnoozeButtonsGrid buttons={snoozeButtons} />
       <SnoozeFooter
@@ -374,6 +374,7 @@ export default TooltipHelper(SnoozePanel);
 const Root = styled.div`
   position: relative;
   width: 390px;
+  height: 509px;
   overflow: hidden;
 `;
 
@@ -404,9 +405,4 @@ const SingleTabToggle = styled.button`
   }
 `;
 
-const HintText = styled.div`
-  font-size: 11px;
-  color: #fff;
-  opacity: 0.8;
-`;
 

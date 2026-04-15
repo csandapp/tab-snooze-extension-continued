@@ -95,7 +95,7 @@ const Root = styled.div`
   flex-direction: column;
   align-items: stretch;
   width: 390px;
-  height: 496px;
+  height: 509px;
   overflow: hidden;
 `;
 
@@ -116,7 +116,7 @@ const NavButton = styled(Button).attrs({
   text-transform: none !important;
   white-space: nowrap;
   min-height: 0 !important;
-  padding: 2px 6px !important;
+  padding: 1px 6px !important;
   line-height: 1.5 !important;
   &.linkIsActive {
     background-color: #0000001f !important;

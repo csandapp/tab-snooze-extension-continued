@@ -10,13 +10,13 @@ type Props = {
   children?: React.Node,
   /** Right side of row 1 (pushed right by Spacer). */
   actions?: React.Node,
-  /** Right-aligned content for row 2. Omit to render an empty row. */
-  hint?: React.Node,
+  /** Right-aligned hint text for row 2. Omit to render an empty row. */
+  hint?: string,
 };
 
 export default function AppTopBar({ children, actions, hint }: Props): React.Node {
   return (
-    <AppBar position="relative" sx={{ zIndex: 1, overflow: 'visible' }}>
+    <AppBar position="relative" sx={{ zIndex: 1, overflow: 'visible', height: 'auto' }}>
       <TopBarToolbar>
         <MainRow>
           <Logo src={navbarLogo} />
@@ -26,7 +26,7 @@ export default function AppTopBar({ children, actions, hint }: Props): React.Nod
         </MainRow>
         <SecondRow>
           <Spacer />
-          {hint}
+          {hint && <HintText>{hint}</HintText>}
         </SecondRow>
       </TopBarToolbar>
     </AppBar>
@@ -39,13 +39,14 @@ const TopBarToolbar = styled(Toolbar)`
   padding: 6px 16px 4px !important;
   gap: 2px;
   min-height: auto !important;
-  height: auto;
+  height: auto !important;
 `;
 
 const MainRow = styled.div`
   display: flex;
   align-items: center;
   height: 32px;
+  min-height: 32px !important;
 `;
 
 const SecondRow = styled.div`
@@ -53,12 +54,19 @@ const SecondRow = styled.div`
   align-items: center;
   font-size: 11px;
   line-height: 1.5;
-  min-height: 1.5em;
+  min-height: 17px;
 `;
 
 const Logo = styled.img.attrs({ alt: '' })`
   height: 22px;
   flex-shrink: 0;
+  margin-right: 8px;
+`;
+
+const HintText = styled.div`
+  font-size: 11px;
+  color: #fff;
+  opacity: 0.8;
 `;
 
 const Spacer = styled.div`
