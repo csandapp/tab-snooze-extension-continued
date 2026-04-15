@@ -4,8 +4,6 @@ import type { Props as SnoozeButtonProps } from './SnoozeButton';
 
 import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import styled from 'styled-components';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import calcSnoozeOptions, {
   SNOOZE_TYPE_REPEATED,
   SNOOZE_TYPE_SPECIFIC_DATE,
@@ -24,7 +22,7 @@ import {
   getActiveTab,
 } from '../../core/utils';
 import { filterSnoozableTabs, getTargetTabs } from '../../core/tabSelection';
-import navbarLogo from '../OptionsPage/images/navbar_logo.svg';
+import AppTopBar from '../AppTopBar';
 
 // code splitting these big components
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
@@ -237,28 +235,25 @@ export function SnoozePanel(props: Props): React.Node {
         if (ref) ref.focus();
       }}
     >
-      <AppBar position="relative" sx={{ zIndex: 1 }}>
-        <PanelToolbar>
-          <PanelHeaderRow>
-            <Logo src={navbarLogo} />
-            <TabControls>
-              <TabCountLabel>
-                {singleTabMode
-                  ? '1 tab'
-                  : `${targetTabs.length} tab${targetTabs.length !== 1 ? 's' : ''}`}
-              </TabCountLabel>
-              <SingleTabToggle
-                onClick={toggleSingleTabMode}
-                title={singleTabMode ? 'Switch to snooze all tabs in window' : 'Switch to snooze only this tab'}
-                aria-label={singleTabMode ? 'Switch to snooze all tabs mode' : 'Switch to snooze this tab only'}
-              >
-                {singleTabMode ? '⇄ All tabs' : '⇄ Single tab'}
-              </SingleTabToggle>
-            </TabControls>
-          </PanelHeaderRow>
-          <HintText>{MULTI_TAB_HINT}</HintText>
-        </PanelToolbar>
-      </AppBar>
+      <AppTopBar
+        actions={
+          <TabControls>
+            <TabCountLabel>
+              {singleTabMode
+                ? '1 tab'
+                : `${targetTabs.length} tab${targetTabs.length !== 1 ? 's' : ''}`}
+            </TabCountLabel>
+            <SingleTabToggle
+              onClick={toggleSingleTabMode}
+              title={singleTabMode ? 'Switch to snooze all tabs in window' : 'Switch to snooze only this tab'}
+              aria-label={singleTabMode ? 'Switch to snooze all tabs mode' : 'Switch to snooze this tab only'}
+            >
+              {singleTabMode ? '⇄ All tabs' : '⇄ Single tab'}
+            </SingleTabToggle>
+          </TabControls>
+        }
+        hint={MULTI_TAB_HINT}
+      />
       <SnoozeButtonsGrid buttons={snoozeButtons} />
       <SnoozeFooter
         tooltip={{
@@ -378,25 +373,9 @@ export default TooltipHelper(SnoozePanel);
 
 const Root = styled.div`
   position: relative;
-`;
-
-const PanelToolbar = styled(Toolbar)`
-  flex-direction: column !important;
-  align-items: stretch !important;
-  padding: 6px 16px 4px !important;
-  gap: 2px;
-  min-height: auto !important;
-  height: auto;
-`;
-
-const PanelHeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Logo = styled.img`
-  height: 22px;
+  width: 390px;
+  height: 509px;
+  overflow: hidden;
 `;
 
 const TabControls = styled.div`
@@ -426,9 +405,4 @@ const SingleTabToggle = styled.button`
   }
 `;
 
-const HintText = styled.div`
-  font-size: 11px;
-  color: #fff;
-  opacity: 0.8;
-  text-align: right;
-`;
+

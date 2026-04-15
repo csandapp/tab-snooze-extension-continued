@@ -29,7 +29,7 @@ const SnoozeButtonsGrid = (props: Props): React.Node => {
 
 const ButtonsGrid = styled.div`
   display: grid;
-  grid-template-columns: 130px 130px 130px;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 130px 130px 130px;
   justify-items: stretch;
   align-items: stretch;
