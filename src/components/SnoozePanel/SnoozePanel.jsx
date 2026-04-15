@@ -382,6 +382,8 @@ export default TooltipHelper(SnoozePanel);
 
 const Root = styled.div`
   position: relative;
+  width: 390px;
+  overflow: hidden;
 `;
 
 const PanelToolbar = styled(Toolbar)`
@@ -433,7 +435,8 @@ const SingleTabToggle = styled.button`
 const HintRow = styled.div`
   display: flex;
   align-items: center;
-  height: 17px;
+  font-size: 11px;
+  line-height: 1.5;
 `;
 
 const HintText = styled.div`

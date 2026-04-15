@@ -123,7 +123,8 @@ const NavRow = styled.div`
 const AlignmentRow = styled.div`
   display: flex;
   align-items: center;
-  height: 17px;
+  font-size: 11px;
+  line-height: 1.5;
 `;
 
 const Logo = styled.img`
