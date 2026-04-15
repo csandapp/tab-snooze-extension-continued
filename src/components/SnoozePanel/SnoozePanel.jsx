@@ -241,6 +241,7 @@ export function SnoozePanel(props: Props): React.Node {
         <PanelToolbar>
           <PanelHeaderRow>
             <Logo src={navbarLogo} />
+            <Spacer />
             <TabControls>
               <TabCountLabel>
                 {singleTabMode
@@ -256,7 +257,10 @@ export function SnoozePanel(props: Props): React.Node {
               </SingleTabToggle>
             </TabControls>
           </PanelHeaderRow>
-          <HintText>{MULTI_TAB_HINT}</HintText>
+          <HintRow>
+            <Spacer />
+            <HintText>{MULTI_TAB_HINT}</HintText>
+          </HintRow>
         </PanelToolbar>
       </AppBar>
       <SnoozeButtonsGrid buttons={snoozeButtons} />
@@ -392,7 +396,7 @@ const PanelToolbar = styled(Toolbar)`
 const PanelHeaderRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  min-height: 32px;
 `;
 
 const Logo = styled.img`
@@ -426,9 +430,18 @@ const SingleTabToggle = styled.button`
   }
 `;
 
+const HintRow = styled.div`
+  display: flex;
+  align-items: center;
+  height: 17px;
+`;
+
 const HintText = styled.div`
   font-size: 11px;
   color: #fff;
   opacity: 0.8;
-  text-align: right;
+`;
+
+const Spacer = styled.div`
+  flex: 1;
 `;
