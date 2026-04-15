@@ -16,7 +16,7 @@ type Props = {
 
 export default function AppTopBar({ children, actions, hint }: Props): React.Node {
   return (
-    <AppBar position="relative" sx={{ zIndex: 1 }}>
+    <AppBar position="relative" sx={{ zIndex: 1, overflow: 'visible' }}>
       <TopBarToolbar>
         <MainRow>
           <Logo src={navbarLogo} />
@@ -45,7 +45,7 @@ const TopBarToolbar = styled(Toolbar)`
 const MainRow = styled.div`
   display: flex;
   align-items: center;
-  min-height: 32px;
+  height: 32px;
 `;
 
 const SecondRow = styled.div`
@@ -53,6 +53,7 @@ const SecondRow = styled.div`
   align-items: center;
   font-size: 11px;
   line-height: 1.5;
+  min-height: 1.5em;
 `;
 
 const Logo = styled.img.attrs({ alt: '' })`
