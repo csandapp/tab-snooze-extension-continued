@@ -43,6 +43,9 @@ const StyledIconButton = muiStyled(IconButton)(({ theme }) => ({
 }));
 
 
+// TODO: SleepingTabsPage belongs in the popup router as /sleeping-tabs, not here.
+// OptionsPage should become settings-only. See docs/superpowers/specs/future-popup-router-unification.md
+// for the full migration plan (routes to add, redirect from /options/sleeping-tabs, nav bar changes).
 function OptionsPage(props: {}): React.Node {
   const location = useLocation();
   

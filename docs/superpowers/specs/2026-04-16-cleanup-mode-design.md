@@ -5,94 +5,108 @@
 
 ## Overview
 
-Cleanup Mode is a triage feature accessed from the popup that lets users rapidly process a large number of open tabs. On entry it automatically closes duplicates and configured auto-close domains, then presents a scrollable list where each tab can be individually snoozed or closed. A 24-hour ephemeral triage history lets users recover accidentally closed URLs.
+Cleanup Mode is a triage feature that lets users rapidly process a large number of open tabs. It lives at its own top-level route (`/cleanup`), peer to `/popup`, keeping `SnoozePanel` single-purpose. On entry it automatically closes duplicates and configured auto-close domains, then presents a scrollable list where each tab can be individually snoozed or closed. A 24-hour ephemeral triage history lets users recover accidentally closed URLs.
 
 ---
 
-## 1. Entry Point & Mode Switching
+## 1. Architecture — Routing Over Mode-Switching
 
-A "Cleanup" toggle button is added to the `AppTopBar` in `SnoozePanel`, styled identically to the existing `SingleTabToggle`. It is hidden when `singleTabMode` is true (cleanup is meaningless for a single tab).
+Cleanup is a **sibling route** to the snooze popup, not a mode inside `SnoozePanel`. The router gains a `/cleanup` route rendered by a new `CleanupPanel` component. The "Cleanup" button in `SnoozePanel`'s `AppTopBar` is a React Router `Link` to `/cleanup`. `CleanupPanel` has its own `AppTopBar` with a back arrow that navigates to `/popup`.
 
-Clicking "Cleanup" sets a `cleanupMode: boolean` state in `SnoozePanel`. When true, the `SnoozeButtonsGrid` is replaced by `CleanupPanel`. The top bar remains visible. Clicking "Cleanup" again exits the mode and restores the normal grid.
+This keeps `SnoozePanel.jsx` focused solely on snoozing and gives `CleanupPanel` a clean file boundary with no shared boolean state.
 
-**Which tabs are included:** Cleanup mode respects the existing targeting logic — it shows either the Ctrl+click highlighted selection (if >1 tab highlighted) or all tabs in the current window. It does not apply in single-tab mode.
+**Changes to routing layer:**
+- `src/paths.js` — add `CLEANUP_PATH = '/cleanup'`
+- `src/Router.jsx` — add `<Route path={CLEANUP_PATH} element={<AsyncCleanupPanel />} />`
+- `SnoozePanel` `AppTopBar` — "Cleanup" button becomes `<Link to={CLEANUP_PATH}>`, hidden when `singleTabMode` is true
 
-**Auto-processing on entry:** Before the triage list renders, `CleanupPanel` runs auto-processing:
-1. Close duplicate tabs (keep the tab with the highest `lastAccessed` timestamp; `chrome.tabs.query` returns this field in MV3)
-2. Close tabs whose URL hostname matches any entry in `cleanupAutocloseDomains` from settings
-
-Both operations call `chrome.tabs.remove` directly from the popup (no SW round-trip needed for closing) and log each closed tab to triage history.
+**Which tabs are included:** `CleanupPanel` reads the current window's tabs on mount via `chrome.tabs.query`. It respects the existing targeting logic — if >1 tab was highlighted when cleanup was entered, those are used; otherwise all tabs in the window. Single-tab mode is irrelevant (the button is hidden in that state).
 
 ---
 
-## 2. Triage List UI
+## 2. Auto-Processing on Entry
 
-`CleanupPanel` renders a scrollable list inside the fixed 390×509px popup, below the `AppTopBar`. Each row is ~48px and contains:
+Before the triage list renders, `CleanupPanel` runs auto-processing in sequence:
+
+1. **Deduplication** — query all target tabs, group by URL, keep the tab with the highest `lastAccessed` timestamp per URL, close the rest via `chrome.tabs.remove`
+2. **Domain auto-close** — close any tab whose `URL.hostname` matches an entry in `cleanupAutocloseDomains` from settings
+
+Both operations call `chrome.tabs.remove` directly from the popup (no SW round-trip needed for closing). Every closed tab is logged to triage history before removal.
+
+---
+
+## 3. Triage List UI
+
+`CleanupPanel` renders a scrollable list in the same 390×509px popup dimensions. Each row (~48px) contains:
 
 - **Favicon** (24px) + **truncated title** (fills remaining width)
-- **Snooze button** (right side) — opens a compact inline dropdown listing the standard snooze time options (Later Today, Tomorrow, Next Week, etc.) as a menu. Selecting an option snoozes the tab via the existing `MSG_SNOOZE_TABS` message path, closes the tab, and removes the row.
-- **Close button** (X icon, right of snooze) — calls `chrome.tabs.remove` immediately, logs to triage history, removes the row.
+- **Snooze button** (right side) — compact inline dropdown listing standard snooze time options as a menu. Selecting one snoozes via `MSG_SNOOZE_TABS`, closes the tab, removes the row.
+- **Close button** (X icon) — calls `chrome.tabs.remove` immediately, logs to triage history, removes the row.
 
-**Grouping:** A group-by toggle in the `AppTopBar` (visible only in cleanup mode) switches between:
+**Grouping:** A group-by toggle in `CleanupPanel`'s `AppTopBar` switches between:
 - **Flat** (default) — ungrouped, ordered by tab index
 - **By domain** — sticky domain-name headers
-- **By age** — sticky age bucket headers ("Opened today", "Opened this week", "Older")
+- **By age** — sticky age buckets ("Opened today", "Opened this week", "Older")
 
-Group headers include a "Close all" action that bulk-closes every tab in the group and logs each to triage history.
+Group headers include a "Close all" action that bulk-closes every tab in the group.
 
-**Empty state:** When the list reaches zero tabs, a brief "All done" message is shown. After 1.5 seconds the panel auto-exits cleanup mode and restores the normal grid.
+**Empty state:** When the list reaches zero tabs, show "All done" briefly, then navigate back to `/popup` after 1.5 seconds.
 
 ---
 
-## 3. Triage History
+## 4. Triage History
 
-Every tab closed during cleanup mode (via auto-processing or manual action) is logged. Each history entry contains:
+Every tab closed in cleanup mode (auto-processing or manual) is logged:
 
 ```
 { url, title, favicon, closedAt: timestamp }
 ```
 
-**Storage:** Entries are appended to `chrome.storage.local` under key `triageHistory` as an array. Writes go through the service worker via a new `MSG_LOG_TRIAGE` message type, using the existing `withStorageLock` mutex in `storage.js` for serialized writes. On every write, entries older than 24 hours are pruned before saving.
+**Storage:** Appended to `chrome.storage.local` under key `triageHistory`. Writes go through the service worker via a new `MSG_LOG_TRIAGE` message, using the existing `withStorageLock` mutex in `storage.js`. On every write, entries older than 24 hours are pruned before saving.
 
-**New storage functions in `storage.js`:**
+**New functions in `storage.js`:**
 - `getTriageHistory(): Promise<Array<TriageEntry>>`
-- `appendTriageEntries(entries: Array<TriageEntry>): Promise<void>` — prunes stale entries, appends new ones, saves
+- `appendTriageEntries(entries: Array<TriageEntry>): Promise<void>`
 
-**UI:** A new "Triage History" section in `OptionsPage` lists entries with favicon, title, clickable URL, and relative time ("2 hours ago"). Read-only — clicking a URL opens it in a new tab. The section is hidden when history is empty.
-
----
-
-## 4. Settings — Auto-Close Domains
-
-A new "Cleanup Mode" section in `SettingsPage.jsx` contains a tag-input field for domain names (e.g., `mail.google.com`, `twitter.com`).
-
-**Storage:** Stored in `chrome.storage.local` under key `cleanupAutocloseDomains` as `string[]`, accessed via `getSettings`/`saveSettings` like other preferences.
-
-**Matching logic:** On cleanup entry, each tab's `URL.hostname` is compared against the list. Matches are closed before the triage list renders.
+**UI:** A "Triage History" section in `OptionsPage` (below sleeping tabs) lists entries with favicon, title, clickable URL (opens in new tab), and relative time. Hidden when history is empty.
 
 ---
 
-## 5. Data Flow Summary
+## 5. Settings — Auto-Close Domains
+
+A "Cleanup Mode" section in `SettingsPage.jsx` contains a tag-input field for domain names (e.g. `mail.google.com`, `twitter.com`). Stored in `chrome.storage.local` under key `cleanupAutocloseDomains` as `string[]`, via `getSettings`/`saveSettings`.
+
+---
+
+## 6. Data Flow Summary
 
 | Action | Who does it | How |
 |---|---|---|
-| Close tab (manual or auto) | Popup (`CleanupPanel`) | `chrome.tabs.remove` directly |
+| Close tab (manual or auto) | `CleanupPanel` (popup) | `chrome.tabs.remove` directly |
 | Log to triage history | Service worker | `MSG_LOG_TRIAGE` → `appendTriageEntries` |
 | Snooze tab | Service worker | `MSG_SNOOZE_TABS` (existing path) |
-| Read auto-close domains | Popup | `getSettings()` |
-| Read/display triage history | Options page | `getTriageHistory()` + `chrome.storage.onChanged` listener |
+| Read auto-close domains | `CleanupPanel` | `getSettings()` |
+| Read/display triage history | Options page | `getTriageHistory()` + `chrome.storage.onChanged` |
 
 ---
 
-## 6. New Files & Key Changes
+## 7. New Files & Key Changes
 
 | File | Change |
 |---|---|
-| `src/components/SnoozePanel/SnoozePanel.jsx` | Add `cleanupMode` state, "Cleanup" button in `AppTopBar`, conditional render of `CleanupPanel` |
-| `src/components/SnoozePanel/CleanupPanel.jsx` | New component — auto-processing, triage list, grouping, row actions |
+| `src/paths.js` | Add `CLEANUP_PATH = '/cleanup'` |
+| `src/Router.jsx` | Add `/cleanup` route → `AsyncCleanupPanel` |
+| `src/components/CleanupPanel/index.jsx` | New component — auto-processing, triage list, grouping, row actions, own `AppTopBar` |
+| `src/components/SnoozePanel/SnoozePanel.jsx` | Add "Cleanup" `Link` button to `AppTopBar`; no mode state added |
 | `src/components/OptionsPage/SettingsPage.jsx` | Add "Cleanup Mode" section with domain tag-input |
 | `src/components/OptionsPage/SleepingTabsPage.jsx` | Add "Triage History" section |
 | `src/core/storage.js` | Add `triageHistory` key, `getTriageHistory`, `appendTriageEntries` |
 | `src/core/messages.js` | Add `MSG_LOG_TRIAGE` constant |
 | `src/core/backgroundMain.js` | Handle `MSG_LOG_TRIAGE` message |
 | `src/core/settings.js` | Add `cleanupAutocloseDomains` to default settings shape |
+
+---
+
+## 8. Future Work
+
+The sleeping tabs list currently lives in `OptionsPage`. A future refactor should move it into the popup router as a `/sleeping-tabs` route, creating a unified tab-management hub within the popup. See `docs/superpowers/specs/future-popup-router-unification.md`.
