@@ -6,6 +6,7 @@ export const APP_BASE_PATH = '/index.html#';
 
 // App routes
 export const POPUP_PATH = '/popup';
+export const CLEANUP_PATH = '/cleanup';
 export const OPTIONS_PATH = '/options';
 export const SLEEPING_TABS_PATH = '/options/sleeping-tabs';
 export const SETTINGS_PATH = '/options/settings';

@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import SnoozePanel from './components/SnoozePanel';
 import {
   POPUP_PATH,
+  CLEANUP_PATH,
   OPTIONS_PATH,
   SLEEPING_TABS_PATH,
   SETTINGS_PATH,
@@ -37,6 +38,9 @@ const AsyncTutorial = React.lazy(() =>
 const AsyncWhatsNewDialog = React.lazy(() =>
   import('./components/dialogs/WhatsNewDialog')
 );
+const AsyncCleanupPanel = React.lazy(() =>
+  import('./components/CleanupPanel')
+);
 
 const Router = () => (
   <HashRouter hashType="noslash">
@@ -46,7 +50,8 @@ const Router = () => (
         <Route path="/" element={<Navigate to={POPUP_PATH} replace />} />
         
         <Route path={POPUP_PATH} element={<SnoozePanel />} />
-        
+        <Route path={CLEANUP_PATH} element={<AsyncCleanupPanel />} />
+
         {/* Options routes - handle both base and sub-paths */}
         <Route path={`${OPTIONS_PATH}/*`} element={<AsyncOptionsPage />} />
         
