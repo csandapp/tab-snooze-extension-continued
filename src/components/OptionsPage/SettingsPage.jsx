@@ -16,6 +16,8 @@ import WorkIcon from '@mui/icons-material/Work';
 import SomedayIcon from '@mui/icons-material/BeachAccess';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import DomainTagInput from './DomainTagInput';
 
 import StarIcon from '@mui/icons-material/Star';
 import GiftCardIcon from '@mui/icons-material/CardGiftcard';
@@ -450,6 +452,25 @@ const SettingsPage = (props: Props): Node => {
             )}
           </Fragment>
         )}
+        <Header>Cleanup Mode</Header>
+        <ListItem>
+          <ListItemIcon><FilterListIcon /></ListItemIcon>
+          <ListItemText
+            primary="Auto-close domains"
+            secondary="Tabs matching these hostnames are closed automatically when cleanup mode starts (exact match, e.g. mail.google.com)"
+          />
+        </ListItem>
+        <ListItem>
+          <DomainTagInput
+            domains={settingsState.cleanupAutocloseDomains || []}
+            onChange={(domains) => {
+              const next = { ...settingsState, cleanupAutocloseDomains: domains };
+              saveSettings(next);
+              setSettingsState(next);
+            }}
+          />
+        </ListItem>
+
         <Header>Keyboard Shortcuts {!isPro /* && <ProBadge />*/}</Header>
         {commandsState.map((command, index) =>
           renderShortcutSetting({
