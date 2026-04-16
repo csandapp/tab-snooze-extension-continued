@@ -28,7 +28,7 @@ This keeps `SnoozePanel.jsx` focused solely on snoozing and gives `CleanupPanel`
 
 Before the triage list renders, `CleanupPanel` runs auto-processing in sequence:
 
-1. **Deduplication** — query all target tabs, group by URL, keep the tab with the highest `lastAccessed` timestamp per URL, close the rest via `chrome.tabs.remove`
+1. **Deduplication** — query all target tabs, group by URL stripped of query string (`scheme + host + path` only; query params are ignored so `example.com/page?a=1` and `example.com/page?a=2` are the same duplicate key), keep the tab with the highest `lastAccessed` timestamp per group, close the rest via `chrome.tabs.remove`
 2. **Domain auto-close** — close any tab whose `URL.hostname` matches an entry in `cleanupAutocloseDomains` from settings
 
 Both operations call `chrome.tabs.remove` directly from the popup (no SW round-trip needed for closing). Every closed tab is logged to triage history before removal.
