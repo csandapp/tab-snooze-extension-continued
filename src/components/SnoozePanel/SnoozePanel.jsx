@@ -23,6 +23,8 @@ import {
 } from '../../core/utils';
 import { filterSnoozableTabs, getTargetTabs } from '../../core/tabSelection';
 import AppTopBar from '../AppTopBar';
+import { Link } from 'react-router-dom';
+import { CLEANUP_PATH } from '../../paths';
 
 // code splitting these big components
 const AsyncPeriodSelector = lazy(() => import('./PeriodSelector'));
@@ -250,6 +252,9 @@ export function SnoozePanel(props: Props): React.Node {
             >
               {singleTabMode ? '⇄ All tabs' : '⇄ Single tab'}
             </SingleTabToggle>
+            {!singleTabMode && (
+              <CleanupLink to={CLEANUP_PATH}>Cleanup</CleanupLink>
+            )}
           </TabControls>
         }
         hint={MULTI_TAB_HINT}
@@ -400,6 +405,21 @@ const SingleTabToggle = styled.button`
   padding: 2px 8px;
   border-radius: 4px;
 
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+`;
+
+const CleanupLink = styled(Link)`
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-decoration: none;
   &:hover {
     background-color: rgba(0, 0, 0, 0.25);
   }
