@@ -5,8 +5,6 @@ import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { muiTheme, styledComponentsTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 import Router from './Router';
-import { Agentation } from 'agentation';
-
 function App() {
   return (
     <ThemeProvider theme={muiTheme}>
@@ -14,7 +12,6 @@ function App() {
         <CssBaseline /> {/* use MUI's CSS baseline instead of sanitize.css for CSS normalization */}
         <GlobalStyles />
         <Router />
-        <Agentation />
       </StyledThemeProvider>
     </ThemeProvider>
   );
