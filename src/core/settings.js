@@ -35,6 +35,9 @@ export const DEFAULT_SETTINGS: Settings = {
 
   // Multi-tab snooze
   singleTabMode: false,
+
+  // Cleanup mode
+  cleanupAutocloseDomains: [],
 };
 
 export async function getSettings(): Promise<Settings> {

@@ -5,7 +5,7 @@
  * without a view.
  */
 import { repeatLastSnooze, snoozeTabsBatch } from './snooze';
-import { MSG_SNOOZE_TABS, MSG_DELETE_SNOOZED_TABS } from './messages';
+import { MSG_SNOOZE_TABS, MSG_DELETE_SNOOZED_TABS, MSG_LOG_TRIAGE } from './messages';
 import {
   registerEventListeners as registerWakeupEventListeners,
   scheduleWakeupAlarm,
@@ -32,7 +32,7 @@ import {
   registerEventListeners as registerBadgeEventListeners,
 } from './badge';
 import { getSettings, saveSettings } from './settings';
-import { saveRecentlyWokenTabs } from './storage';
+import { saveRecentlyWokenTabs, appendTriageEntries } from './storage';
 
 // Clear recently woken tabs on every Service Worker startup.
 // This ensures tabs can retry if SW crashed mid-wakeup.
@@ -137,6 +137,18 @@ export function runBackgroundScript() {
           sendResponse({ success: false, error: error.message });
         });
       return true; // keep channel open for async sendResponse
+    }
+
+    if (message.action === MSG_LOG_TRIAGE) {
+      const { entries } = message;
+      console.log(`📨 [SW] Received logTriage message for ${entries?.length} tab(s)`);
+      appendTriageEntries(entries)
+        .then(() => sendResponse({ success: true }))
+        .catch(error => {
+          console.error('appendTriageEntries message handler failed:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true;
     }
   });
 }

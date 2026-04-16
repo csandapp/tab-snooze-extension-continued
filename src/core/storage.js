@@ -97,6 +97,26 @@ export function saveRecentlyWokenTabs(
   });
 }
 
+export const STORAGE_KEY_TRIAGE_HISTORY = 'triageHistory';
+
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+export async function getTriageHistory(): Promise<Array<Object>> {
+  const { triageHistory } = await chrome.storage.local.get(STORAGE_KEY_TRIAGE_HISTORY);
+  return triageHistory || [];
+}
+
+export function appendTriageEntries(entries: Array<Object>): Promise<void> {
+  return withStorageLock(async () => {
+    const existing = await getTriageHistory();
+    const cutoff = Date.now() - TWENTY_FOUR_HOURS_MS;
+    const fresh = existing.filter(e => e.closedAt > cutoff);
+    await chrome.storage.local.set({
+      [STORAGE_KEY_TRIAGE_HISTORY]: [...fresh, ...entries],
+    });
+  });
+}
+
 // export function getSnoozeHistory() {
 //   return chrome.storage.local
 //     .get()

@@ -74,4 +74,7 @@ declare type Settings = {|
 
   // Multi-tab snooze
   singleTabMode: boolean,
+
+  // Cleanup mode
+  cleanupAutocloseDomains: Array<string>,
 |};
