@@ -6,6 +6,7 @@ import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
 import { openTabs } from '../../core/wakeup';
 import { MSG_DELETE_SNOOZED_TABS } from '../../core/messages';
+import { getTriageHistory } from '../../core/storage';
 import { getSleepingTabByWakeupGroups } from './groupSleepingTabs';
 import { formatWakeupDescription } from './formatWakeupDescription';
 import List from '@mui/material/List';
@@ -60,27 +61,34 @@ const StyledFab = muiStyled(Fab)(({ theme }) => ({
 const SleepingTabsPage = (props: Props): React.Node => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
   const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
-  
+  const [triageHistory, setTriageHistory] = useState([]);
+
   const refreshSnoozedTabs = useCallback(async () => {
     const groups: Array<TabGroup> = await getSleepingTabByWakeupGroups(hidePeriodicState);
     setVisibleTabGroupsState(groups);
   }, [hidePeriodicState]);
 
+  const refreshTriageHistory = useCallback(async () => {
+    const history = await getTriageHistory();
+    setTriageHistory(history);
+  }, []);
+
   useEffect(() => {
     refreshSnoozedTabs();
-    
-    // Satisfy Flow that Promise is incompatible with undefined in the return value
+    refreshTriageHistory();
+
     const storageListener = () => {
       refreshSnoozedTabs();
+      refreshTriageHistory();
     };
 
     // listen to storage changes
     chrome.storage.onChanged.addListener(storageListener);
-  
+
     return () => {
       chrome.storage.onChanged.removeListener(storageListener);
     }
-  }, [refreshSnoozedTabs]);
+  }, [refreshSnoozedTabs, refreshTriageHistory]);
 
   // componentDidMount() {
   //   // track(EVENTS.SLEEPING_TABS_VIEW);
@@ -156,6 +164,15 @@ const SleepingTabsPage = (props: Props): React.Node => {
   }
 
   
+  const formatRelativeTime = (timestamp) => {
+    const diff = Date.now() - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(diff / 3600000);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(diff / 86400000)}d ago`;
+  };
+
   if (!visibleTabGroupsState) {
       // avoid showing placeholder while loading, because
       // it causes placeholder to flicker before the list renders on screen
@@ -173,6 +190,30 @@ const SleepingTabsPage = (props: Props): React.Node => {
         </StyledList>
       ) : (
         <NoTabsPlaceholder />
+      )}
+
+      {triageHistory.length > 0 && (
+        <TriageSection>
+          <StyledListSubheader disableSticky>Triage History (last 24h)</StyledListSubheader>
+          {[...triageHistory].reverse().map((entry, i) => (
+            <StyledListItem
+              key={i}
+              button
+              component="a"
+              href={entry.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TriageIcon src={entry.favicon} alt="" />
+              <ListItemText
+                primary={entry.title || entry.url}
+                secondary={`${formatRelativeTime(entry.closedAt)} — ${entry.url}`}
+                primaryTypographyProps={{ noWrap: true, style: { lineHeight: 1.4 } }}
+                secondaryTypographyProps={{ noWrap: true, style: { fontSize: 11 } }}
+              />
+            </StyledListItem>
+          ))}
+        </TriageSection>
       )}
 
       <NewTodoBtn />
@@ -237,6 +278,21 @@ const Icon = styled.img`
   margin-top: 6px;
   margin-right: 10px;
   border-radius: 3px;
+`;
+
+const TriageSection = styled.div`
+  margin-top: 8px;
+  border-top: 1px solid #f0f0f0;
+`;
+
+const TriageIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 3px;
+  margin-right: 10px;
+  align-self: flex-start;
+  margin-top: 6px;
 `;
 
 export default SleepingTabsPage;
