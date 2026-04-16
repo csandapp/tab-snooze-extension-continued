@@ -21,6 +21,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SnoozeDropdown from './SnoozeDropdown';
 
 async function logAndCloseTabs(tabs) {
   if (tabs.length === 0) return;
@@ -158,7 +159,10 @@ export default function CleanupPanel(): React.Node {
                     }}
                   />
                   <TabActions>
-                    {/* SnoozeDropdown wired in Task 7 */}
+                    <SnoozeDropdown
+                      options={snoozeOptions}
+                      onSelect={opt => snoozeTab(tab, opt)}
+                    />
                     <IconButton
                       size="small"
                       onClick={() => closeTab(tab)}
