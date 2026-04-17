@@ -252,9 +252,13 @@ export function SnoozePanel(props: Props): React.Node {
             >
               {singleTabMode ? '⇄ All tabs' : '⇄ Single tab'}
             </SingleTabToggle>
-            {!singleTabMode && (
-              <CleanupLink to={CLEANUP_PATH}>Cleanup</CleanupLink>
-            )}
+            <CleanupLink
+              to={CLEANUP_PATH}
+              disabled={targetTabs.length <= 1}
+              onClick={targetTabs.length <= 1 ? e => e.preventDefault() : undefined}
+            >
+              Cleanup
+            </CleanupLink>
           </TabControls>
         }
         hint={MULTI_TAB_HINT}
@@ -413,15 +417,16 @@ const SingleTabToggle = styled.button`
 const CleanupLink = styled(Link)`
   background: rgba(0, 0, 0, 0.15);
   border: none;
-  cursor: pointer;
+  cursor: ${({ disabled }) => disabled ? 'default' : 'pointer'};
   font-size: 12px;
   font-weight: 500;
-  color: #fff;
+  color: ${({ disabled }) => disabled ? 'rgba(255,255,255,0.35)' : '#fff'};
   padding: 2px 8px;
   border-radius: 4px;
   text-decoration: none;
+  opacity: ${({ disabled }) => disabled ? 0.6 : 1};
   &:hover {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: ${({ disabled }) => disabled ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.25)'};
   }
 `;
 
