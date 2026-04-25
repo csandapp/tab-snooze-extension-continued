@@ -1,10 +1,7 @@
 import moment from 'moment';
 import { APP_BASE_PATH, BACKGROUND_PATH } from '../paths';
-import URL from 'url';
 import type { SnoozedTab, SnoozePeriod } from '../types';
 
-
-const AMAZON_AFFILIATE_ID = 'tabsnooze-20';
 
 export function isBackgroundScript() {
   const hashPath = window.location.hash.substring(1);
@@ -65,19 +62,6 @@ export function createTabs(
     console.log(`✅ [${callId}] createTabs() done: ${created.length} created, ${customHandled.length} externally handled, ${failedTabs.length} failed`);
     return { created, failedTabs, customHandled };
   });
-}
-
-// Attach affiliate tracking ID for amazon product links
-function attachAffiliationTag(url: string): string {
-  if (!url.includes('amazon.')) {
-    return url; // as is
-  }
-  const parsedUrl = URL.parse(url, true /* parse query too */);
-
-  parsedUrl.query!.tag = AMAZON_AFFILIATE_ID;
-  parsedUrl.search = undefined as unknown as string; // clear search so 'query' will be used for formatting
-
-  return URL.format(parsedUrl);
 }
 
 export async function createCenteredWindow(
@@ -152,7 +136,7 @@ export async function notifyUserAboutNewTabs(
   //   faviconURI = 'images/extension_icon_128.png';
   // }
 
-  let faviconURI = chrome.runtime.getURL('images/extension_icon_128.png');
+  const faviconURI = chrome.runtime.getURL('images/extension_icon_128.png');
 
   // Desktop notification
   const createdNotifId = await chrome.notifications.create('', {

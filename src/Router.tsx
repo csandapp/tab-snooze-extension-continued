@@ -4,8 +4,6 @@ import SnoozePanel from './components/SnoozePanel';
 import {
   POPUP_PATH,
   OPTIONS_PATH,
-  SLEEPING_TABS_PATH,
-  SETTINGS_PATH,
   TODO_PATH,
   FIRST_SNOOZE_PATH,
   SUPPORT_TS_PATH,
