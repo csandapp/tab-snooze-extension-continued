@@ -79,7 +79,7 @@ export async function snoozeActiveTab(config: SnoozeConfig) {
   return snoozeTab(activeTab, config);
 }
 
-export async function repeatLastSnooze() {
+export async function repeatLastSnooze(): Promise<boolean> {
   const snoozedTabs = await getSnoozedTabs();
   const lastSnooze = getRecentlySnoozedTab(snoozedTabs);
 
@@ -89,16 +89,17 @@ export async function repeatLastSnooze() {
     !lastSnooze ||
     Date.now() - lastSnooze.sleepStart > 1000 * 60 * 10
   ) {
-    return;
+    return false;
   }
 
   // track(EVENTS.REPEAT_SNOOZE);
 
-  return snoozeActiveTab({
+  await snoozeActiveTab({
     wakeupTime: lastSnooze.period ? undefined : lastSnooze.when,
     period: lastSnooze.period,
     type: lastSnooze.type,
   });
+  return true;
 }
 
 export async function resnoozePeriodicTab(snoozedTab: SnoozedTab) {
