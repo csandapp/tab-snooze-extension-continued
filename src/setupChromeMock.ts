@@ -15,7 +15,7 @@ if (import.meta.env.DEV) {
     ...chrome, // Preserve existing chrome object if it exists
     runtime: {
       getManifest: () => ({
-        name: "Tab Snooze - Manifest V3",
+        name: "Tab Snooze",
         version: "12.0.0",
         manifest_version: 3,
         description: "Save articles, videos and todos for later. They'll magically reopen when you need them."

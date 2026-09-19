@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Tab Snooze - Manifest V3",
+  "name": "Tab Snooze",
   "short_name": "Tab Snooze",
   "version": "12.2.0",
   "description": "Save articles, videos and todos for later. They'll magically reopen when you need them.",
