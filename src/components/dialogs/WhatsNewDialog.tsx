@@ -10,7 +10,10 @@ import CodeIcon from '@mui/icons-material/Code';
 import congratsImage from './images/congrats.png';
 
 const CHANGELOG_ITEMS = [
-  'Fixed a bug where snoozed tabs could re-open repeatedly',
+  'Snooze multiple tabs at once — just this tab, every tab in the window, or the tabs you have selected',
+  'Export your snoozed tabs to a JSON file, and import them back',
+  'Snooze buttons now show the keyboard shortcut key you can press',
+  'Fixed "Next Weekend" picking the wrong date when snoozing during a weekend',
 ];
 
 export default function WhatsNewDialog(): React.ReactNode {
