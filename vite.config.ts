@@ -59,6 +59,10 @@ export default defineConfig({
     target: 'chrome109',
     // @crxjs/vite-plugin handles the build configuration
     outDir: 'build',
+    // Chrome rejects modulepreload hints on extension pages ("cross-world
+    // extension resource mismatch"). Assets load from local disk, so the
+    // hints buy nothing anyway.
+    modulePreload: false,
     emptyOutDir: true,
     minify: false, // Keep unminified for Chrome Web Store review
     rollupOptions: {
