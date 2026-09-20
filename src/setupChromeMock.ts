@@ -16,7 +16,7 @@ if (import.meta.env.DEV) {
     runtime: {
       getManifest: () => ({
         name: "Tab Snooze",
-        version: "12.0.0",
+        version: "12.2.0",
         manifest_version: 3,
         description: "Save articles, videos and todos for later. They'll magically reopen when you need them."
       }),
