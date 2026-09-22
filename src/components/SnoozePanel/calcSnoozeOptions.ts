@@ -1,0 +1,172 @@
+import moment from 'moment';
+import type { Settings, SnoozeType } from '@/types';
+
+// Import all the icons at the top
+import coffeeIcon from './icons/coffee.svg';
+import coffeeWhiteIcon from './icons/coffee_white.svg';
+import moonIcon from './icons/moon.svg';
+import moonWhiteIcon from './icons/moon_white.svg';
+import sunIcon from './icons/sun.svg';
+import sunWhiteIcon from './icons/sun_white.svg';
+import soffaIcon from './icons/soffa.svg';
+import soffaWhiteIcon from './icons/soffa_white.svg';
+import briefcaseIcon from './icons/breifcase.svg';
+import briefcaseWhiteIcon from './icons/breifcase_white.svg';
+import mailboxIcon from './icons/mailbox.svg';
+import mailboxWhiteIcon from './icons/mailbox_white.svg';
+import pineIcon from './icons/pine.svg';
+import pineWhiteIcon from './icons/pine_white.svg';
+import refreshIcon from './icons/refresh.svg';
+import refreshWhiteIcon from './icons/refresh_white.svg';
+import calendarIcon from './icons/calendar.svg';
+import calendarWhiteIcon from './icons/calendar_white.svg';
+
+export const SNOOZE_TYPE_REPEATED: SnoozeType = 'periodically';
+export const SNOOZE_TYPE_SPECIFIC_DATE: SnoozeType = 'specific_date';
+
+export interface SnoozeOption {
+  id: SnoozeType;
+  title: string;
+  icon: string;
+  activeIcon: string;
+  tooltip: string;
+  when?: Date;
+  shortcutKey?: string;
+}
+
+export default function calcSnoozeOptions(
+  settings: Settings
+): SnoozeOption[] {
+  // constants from user settings
+  const {
+    workdayEnd,
+    weekStartDay,
+    weekEndDay,
+    workdayStart,
+    laterTodayHoursDelta,
+    somedayMonthsDelta,
+  } = settings;
+
+  const isVeryLateAtNight = moment().hour() <= 3;
+  const isNightTime =
+    moment().hour() >= workdayEnd || moment().hour() < 3;
+  // isWeekend covers both days: the first day (e.g. Saturday) and the second (e.g. Sunday)
+  const isWeekend =
+    moment().day() === weekEndDay ||
+    moment().day() === (weekEndDay + 1) % 7;
+
+  const roundDate = (momentDate: moment.Moment) =>
+    momentDate
+      .minutes(0)
+      .seconds(0)
+      .millisecond(0);
+
+  const dayStart = (momentDate: moment.Moment) =>
+    roundDate(momentDate.hour(workdayStart));
+
+  const laterTodayTime = moment().add(laterTodayHoursDelta, 'hours');
+  const thisEveningTime = roundDate(
+    moment().hour() >= workdayEnd
+      ? moment()
+          .add(1, 'day')
+          .hour(workdayEnd)
+      : moment().hour(workdayEnd)
+  );
+  const tomorrowTime = isVeryLateAtNight
+    ? dayStart(moment()) // if its very late, tomorrow = today.
+    : dayStart(moment().add(1, 'days'));
+  // Use >= so that any day at or past weekEndDay (e.g. Saturday when weekend starts Friday)
+  // correctly targets next weekend rather than going backwards within the current week.
+  const weekendTime = moment().day() >= weekEndDay
+    ? dayStart(moment().day(weekEndDay + 7)) // at or past weekend start → next weekend
+    : dayStart(moment().day(weekEndDay));     // before weekend start → this upcoming weekend
+  const nextWeekTime = dayStart(moment().day(weekStartDay + 7)); // next day which start the week
+  const inAMonthTime = dayStart(moment().add(1, 'months'));
+  const somedayTime = dayStart(
+    moment().add(somedayMonthsDelta, 'months')
+  );
+
+  return [
+    {
+      id: 'later',
+      title: 'Later Today',
+      icon: coffeeIcon,
+      activeIcon: coffeeWhiteIcon,
+      tooltip: `${laterTodayTime.calendar()} (${laterTodayHoursDelta} hours from now)`,
+      when: laterTodayTime.toDate(),
+      shortcutKey: 'L',
+    },
+    {
+      id: 'evening',
+      title: isNightTime ? 'Tomorrow Eve' : 'This Evening',
+      icon: moonIcon,
+      activeIcon: moonWhiteIcon,
+      tooltip: thisEveningTime.calendar(),
+      when: thisEveningTime.toDate(),
+      shortcutKey: 'E',
+    },
+    {
+      id: 'tomorrow',
+      title: 'Tomorrow',
+      icon: sunIcon,
+      activeIcon: sunWhiteIcon,
+      tooltip: tomorrowTime.calendar(),
+      when: tomorrowTime.toDate(),
+      shortcutKey: 'T',
+    },
+    {
+      id: 'weekend',
+      title: isWeekend ? 'Next Weekend' : 'This Weekend',
+      icon: soffaIcon,
+      activeIcon: soffaWhiteIcon,
+      tooltip: weekendTime.calendar(),
+      when: weekendTime.toDate(),
+      shortcutKey: 'W',
+    },
+    {
+      id: 'next_week',
+      title: 'Next Week',
+      icon: briefcaseIcon,
+      activeIcon: briefcaseWhiteIcon,
+      tooltip: nextWeekTime.calendar(),
+      when: nextWeekTime.toDate(),
+      shortcutKey: 'N',
+    },
+    {
+      id: 'in_a_month',
+      title: 'In a Month',
+      icon: mailboxIcon,
+      activeIcon: mailboxWhiteIcon,
+      tooltip: inAMonthTime.format('LL'),
+      when: inAMonthTime.toDate(),
+      shortcutKey: 'M',
+    },
+    {
+      id: 'someday',
+      title: 'Someday',
+      icon: pineIcon,
+      activeIcon: pineWhiteIcon,
+      tooltip: `${somedayTime.format(
+        'LL'
+      )} (${somedayMonthsDelta} months from now)`,
+      when: somedayTime.toDate(),
+      shortcutKey: 'S',
+    },
+    {
+      id: SNOOZE_TYPE_REPEATED,
+      title: 'Repeatedly',
+      icon: refreshIcon,
+      activeIcon: refreshWhiteIcon,
+      tooltip: 'Open this tab on a periodic basis',
+      shortcutKey: 'R',
+    },
+    {
+      id: SNOOZE_TYPE_SPECIFIC_DATE,
+      title: 'Pick a Date',
+      icon: calendarIcon,
+      activeIcon: calendarWhiteIcon,
+      tooltip: 'Select a specific date & time',
+      shortcutKey: 'D',
+    },
+  ];
+}
