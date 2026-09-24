@@ -20,16 +20,6 @@ interface Props {
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
-interface State {
-  periodType: PeriodType;
-  selectedHour: number;
-  selectedMonth: number;
-  selectedDay: number;
-  selectedWeekdays: Array<boolean>;
-}
-
-
-
 const PeriodSelector = (props: Props): React.ReactNode => {
   const { visible, onPeriodSelected } = props;
   

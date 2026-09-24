@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck — Dev-only mock that intentionally reassigns the chrome global
 console.log('Loading src/setup.js');
 if (import.meta.env.DEV) {
@@ -29,23 +30,23 @@ if (import.meta.env.DEV) {
         return Promise.resolve({ success: true });
       },
       onInstalled: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.runtime.onInstalled.addListener');
-          // callback({ reason: 'install', previousVersion: '0.0.0' });
+          // _callback({ reason: 'install', previousVersion: '0.0.0' });
         }
       },
       onMessage: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.runtime.onMessage.addListener');
         },
-        removeListener: (callback) => {
+        removeListener: (_callback) => {
           console.log('Mock chrome.runtime.onMessage.removeListener');
         }
       },
       onStartup: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.runtime.onStartup.addListener');
-          // callback(); // Simulate immediate startup
+          // _callback(); // Simulate immediate startup
         }
       }
     },
@@ -88,10 +89,10 @@ if (import.meta.env.DEV) {
         }
       },
       onChanged: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.storage.onChanged.addListener');
         },
-        removeListener: (callback) => {
+        removeListener: (_callback) => {
           console.log('Mock chrome.storage.onChanged.removeListener');
         }
       }
@@ -146,10 +147,10 @@ if (import.meta.env.DEV) {
         return Promise.resolve(mockAlarms);
       },
       onAlarm: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.alarms.onAlarm.addListener');
         },
-        removeListener: (callback) => {
+        removeListener: (_callback) => {
           console.log('Mock chrome.alarms.onAlarm.removeListener');
         }
       }
@@ -170,10 +171,10 @@ if (import.meta.env.DEV) {
         return Promise.resolve('active');
       },
       onStateChanged: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.idle.onStateChanged.addListener');
         },
-        removeListener: (callback) => {
+        removeListener: (_callback) => {
           console.log('Mock chrome.idle.onStateChanged.removeListener');
         }
       }
@@ -196,10 +197,10 @@ if (import.meta.env.DEV) {
 
     commands: {
       onCommand: {
-        addListener: (callback) => {
+        addListener: (_callback) => {
           console.log('Mock chrome.commands.onCommand.addListener');
         },
-        removeListener: (callback) => {
+        removeListener: (_callback) => {
           console.log('Mock chrome.commands.onCommand.removeListener');
         }
       }

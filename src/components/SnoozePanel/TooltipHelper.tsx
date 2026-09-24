@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 const TOOLTIP_SHOW_TIMEOUT = 600;
 const TOOLTIP_HIDE_TIMEOUT = 100;
 
-export default <P extends Record<string, any>>(WrappedComponent: React.ComponentType<P>) => {
+export default <P extends Record<string, unknown>>(WrappedComponent: React.ComponentType<P>) => {
   const TooltipHelper = (props: Omit<P, 'tooltipVisible' | 'tooltipText' | 'preventTooltip' | 'onTooltipAreaMouseEnter' | 'onTooltipAreaMouseLeave'>) => {
     // counts down until tooltip appears/hides
     const tooltipShowTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);

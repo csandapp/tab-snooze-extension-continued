@@ -103,7 +103,7 @@ const Subheader = styled.div`
   padding: 0 30px;
 `;
 
-const NoThanksButton = styled(Button).attrs(props => ({
+const NoThanksButton = styled(Button).attrs(() => ({
   color: '#fff',
   // TODO $FlowFixMe
   // $FlowFixMe

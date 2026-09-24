@@ -102,7 +102,7 @@ const exportSnoozedTabs = async () => {
 
 const SleepingTabsPage = (): React.ReactNode => {
   const [ visibleTabGroupsState, setVisibleTabGroupsState ] = useState<Array<TabGroup>>([]);
-  const [ hidePeriodicState, setHidePeriodicState ] = useState(false);
+  const hidePeriodicState = false;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const importSnoozedTabs = async (event: React.ChangeEvent<HTMLInputElement>) => {
